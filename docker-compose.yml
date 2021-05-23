@@ -1,0 +1,16 @@
+version: "2"
+services:
+  my_app:
+    build:
+      .
+    ports:
+      - "80:5000"
+
+  db:
+    image: postgres:9.6-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: printmob
