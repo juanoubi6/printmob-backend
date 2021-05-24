@@ -1,1 +1,1 @@
-from .some_service import TestService
+from .campaign_service import CampaignService

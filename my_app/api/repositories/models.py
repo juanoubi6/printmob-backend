@@ -5,14 +5,11 @@ from sqlalchemy.orm import declarative_base
 Base = declarative_base()
 
 
-class UserModel(Base):
-    __tablename__ = 'users'
+class CampaignModel(Base):
+    __tablename__ = 'campaign'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    full_name = Column(String)
-    nick_name = Column(String)
 
     def __repr__(self):
-        return "<User(name='%s', fullname='%s', nickname='%s')>" % (
-            self.name, self.fullname, self.nickname)
+        return "<Campaign(name='%s')>" % self.name

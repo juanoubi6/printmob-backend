@@ -2,9 +2,9 @@ from flask import Blueprint, current_app, request
 
 from my_app.api import route
 
-bp = Blueprint('testController', __name__, url_prefix='/test-controller')
+campaignBlueprint = Blueprint('campaignController', __name__, url_prefix='/campaigns')
 
 
-@route(bp, '/testUrl', methods=['GET'])
-def get_test_data():
-    return current_app.test_controller.get_test_data(request)
+@route(campaignBlueprint, '/', methods=['GET'])
+def get_campaigns():
+    return current_app.campaign_controller.get_campaigns(request)

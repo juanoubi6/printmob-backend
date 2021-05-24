@@ -4,7 +4,7 @@ from flask import jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 from . import builder
-from .controllers import TestController
+from .controllers import CampaignController
 from .. import factory
 from ..helpers import JSONEncoder
 from .config import db_config

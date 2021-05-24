@@ -1,1 +1,1 @@
-from .some_repository import TestRepository
+from .campaign_repository import CampaignRepository

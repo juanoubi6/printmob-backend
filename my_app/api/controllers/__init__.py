@@ -1,1 +1,1 @@
-from .some_controller import TestController
+from .campaign_controller import CampaignController

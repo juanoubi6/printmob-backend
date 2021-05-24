@@ -1,14 +1,14 @@
-from my_app.api.controllers import TestController
-from my_app.api.repositories import TestRepository
-from my_app.api.services import TestService
+from my_app.api.controllers import CampaignController
+from my_app.api.repositories import CampaignRepository
+from my_app.api.services import CampaignService
 
 
 def inject_controllers(app, db):
-    app.test_controller = build_test_controller(db)
+    app.campaign_controller = build_campaign_controller(db)
 
 
-def build_test_controller(db):
-    test_repository = TestRepository(db)
-    test_service = TestService(test_repository)
+def build_campaign_controller(db):
+    campaign_repository = CampaignRepository(db)
+    campaign_service = CampaignService(campaign_repository)
 
-    return TestController(test_service)
+    return CampaignController(campaign_service)
