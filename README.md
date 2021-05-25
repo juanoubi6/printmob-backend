@@ -5,6 +5,7 @@ Backend de la aplicacion Printmob
 1. Pararse en el directorio raiz
 1. Levantar la base de datos con `docker-compose up db`
 1. Correr las migraciones con `alembic upgrade head`
+1. Cargar las variables de entorno del archivo .env.example en el ambiente
 1. Correr el main del archivo wsgi.py
 
 #Crear una nueva migracion

@@ -1,3 +1,5 @@
+from sqlalchemy import desc
+
 from my_app.api.domain import Campaign
 from my_app.api.repositories.models import CampaignModel
 
@@ -11,5 +13,6 @@ class CampaignRepository:
         self.db.session.add(campaign_model)
         self.db.session.commit()
 
-        campaign_model = self.db.session.query(CampaignModel).filter_by(name='Name').first()
+        campaign_model = self.db.session.query(CampaignModel).filter_by(name='Name').order_by(
+            desc(CampaignModel.id)).first()
         return [Campaign(campaign_model.name, campaign_model.id)]

@@ -7,7 +7,7 @@ from . import builder
 from .controllers import CampaignController
 from .. import factory
 from ..helpers import JSONEncoder
-from .config import db_config
+from ..settings import DB_CONFIG
 
 
 def create_app(env, settings_override=None, register_security_blueprint=False):
@@ -30,7 +30,7 @@ def create_app(env, settings_override=None, register_security_blueprint=False):
 
 
 def create_db(app, env):
-    database_config = db_config[env]
+    database_config = DB_CONFIG[env]
     app.config['SQLALCHEMY_DATABASE_URI'] = database_config['SQLALCHEMY_DATABASE_URI']
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = database_config['SQLALCHEMY_TRACK_MODIFICATIONS']
     db = SQLAlchemy(app)
