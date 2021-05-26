@@ -1,13 +1,11 @@
-FROM python:3.7
+FROM python:3.7-slim
 
-WORKDIR /usr/src/app
+COPY . /app
+WORKDIR /app
 
-COPY setup.py ./
-COPY README.md ./
+RUN chmod -R 777 ./bin/entrypoint.sh
 RUN pip install --no-cache-dir .
 
 RUN apt-get update && apt-get install -y binutils libc-dev
 
-COPY . .
-
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "wsgi:app"]
+ENTRYPOINT ["bin/entrypoint.sh"]
