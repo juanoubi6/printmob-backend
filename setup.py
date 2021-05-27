@@ -17,6 +17,7 @@ setup(
         "psycopg2==2.7.5",
         "pytest==6.2.4",
         "alembic==1.6.3",
-        "jsonpickle==2.0.0"
+        "jsonpickle==2.0.0",
+        "pytest==6.2.4"
     ],
 )
