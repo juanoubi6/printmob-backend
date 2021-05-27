@@ -7,10 +7,10 @@ from . import builder
 from .controllers import CampaignController
 from .. import factory
 from ..helpers import JSONEncoder
-from ..settings import DB_CONFIG
+from ..settings import DB_CONFIG, ENV
 
 
-def create_app(env, settings_override=None, register_security_blueprint=False):
+def create_app(settings_override=None, register_security_blueprint=False):
     """Returns the Overholt API application instance"""
 
     app = factory.create_app(
@@ -21,18 +21,20 @@ def create_app(env, settings_override=None, register_security_blueprint=False):
     app.json_encoder = JSONEncoder
 
     # Inject db
-    db = create_db(app, env)
+    db = create_db(app)
 
     # Inject controllers
     builder.inject_controllers(app, db)
 
+    # Set env vars
+    app.config['ENV'] = ENV
+
     return app
 
 
-def create_db(app, env):
-    database_config = DB_CONFIG[env]
-    app.config['SQLALCHEMY_DATABASE_URI'] = database_config['SQLALCHEMY_DATABASE_URI']
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = database_config['SQLALCHEMY_TRACK_MODIFICATIONS']
+def create_db(app):
+    app.config['SQLALCHEMY_DATABASE_URI'] = DB_CONFIG['SQLALCHEMY_DATABASE_URI']
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = DB_CONFIG['SQLALCHEMY_TRACK_MODIFICATIONS']
     db = SQLAlchemy(app)
     app.db = db
 

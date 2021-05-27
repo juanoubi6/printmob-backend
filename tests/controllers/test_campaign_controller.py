@@ -4,9 +4,7 @@ from unittest.mock import Mock
 from my_app.api import create_app
 from my_app.api.domain import Campaign
 
-app = create_app("test")
-app.config['TESTING'] = True
-app.config['FLASK_ENV'] = 'TESTING'
+app = create_app()
 app.testing = True
 client = app.test_client()
 
