@@ -2,8 +2,6 @@ import os
 
 DEBUG = True
 
-ENV = os.environ["ENVIRONMENT"]
-
 DB_CONFIG = {
     "test": {
         "SQLALCHEMY_DATABASE_URI": "sqlite://",
