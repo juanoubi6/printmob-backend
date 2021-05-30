@@ -68,9 +68,11 @@ class CampaignRepository:
 
     def get_campaign_detail(self, campaign_id):
         campaign_model = self.db.session.query(CampaignModel).filter_by(id=campaign_id).first()
+        '''
         alt_model_pictures_url = self.db.session.query(ModelImageModel.model_picture_url)\
             .filter_by(campaign_id=campaign_id).all()
         printer = self.db.session.query(UserModel).filter_by(id=campaign_model.printer_id).first()
         current_pledgers = self.db.session.query(PledgeModel).filter_by(campaign_id=campaign_id).count()
         tech_details = self.db.session.query(TechDetailsModel).filter_by(campaign_id=campaign_id).first()
-        return CampaignDetail(campaign_model, alt_model_pictures_url, printer, current_pledgers, tech_details)
+        '''
+        return CampaignDetail(campaign_model)#, alt_model_pictures_url, printer, current_pledgers, tech_details)
