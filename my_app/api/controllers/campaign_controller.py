@@ -9,3 +9,8 @@ class CampaignController:
         campaigns = self.campaign_service.get_campaigns()
 
         return list(map(lambda c: c.to_json(), campaigns)), 200
+
+    def get_campaign_detail(self, req: request, campaign_id):
+        campaign = self.campaign_service.get_campaign_detail(campaign_id)
+
+        return campaign.to_json(), 200
