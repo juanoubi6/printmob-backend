@@ -10,11 +10,11 @@ class TechDetail:
 
     def to_json(self):
         return {
+            "material": self.material,
+            "weight": self.weight,
             "dimension": {
-                "weight": self.weight,
                 "width": self.width,
                 "length": self.length,
                 "depth": self.depth
-            },
-            "material": self.material
+            }
         }
