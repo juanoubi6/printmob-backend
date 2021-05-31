@@ -3,7 +3,7 @@ from sqlalchemy import desc, func, DateTime
 
 from my_app.api.domain import Campaign
 from my_app.api.domain.campaign_detail import CampaignDetail
-from my_app.api.exceptions.NotFoundException import NotFoundException
+from my_app.api.exceptions.not_found_exception import NotFoundException
 from my_app.api.repositories.models import CampaignModel, ModelImageModel, UserModel, PledgeModel, TechDetailsModel, \
     PrinterModel, BuyerModel
 

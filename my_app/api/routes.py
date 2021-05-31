@@ -1,7 +1,6 @@
 from flask import Blueprint, current_app, request
 
 from my_app.api import route
-from my_app.api.exceptions.NotFoundException import NotFoundException
 
 campaignBlueprint = Blueprint('campaignController', __name__, url_prefix='/campaigns')
 

@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from . import builder
 from .controllers import CampaignController
+from .exceptions import register_error_handlers
 from .. import factory
 from ..helpers import JSONEncoder
 from ..settings import DB_CONFIG, ENV
@@ -25,6 +26,9 @@ def create_app(settings_override=None, register_security_blueprint=False):
 
     # Inject controllers
     builder.inject_controllers(app, db)
+
+    # Register error handler
+    register_error_handlers(app)
 
     # Set env vars
     app.config['ENV'] = ENV
