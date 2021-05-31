@@ -6,3 +6,7 @@ run:
 
 stop:
 	docker-compose down
+
+test:
+	echo "Esto requiere que hayas hecho make run"
+	docker exec -it printmob-backend_backend_1 pytest tests/
