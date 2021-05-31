@@ -1,7 +1,5 @@
 from flask import request
 
-from my_app.api.exceptions import NotFoundException, BusinessException
-
 CAMPAIGN_DETAIL_FAILED = 'Campaign detail retrieval has failed'
 
 
