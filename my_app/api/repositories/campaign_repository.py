@@ -3,8 +3,11 @@ from sqlalchemy import desc, func, DateTime
 
 from my_app.api.domain import Campaign
 from my_app.api.domain.campaign_detail import CampaignDetail
+from my_app.api.exceptions.NotFoundException import NotFoundException
 from my_app.api.repositories.models import CampaignModel, ModelImageModel, UserModel, PledgeModel, TechDetailsModel, \
     PrinterModel, BuyerModel
+
+CAMPAIGN_NOT_FOUND = 'Non-existent campaign'
 
 
 class CampaignRepository:
@@ -68,11 +71,6 @@ class CampaignRepository:
 
     def get_campaign_detail(self, campaign_id):
         campaign_model = self.db.session.query(CampaignModel).filter_by(id=campaign_id).first()
-        '''
-        alt_model_pictures_url = self.db.session.query(ModelImageModel.model_picture_url)\
-            .filter_by(campaign_id=campaign_id).all()
-        printer = self.db.session.query(UserModel).filter_by(id=campaign_model.printer_id).first()
-        current_pledgers = self.db.session.query(PledgeModel).filter_by(campaign_id=campaign_id).count()
-        tech_details = self.db.session.query(TechDetailsModel).filter_by(campaign_id=campaign_id).first()
-        '''
-        return CampaignDetail(campaign_model)#, alt_model_pictures_url, printer, current_pledgers, tech_details)
+        if campaign_model is None:
+            raise NotFoundException(CAMPAIGN_NOT_FOUND)
+        return CampaignDetail(campaign_model)
