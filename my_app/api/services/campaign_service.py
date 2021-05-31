@@ -4,3 +4,6 @@ class CampaignService:
 
     def get_campaigns(self):
         return self.campaign_repository.get_campaigns()
+
+    def get_campaign_detail(self, campaign_id):
+        return self.campaign_repository.get_campaign_detail(campaign_id)

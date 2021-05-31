@@ -1,7 +1,7 @@
 class Campaign:
-    def __init__(self, name, id=None):
+    def __init__(self, name, campaign_id):
+        self.id = campaign_id
         self.name = name
-        self.id = id
 
     def to_json(self):
         return {
