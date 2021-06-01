@@ -9,4 +9,4 @@ stop:
 
 test:
 	echo "Esto requiere que hayas hecho make run"
-	docker exec -it printmob-backend_backend_1 pytest tests/
+	docker exec -it printmob-backend_backend_1 python3 -m pytest tests/
