@@ -1,9 +1,10 @@
 from datetime import datetime
-from sqlalchemy import desc, func, DateTime
+
+from sqlalchemy import desc
 
 from my_app.api.domain import Campaign
 from my_app.api.domain.campaign_detail import CampaignDetail
-from my_app.api.exceptions.NotFoundException import NotFoundException
+from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories.models import CampaignModel, ModelImageModel, UserModel, PledgeModel, TechDetailsModel, \
     PrinterModel, BuyerModel
 

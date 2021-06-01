@@ -4,6 +4,7 @@ from my_app.api import create_app
 from my_app.api.domain import Campaign
 
 app = create_app()
+app.config['TESTING'] = True
 app.testing = True
 client = app.test_client()
 
