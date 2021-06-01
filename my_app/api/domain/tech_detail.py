@@ -38,7 +38,7 @@ class TechDetail:
             "campaign_id": self.campaign_id,
             "material": self.material,
             "weight": self.weight,
-            "dimension": {
+            "dimensions": {
                 "width": self.width,
                 "length": self.length,
                 "depth": self.depth
