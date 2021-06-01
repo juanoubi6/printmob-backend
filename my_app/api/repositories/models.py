@@ -22,7 +22,7 @@ class CampaignModel(Base):
     printer = relationship("PrinterModel")
     tech_detail = relationship("TechDetailsModel", uselist=False, back_populates='campaign')
     pledges = relationship('PledgeModel')
-    images = relationship('ModelImageModel')
+    images = relationship('CampaignModelImageModel')
 
     def __repr__(self):
         return "<Campaign(id='{id}}',name='{name}')>".format(id=self.id, name=self.name)
@@ -32,7 +32,7 @@ class PrinterModel(Base):
     __tablename__ = 'printers'
 
     id = Column(Integer, ForeignKey('users.id'), primary_key=True)
-    user = relationship("UserModel", backref=backref("printers", uselist=False))
+    user = relationship("UserModel", uselist=False, back_populates="printer")
 
     def __repr__(self):
         return "<Printer(id='{id}}')>".format(id=self.id)
@@ -57,6 +57,8 @@ class UserModel(Base):
     user_name = Column(String)
     date_of_birth = Column(DateTime)
     email = Column(String)
+
+    printer = relationship("PrinterModel", back_populates="user")
 
     def __repr__(self):
         return "<User(id='{id}}',username='{user_name}')>".format(id=self.id, user_name=self.user_name)
@@ -93,13 +95,13 @@ class PledgeModel(Base):
             .format(id=self.id, campaign_id=self.campaign_id,buyer_id=self.buyer_id)
 
 
-class ModelImageModel(Base):
-    __tablename__ = 'model_images'
+class CampaignModelImageModel(Base):
+    __tablename__ = 'campaign_model_images'
 
     id = Column(Integer, primary_key=True)
     model_picture_url = Column(String)
     campaign_id = Column(Integer, ForeignKey('campaign.id'))
 
     def __repr__(self):
-        return "<ModelImage(id='{id}}',campaign_id='{campaign_id}',picture_url='{picture_url}')>"\
+        return "<CampaignModelImage(id='{id}}',campaign_id='{campaign_id}',picture_url='{picture_url}')>"\
             .format(id=self.id, campaign_id=self.campaign_id,picture_url=self.model_picture_url)

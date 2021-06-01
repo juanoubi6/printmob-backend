@@ -3,9 +3,8 @@ from datetime import datetime
 from sqlalchemy import desc
 
 from my_app.api.domain import Campaign
-from my_app.api.domain.campaign_detail import CampaignDetail
 from my_app.api.exceptions import NotFoundException
-from my_app.api.repositories.models import CampaignModel, ModelImageModel, UserModel, PledgeModel, TechDetailsModel, \
+from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, PledgeModel, TechDetailsModel, \
     PrinterModel, BuyerModel
 
 CAMPAIGN_NOT_FOUND = 'Non-existent campaign'
@@ -60,18 +59,18 @@ class CampaignRepository:
         self.db.session.add(first_pledge)
         self.db.session.commit()
 
-        model_image = ModelImageModel(campaign_id=campaign_model.id,
-                                      model_picture_url="https://free3d.com/imgd/l80/1089780.jpg")
+        model_image = CampaignModelImageModel(campaign_id=campaign_model.id,
+                                              model_picture_url="https://free3d.com/imgd/l80/1089780.jpg")
         self.db.session.add(model_image)
         self.db.session.commit()
 
     def get_campaigns(self):
         self.init_campaigns()
         campaign_model = self.db.session.query(CampaignModel).order_by(desc(CampaignModel.id)).first()
-        return [Campaign(campaign_model.name, campaign_model.id)]
+        return [Campaign.from_model(campaign_model)]
 
     def get_campaign_detail(self, campaign_id):
         campaign_model = self.db.session.query(CampaignModel).filter_by(id=campaign_id).first()
         if campaign_model is None:
             raise NotFoundException(CAMPAIGN_NOT_FOUND)
-        return CampaignDetail(campaign_model)
+        return Campaign.from_model(campaign_model)
