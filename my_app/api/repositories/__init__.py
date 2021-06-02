@@ -1,1 +1,2 @@
 from .campaign_repository import CampaignRepository
+from .pledge_repository import PledgeRepository
