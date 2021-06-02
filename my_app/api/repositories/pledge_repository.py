@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from my_app.api.domain import Pledge, PledgePrototype
+from my_app.api.domain import PledgePrototype
 from my_app.api.repositories.models import PledgeModel
 
 
