@@ -7,8 +7,6 @@ from my_app.api.domain.tech_detail import TechDetail
 from my_app.api.domain.user import User
 from my_app.api.repositories.models import CampaignModel
 
-CampaignModelImages = List[CampaignModelImage]
-
 
 class Campaign:
     def __init__(
@@ -17,7 +15,7 @@ class Campaign:
             name: str,
             description: str,
             campaign_picture_url: str,
-            campaign_model_images: CampaignModelImages,
+            campaign_model_images: List[CampaignModelImage],
             printer: Printer,
             pledge_price: float,
             start_date: datetime.datetime,

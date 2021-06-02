@@ -36,3 +36,15 @@ class Pledge:
             "campaign_id": self.campaign_id,
             "pledge_date": self.pledge_date
         }
+
+
+class PledgePrototype:
+    def __init__(
+            self,
+            buyer_id: int,
+            pledge_price: float,
+            campaign_id: int,
+    ):
+        self.buyer_id = buyer_id
+        self.pledge_price = pledge_price
+        self.campaign_id = campaign_id

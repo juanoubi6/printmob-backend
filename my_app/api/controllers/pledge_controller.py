@@ -1,4 +1,8 @@
+import json
+
 from flask import request
+
+#from my_app.api.domain import PledgePrototype
 
 
 class PledgeController:
@@ -6,6 +10,13 @@ class PledgeController:
         self.pledge_service = pledge_service
 
     def create_pledge(self, req: request):
-        created_pledge = self.pledge_service.create_pledge(campaign_id)
-
-        return created_pledge.to_json(), 201
+        # body = json.loads(req.data)
+        # prototype = PledgePrototype(
+        #     pledge_price=body["pledge_price"],
+        #     campaign_id=body["campaign_id"],
+        #     buyer_id=body["buyer_id"]
+        # )
+        # created_pledge = self.pledge_service.create_pledge(prototype)
+        #
+        # return created_pledge.to_json(), 201
+        return 5,200
