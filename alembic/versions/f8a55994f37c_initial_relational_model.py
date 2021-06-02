@@ -103,15 +103,15 @@ def upgrade():
     )
 
     op.create_table(
-        'model_images',
+        'campaign_model_images',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('campaign_id', sa.Integer, nullable=False),
         sa.Column('model_picture_url', sa.String(255), nullable=False)
     )
 
     op.create_foreign_key(
-        'fk_model_images_campaign',
-        'model_images', 'campaign',
+        'fk_campaign_model_images',
+        'campaign_model_images', 'campaign',
         ['campaign_id'], ['id']
     )
 
