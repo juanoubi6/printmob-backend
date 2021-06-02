@@ -1,6 +1,3 @@
-from my_app.api.repositories.models import CampaignModelImageModel
-
-
 class CampaignModelImage:
     def __init__(
             self,
@@ -11,14 +8,6 @@ class CampaignModelImage:
         self.id = id
         self.model_picture_url = model_picture_url
         self.campaign_id = campaign_id
-
-    @staticmethod
-    def from_model(campaign_model_image: CampaignModelImageModel):
-        return CampaignModelImage(
-            id=campaign_model_image.id,
-            model_picture_url=campaign_model_image.model_picture_url,
-            campaign_id=campaign_model_image.campaign_id
-        )
 
     def to_json(self):
         return {

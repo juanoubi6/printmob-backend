@@ -2,9 +2,9 @@ from datetime import datetime
 
 from sqlalchemy import desc
 
-from my_app.api.domain import Campaign
 from my_app.api.exceptions import NotFoundException
-from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, PledgeModel, TechDetailsModel, \
+from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, PledgeModel, \
+    TechDetailsModel, \
     PrinterModel, BuyerModel
 
 CAMPAIGN_NOT_FOUND = 'Non-existent campaign'
@@ -15,19 +15,27 @@ class CampaignRepository:
         self.db = db
 
     def init_campaigns(self):
-        user_model = UserModel(first_name='Lucas',
-                               last_name='Costas',
-                               user_name='Chikinkun',
-                               date_of_birth=datetime.now(),
-                               email='lcostas@gmail.com')
-        self.db.session.add(user_model)
+        printer_user_model = UserModel(first_name='Lucas',
+                                       last_name='Costas',
+                                       user_name='Chikinkun',
+                                       date_of_birth=datetime.now(),
+                                       email='lcostas@gmail.com')
+        self.db.session.add(printer_user_model)
         self.db.session.commit()
 
-        printer_model = PrinterModel(id=user_model.id)
+        buyer_user_model = UserModel(first_name='Juan',
+                                     last_name='Oubina',
+                                     user_name='Oubi',
+                                     date_of_birth=datetime.now(),
+                                     email='oubi@gmail.com')
+        self.db.session.add(buyer_user_model)
+        self.db.session.commit()
+
+        printer_model = PrinterModel(id=printer_user_model.id)
         self.db.session.add(printer_model)
         self.db.session.commit()
 
-        buyer_model = BuyerModel(id=user_model.id)
+        buyer_model = BuyerModel(id=buyer_user_model.id)
         self.db.session.add(buyer_model)
         self.db.session.commit()
 
@@ -54,7 +62,7 @@ class CampaignRepository:
 
         first_pledge = PledgeModel(campaign_id=campaign_model.id,
                                    pledge_price=350.0,
-                                   buyer_id=user_model.id,
+                                   buyer_id=buyer_model.id,
                                    pledge_date=datetime.now())
         self.db.session.add(first_pledge)
         self.db.session.commit()
@@ -67,10 +75,10 @@ class CampaignRepository:
     def get_campaigns(self):
         self.init_campaigns()
         campaign_model = self.db.session.query(CampaignModel).order_by(desc(CampaignModel.id)).first()
-        return [Campaign.from_model(campaign_model)]
+        return [campaign_model.to_campaign_entity()]
 
     def get_campaign_detail(self, campaign_id):
         campaign_model = self.db.session.query(CampaignModel).filter_by(id=campaign_id).first()
         if campaign_model is None:
             raise NotFoundException(CAMPAIGN_NOT_FOUND)
-        return Campaign.from_model(campaign_model)
+        return campaign_model.to_campaign_entity()

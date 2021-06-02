@@ -16,4 +16,4 @@ class PledgeRepository:
         self.db.session.add(pledge_model)
         self.db.session.commit()
 
-        return Pledge.from_model(pledge_model)
+        return pledge_model.to_pledge_entity()

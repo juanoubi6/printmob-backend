@@ -21,4 +21,5 @@ def test_create_pledge_returns_created_pledge(mock_pledge_service):
     }
 
     res = client.post("/pledges", data=json.dumps(pledge_body))
+    assert res.status_code == 201
     assert res.json["id"] == MOCK_PLEDGE.id

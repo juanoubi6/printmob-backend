@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey
 
 from sqlalchemy.orm import declarative_base, relationship, backref
 
+from my_app.api.domain import Pledge, TechDetail, User, Campaign, CampaignModelImage, Printer
+
 Base = declarative_base()
 
 
@@ -26,6 +28,23 @@ class CampaignModel(Base):
 
     def __repr__(self):
         return "<Campaign(id='{id}}',name='{name}')>".format(id=self.id, name=self.name)
+
+    def to_campaign_entity(self):
+        return Campaign(
+            id=self.id,
+            name=self.name,
+            description=self.description,
+            campaign_picture_url=self.campaign_picture_url,
+            campaign_model_images=list(map(lambda ci: ci.to_campaign_model_image_entity(), self.images)),
+            printer=Printer(self.printer.user.to_user_entity()),
+            pledge_price=float(self.pledge_price),
+            start_date=self.start_date,
+            end_date=self.end_date,
+            min_pledgers=self.min_pledgers,
+            max_pledgers=self.max_pledgers,
+            current_pledgers=len(self.pledges),
+            tech_details=self.tech_detail.to_tech_detail_entity()
+        )
 
 
 class PrinterModel(Base):
@@ -63,6 +82,16 @@ class UserModel(Base):
     def __repr__(self):
         return "<User(id='{id}}',username='{user_name}')>".format(id=self.id, user_name=self.user_name)
 
+    def to_user_entity(self):
+        return User(
+            id=self.id,
+            first_name=self.first_name,
+            last_name=self.last_name,
+            user_name=self.user_name,
+            date_of_birth=self.date_of_birth,
+            email=self.email
+        )
+
 
 class TechDetailsModel(Base):
     __tablename__ = 'tech_details'
@@ -80,6 +109,17 @@ class TechDetailsModel(Base):
     def __repr__(self):
         return "<TechDetail(id='{id}}',campaign_id='{campaign_id}')>".format(id=self.id, campaign_id=self.campaign_id)
 
+    def to_tech_detail_entity(self):
+        return TechDetail(
+            id=self.id,
+            campaign_id=self.campaign_id,
+            material=self.material,
+            weight=self.weight,
+            width=self.width,
+            length=self.length,
+            depth=self.depth,
+        )
+
 
 class PledgeModel(Base):
     __tablename__ = 'pledges'
@@ -94,6 +134,15 @@ class PledgeModel(Base):
         return "<Pledge(id='{id}}',campaign_id='{campaign_id}',buyer_id='{buyer_id}')>"\
             .format(id=self.id, campaign_id=self.campaign_id,buyer_id=self.buyer_id)
 
+    def to_pledge_entity(self):
+        return Pledge(
+            id=self.id,
+            buyer_id=self.buyer_id,
+            pledge_price=float(self.pledge_price),
+            campaign_id=self.campaign_id,
+            pledge_date=self.pledge_date,
+        )
+
 
 class CampaignModelImageModel(Base):
     __tablename__ = 'campaign_model_images'
@@ -105,3 +154,10 @@ class CampaignModelImageModel(Base):
     def __repr__(self):
         return "<CampaignModelImage(id='{id}}',campaign_id='{campaign_id}',picture_url='{picture_url}')>"\
             .format(id=self.id, campaign_id=self.campaign_id,picture_url=self.model_picture_url)
+
+    def to_campaign_model_image_entity(self):
+        return CampaignModelImage(
+            id=self.id,
+            model_picture_url=self.model_picture_url,
+            campaign_id=self.campaign_id
+        )
