@@ -8,7 +8,7 @@ class CampaignController:
         self.campaign_service = campaign_service
 
     def get_campaigns(self, req: request):
-        campaigns = self.campaign_service.get_campaigns()
+        campaigns = self.campaign_service.get_campaigns(req.args)
 
         return list(map(lambda c: c.to_json(), campaigns)), 200
 

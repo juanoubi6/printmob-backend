@@ -1,11 +1,13 @@
 from datetime import datetime
 
-from sqlalchemy import desc
+from sqlalchemy import asc
+from sqlalchemy.orm import noload
 
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, PledgeModel, \
     TechDetailsModel, \
     PrinterModel, BuyerModel
+from my_app.api.repositories.utils import paginate
 
 CAMPAIGN_NOT_FOUND = 'Non-existent campaign'
 
@@ -72,10 +74,24 @@ class CampaignRepository:
         self.db.session.add(model_image)
         self.db.session.commit()
 
-    def get_campaigns(self):
-        self.init_campaigns()
-        campaign_model = self.db.session.query(CampaignModel).order_by(desc(CampaignModel.id)).first()
-        return [campaign_model.to_campaign_entity()]
+    def get_campaigns(self, filters):
+        """
+        Returns paginated campaigns using filters
+
+        Parameters
+        ----------
+        filters: dict[str,str]
+            Dict with filters to apply.
+        """
+        # self.init_campaigns()
+        query = self.db.session.query(CampaignModel) \
+            .options(noload(CampaignModel.tech_detail)) \
+            .options(noload(CampaignModel.images)) \
+            .order_by(asc(CampaignModel.id))
+
+        campaign_models = paginate(query, filters).all()
+
+        return list(map(lambda cm: cm.to_campaign_entity(), campaign_models))
 
     def get_campaign_detail(self, campaign_id):
         campaign_model = self.db.session.query(CampaignModel).filter_by(id=campaign_id).first()

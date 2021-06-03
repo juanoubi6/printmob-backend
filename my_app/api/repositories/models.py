@@ -36,14 +36,14 @@ class CampaignModel(Base):
             description=self.description,
             campaign_picture_url=self.campaign_picture_url,
             campaign_model_images=list(map(lambda ci: ci.to_campaign_model_image_entity(), self.images)),
-            printer=Printer(self.printer.user.to_user_entity()),
+            printer=Printer(self.printer.user.to_user_entity()) if self.printer is not None else None,
             pledge_price=float(self.pledge_price),
             start_date=self.start_date,
             end_date=self.end_date,
             min_pledgers=self.min_pledgers,
             max_pledgers=self.max_pledgers,
             current_pledgers=len(self.pledges),
-            tech_details=self.tech_detail.to_tech_detail_entity()
+            tech_details=self.tech_detail.to_tech_detail_entity() if self.tech_detail is not None else None
         )
 
 
