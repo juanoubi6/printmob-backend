@@ -4,3 +4,4 @@ from .pledge import Pledge, PledgePrototype
 from .printer import Printer
 from .tech_detail import TechDetail
 from .user import User
+from .page import Page

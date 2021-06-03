@@ -3,11 +3,12 @@ from datetime import datetime
 from sqlalchemy import asc
 from sqlalchemy.orm import noload
 
+from my_app.api.domain import Page
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, PledgeModel, \
     TechDetailsModel, \
     PrinterModel, BuyerModel
-from my_app.api.repositories.utils import paginate
+from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE
 
 CAMPAIGN_NOT_FOUND = 'Non-existent campaign'
 
@@ -74,7 +75,7 @@ class CampaignRepository:
         self.db.session.add(model_image)
         self.db.session.commit()
 
-    def get_campaigns(self, filters):
+    def get_campaigns(self, filters) -> Page:
         """
         Returns paginated campaigns using filters
 
@@ -90,8 +91,14 @@ class CampaignRepository:
             .order_by(asc(CampaignModel.id))
 
         campaign_models = paginate(query, filters).all()
+        total_records = query.count()
 
-        return list(map(lambda cm: cm.to_campaign_entity(), campaign_models))
+        return Page(
+            page=filters.get("page", DEFAULT_PAGE),
+            page_size=filters.get("page_size", DEFAULT_PAGE_SIZE),
+            total_records=total_records,
+            data=list(map(lambda cm: cm.to_campaign_entity(), campaign_models))
+        )
 
     def get_campaign_detail(self, campaign_id):
         campaign_model = self.db.session.query(CampaignModel).filter_by(id=campaign_id).first()
