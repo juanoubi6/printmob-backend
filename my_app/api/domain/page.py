@@ -1,13 +1,15 @@
-from typing import List
+from typing import List, Generic, TypeVar
+
+T = TypeVar('T')
 
 
-class Page:
+class Page(Generic[T]):
     def __init__(
             self,
             page: int,
             page_size: int,
             total_records: int,
-            data: List,
+            data: List[T],
     ):
         """
         Creates a new page

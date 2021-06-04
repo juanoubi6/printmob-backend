@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import asc
 from sqlalchemy.orm import noload
 
-from my_app.api.domain import Page
+from my_app.api.domain import Page, Campaign
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, PledgeModel, \
     TechDetailsModel, \
@@ -75,7 +75,7 @@ class CampaignRepository:
         self.db.session.add(model_image)
         self.db.session.commit()
 
-    def get_campaigns(self, filters) -> Page:
+    def get_campaigns(self, filters) -> Page[Campaign]:
         """
         Returns paginated campaigns using filters
 
@@ -100,7 +100,7 @@ class CampaignRepository:
             data=list(map(lambda cm: cm.to_campaign_entity(), campaign_models))
         )
 
-    def get_campaign_detail(self, campaign_id):
+    def get_campaign_detail(self, campaign_id) -> Campaign:
         campaign_model = self.db.session.query(CampaignModel).filter_by(id=campaign_id).first()
         if campaign_model is None:
             raise NotFoundException(CAMPAIGN_NOT_FOUND)
