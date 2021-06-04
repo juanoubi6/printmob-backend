@@ -4,10 +4,6 @@ from typing import List
 from my_app.api.domain.campaign_model_image import CampaignModelImage
 from my_app.api.domain.printer import Printer
 from my_app.api.domain.tech_detail import TechDetail
-from my_app.api.domain.user import User
-from my_app.api.repositories.models import CampaignModel
-
-CampaignModelImages = List[CampaignModelImage]
 
 
 class Campaign:
@@ -17,7 +13,7 @@ class Campaign:
             name: str,
             description: str,
             campaign_picture_url: str,
-            campaign_model_images: CampaignModelImages,
+            campaign_model_images: List[CampaignModelImage],
             printer: Printer,
             pledge_price: float,
             start_date: datetime.datetime,
@@ -40,24 +36,6 @@ class Campaign:
         self.max_pledgers = max_pledgers
         self.current_pledgers = current_pledgers
         self.tech_details = tech_details
-
-    @staticmethod
-    def from_model(campaign_model: CampaignModel):
-        return Campaign(
-            id=campaign_model.id,
-            name=campaign_model.name,
-            description=campaign_model.description,
-            campaign_picture_url=campaign_model.campaign_picture_url,
-            campaign_model_images=list(map(lambda ci: CampaignModelImage.from_model(ci), campaign_model.images)),
-            printer=Printer(User.from_model(campaign_model.printer.user)),
-            pledge_price=float(campaign_model.pledge_price),
-            start_date=campaign_model.start_date,
-            end_date=campaign_model.end_date,
-            min_pledgers=campaign_model.min_pledgers,
-            max_pledgers=campaign_model.max_pledgers,
-            current_pledgers=len(campaign_model.pledges),
-            tech_details=TechDetail.from_model(campaign_model.tech_detail)
-        )
 
     def to_json(self):
         return {

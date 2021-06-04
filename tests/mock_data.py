@@ -1,6 +1,6 @@
 import datetime
 
-from my_app.api.domain import Campaign, CampaignModelImage, Printer, User, TechDetail
+from my_app.api.domain import Campaign, CampaignModelImage, Printer, User, TechDetail, Pledge
 
 MOCK_CAMPAIGN = Campaign(
     id=1,
@@ -31,4 +31,12 @@ MOCK_CAMPAIGN = Campaign(
         length=100,
         depth=100,
     )
+)
+
+MOCK_PLEDGE = Pledge(
+    id=1,
+    buyer_id=1,
+    pledge_price=350.0,
+    campaign_id=1,
+    pledge_date=datetime.datetime(2020, 5, 17),
 )

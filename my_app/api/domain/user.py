@@ -1,7 +1,5 @@
 import datetime
 
-from my_app.api.repositories.models import UserModel
-
 
 class User:
     def __init__(
@@ -19,17 +17,6 @@ class User:
         self.user_name = user_name
         self.date_of_birth = date_of_birth
         self.email = email
-
-    @staticmethod
-    def from_model(user_model: UserModel):
-        return User(
-            id=user_model.id,
-            first_name=user_model.first_name,
-            last_name=user_model.last_name,
-            user_name=user_model.user_name,
-            date_of_birth=user_model.date_of_birth,
-            email=user_model.email
-        )
 
     def to_json(self):
         return {
