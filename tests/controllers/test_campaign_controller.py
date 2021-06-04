@@ -21,10 +21,18 @@ def test_get_campaigns_returns_campaign_page(mock_campaign_service):
     )
 
     res = client.get("/campaigns?page=1&page_size=10")
+    assert res.status_code == 200
     assert res.json["page"] == 1
     assert res.json["page_size"] == 10
     assert res.json["total_records"] == 100
     assert res.json["data"][0]["id"] == MOCK_CAMPAIGN.id
+
+
+def test_get_campaigns_fails_on_invalid_pagination_params():
+    res = client.get("/campaigns?page=1&page_size=-10")
+
+    assert res.status_code == 400
+    assert res.json["message"] == "The query param 'page_size' should be numeric"
 
 
 @patch.object(app.campaign_controller, "campaign_service")
