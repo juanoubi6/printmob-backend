@@ -1,11 +1,14 @@
 from datetime import datetime
 
-from sqlalchemy import desc
+from sqlalchemy import asc
+from sqlalchemy.orm import noload
 
+from my_app.api.domain import Page, Campaign
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, PledgeModel, \
     TechDetailsModel, \
     PrinterModel, BuyerModel
+from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE
 
 CAMPAIGN_NOT_FOUND = 'Non-existent campaign'
 
@@ -72,12 +75,32 @@ class CampaignRepository:
         self.db.session.add(model_image)
         self.db.session.commit()
 
-    def get_campaigns(self):
-        self.init_campaigns()
-        campaign_model = self.db.session.query(CampaignModel).order_by(desc(CampaignModel.id)).first()
-        return [campaign_model.to_campaign_entity()]
+    def get_campaigns(self, filters) -> Page[Campaign]:
+        """
+        Returns paginated campaigns using filters
 
-    def get_campaign_detail(self, campaign_id):
+        Parameters
+        ----------
+        filters: dict[str,str]
+            Dict with filters to apply.
+        """
+        # self.init_campaigns()
+        query = self.db.session.query(CampaignModel) \
+            .options(noload(CampaignModel.tech_detail)) \
+            .options(noload(CampaignModel.images)) \
+            .order_by(asc(CampaignModel.id))
+
+        campaign_models = paginate(query, filters).all()
+        total_records = query.count()
+
+        return Page(
+            page=filters.get("page", DEFAULT_PAGE),
+            page_size=filters.get("page_size", DEFAULT_PAGE_SIZE),
+            total_records=total_records,
+            data=list(map(lambda cm: cm.to_campaign_entity(), campaign_models))
+        )
+
+    def get_campaign_detail(self, campaign_id) -> Campaign:
         campaign_model = self.db.session.query(CampaignModel).filter_by(id=campaign_id).first()
         if campaign_model is None:
             raise NotFoundException(CAMPAIGN_NOT_FOUND)

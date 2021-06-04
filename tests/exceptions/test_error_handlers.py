@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from my_app.api import create_app
-from my_app.api.exceptions import BusinessException, ServerException
+from my_app.api.exceptions import BusinessException, ServerException, NotFoundException
 
 app = create_app()
 app.config['TESTING'] = True
@@ -37,3 +37,13 @@ def test_any_endpoint_returns_500_on_unhandled_exception(mock_campaign_service):
     assert res.status_code == 500
     assert 'message' in res.json
     assert res.json['message'] == "some unhandler error"
+
+
+@patch.object(app.campaign_controller, "campaign_service")
+def test_any_endpoint_returns_404_on_not_found_exception(mock_campaign_service):
+    mock_campaign_service.get_campaign_detail.side_effect = NotFoundException("not found")
+
+    res = client.get("/campaigns/1")
+    assert res.status_code == 404
+    assert 'message' in res.json
+    assert res.json['message'] == "not found"

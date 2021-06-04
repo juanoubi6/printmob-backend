@@ -44,12 +44,12 @@ class Campaign:
             "description": self.description,
             "campaign_picture_url": self.campaign_picture_url,
             "campaign_model_images": list(map(lambda cmi: cmi.to_json(), self.campaign_model_images)),
-            "printer": self.printer.to_json(),
+            "printer": self.printer.to_json() if self.printer is not None else None,
             "pledge_price": self.pledge_price,
             "start_date": self.start_date,
             "end_date": self.end_date,
             "min_pledgers": self.min_pledgers,
             "max_pledgers": self.max_pledgers,
             "current_pledgers": self.current_pledgers,
-            "tech_details": self.tech_details.to_json()
+            "tech_details": self.tech_details.to_json() if self.tech_details is not None else None
         }

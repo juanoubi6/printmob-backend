@@ -2,6 +2,7 @@ import json
 from unittest.mock import patch
 
 from my_app.api import create_app
+from my_app.api.domain import Page
 from tests.mock_data import MOCK_CAMPAIGN
 
 app = create_app()
@@ -11,11 +12,27 @@ client = app.test_client()
 
 
 @patch.object(app.campaign_controller, "campaign_service")
-def test_get_campaigns_returns_campaign_list(mock_campaign_service):
-    mock_campaign_service.get_campaigns.return_value = [MOCK_CAMPAIGN]
+def test_get_campaigns_returns_campaign_page(mock_campaign_service):
+    mock_campaign_service.get_campaigns.return_value = Page(
+        page=1,
+        page_size=10,
+        total_records=100,
+        data=[MOCK_CAMPAIGN]
+    )
 
-    res = client.get("/campaigns")
-    assert res.json[0]["name"] == MOCK_CAMPAIGN.name
+    res = client.get("/campaigns?page=1&page_size=10")
+    assert res.status_code == 200
+    assert res.json["page"] == 1
+    assert res.json["page_size"] == 10
+    assert res.json["total_records"] == 100
+    assert res.json["data"][0]["id"] == MOCK_CAMPAIGN.id
+
+
+def test_get_campaigns_fails_on_invalid_pagination_params():
+    res = client.get("/campaigns?page=1&page_size=-10")
+
+    assert res.status_code == 400
+    assert res.json["message"] == "The query param 'page_size' should be numeric"
 
 
 @patch.object(app.campaign_controller, "campaign_service")
