@@ -19,7 +19,7 @@ def paginate(query, filters: dict):
     query: BaseQuery
         Query with limit and offset
     """
-    page = int(filters.get("page_size", DEFAULT_PAGE_SIZE))
+    page = int(filters.get("page", DEFAULT_PAGE))
     page_size = int(filters.get("page_size", DEFAULT_PAGE_SIZE))
 
     if page_size > MAX_PAGE_SIZE:
