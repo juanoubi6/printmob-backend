@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir .
 
 RUN apt-get update && apt-get install -y binutils libc-dev
 
-ENTRYPOINT ["bin/entrypoint.sh"]
+ENTRYPOINT ["sh", "bin/entrypoint.sh"]

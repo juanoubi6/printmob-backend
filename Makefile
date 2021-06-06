@@ -10,3 +10,6 @@ stop:
 test:
 	echo "Esto requiere que hayas hecho make run"
 	docker exec -it printmob-backend_backend_1 python3 -m pytest tests/
+
+migrate:
+	docker exec -ti printmob-backend_backend_1 alembic upgrade head
