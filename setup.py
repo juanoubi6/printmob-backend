@@ -18,6 +18,7 @@ setup(
         "pytest==6.2.4",
         "alembic==1.6.3",
         "jsonpickle==2.0.0",
-        "pytest==6.2.4"
+        "pytest==6.2.4",
+        "flask-cors==3.0.10"
     ],
 )
