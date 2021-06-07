@@ -56,6 +56,16 @@ class PrinterModel(Base):
     def __repr__(self):
         return "<Printer(id='{id}}')>".format(id=self.id)
 
+    def to_printer_entity(self):
+        return Printer(User(
+            id=self.id,
+            first_name=self.user.first_name,
+            last_name=self.user.last_name,
+            user_name=self.user.user_name,
+            date_of_birth=self.user.date_of_birth,
+            email=self.user.email
+        ))
+
 
 class BuyerModel(Base):
     __tablename__ = 'buyers'
