@@ -21,7 +21,10 @@ class Campaign:
             min_pledgers: int,
             max_pledgers: int,
             current_pledgers: int,
-            tech_details: TechDetail
+            tech_details: TechDetail,
+            created_at: datetime.datetime = datetime.datetime.utcnow(),
+            updated_at: datetime.datetime = datetime.datetime.utcnow(),
+            deleted_at: datetime.datetime = None
     ):
         self.id = id
         self.name = name
@@ -36,6 +39,9 @@ class Campaign:
         self.max_pledgers = max_pledgers
         self.current_pledgers = current_pledgers
         self.tech_details = tech_details
+        self.created_at = created_at
+        self.updated_at = updated_at
+        self.deleted_at = deleted_at
 
     def to_json(self):
         return {
@@ -51,5 +57,8 @@ class Campaign:
             "min_pledgers": self.min_pledgers,
             "max_pledgers": self.max_pledgers,
             "current_pledgers": self.current_pledgers,
-            "tech_details": self.tech_details.to_json() if self.tech_details is not None else None
+            "tech_details": self.tech_details.to_json() if self.tech_details is not None else None,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+            "deleted_at": self.deleted_at
         }

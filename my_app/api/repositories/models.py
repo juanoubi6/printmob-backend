@@ -1,3 +1,5 @@
+import datetime
+
 from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey
 
 from sqlalchemy.orm import declarative_base, relationship, backref
@@ -20,6 +22,9 @@ class CampaignModel(Base):
     end_date = Column(DateTime)
     min_pledgers = Column(Integer)
     max_pledgers = Column(Integer)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+    deleted_at = Column(DateTime)
 
     printer = relationship("PrinterModel")
     tech_detail = relationship("TechDetailsModel", uselist=False, back_populates='campaign')
@@ -43,7 +48,10 @@ class CampaignModel(Base):
             min_pledgers=self.min_pledgers,
             max_pledgers=self.max_pledgers,
             current_pledgers=len(self.pledges),
-            tech_details=self.tech_detail.to_tech_detail_entity() if self.tech_detail is not None else None
+            tech_details=self.tech_detail.to_tech_detail_entity() if self.tech_detail is not None else None,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+            deleted_at=self.deleted_at
         )
 
 
@@ -76,6 +84,9 @@ class UserModel(Base):
     user_name = Column(String)
     date_of_birth = Column(DateTime)
     email = Column(String)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+    deleted_at = Column(DateTime)
 
     printer = relationship("PrinterModel", back_populates="user")
 
@@ -89,7 +100,10 @@ class UserModel(Base):
             last_name=self.last_name,
             user_name=self.user_name,
             date_of_birth=self.date_of_birth,
-            email=self.email
+            email=self.email,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+            deleted_at=self.deleted_at
         )
 
 
@@ -128,11 +142,13 @@ class PledgeModel(Base):
     campaign_id = Column(Integer, ForeignKey('campaign.id'))
     pledge_price = Column(DECIMAL)
     buyer_id = Column(Integer)
-    pledge_date = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+    deleted_at = Column(DateTime)
 
     def __repr__(self):
         return "<Pledge(id='{id}}',campaign_id='{campaign_id}',buyer_id='{buyer_id}')>"\
-            .format(id=self.id, campaign_id=self.campaign_id,buyer_id=self.buyer_id)
+            .format(id=self.id, campaign_id=self.campaign_id, buyer_id=self.buyer_id)
 
     def to_pledge_entity(self):
         return Pledge(
@@ -140,7 +156,9 @@ class PledgeModel(Base):
             buyer_id=self.buyer_id,
             pledge_price=float(self.pledge_price),
             campaign_id=self.campaign_id,
-            pledge_date=self.pledge_date,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+            deleted_at=self.deleted_at
         )
 
 

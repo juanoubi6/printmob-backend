@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import asc
+from sqlalchemy import asc, null
 from sqlalchemy.orm import noload
 
 from my_app.api.domain import Page, Campaign
@@ -65,8 +65,7 @@ class CampaignRepository:
 
         first_pledge = PledgeModel(campaign_id=campaign_model.id,
                                    pledge_price=350.0,
-                                   buyer_id=buyer_model.id,
-                                   pledge_date=datetime.now())
+                                   buyer_id=buyer_model.id)
         self.db.session.add(first_pledge)
         self.db.session.commit()
 
@@ -84,8 +83,9 @@ class CampaignRepository:
         filters: dict[str,str]
             Dict with filters to apply.
         """
-        # self.init_campaigns()
+        self.init_campaigns()
         query = self.db.session.query(CampaignModel) \
+            .filter(CampaignModel.deleted_at is null)\
             .options(noload(CampaignModel.tech_detail)) \
             .options(noload(CampaignModel.images)) \
             .order_by(asc(CampaignModel.id))
@@ -101,7 +101,10 @@ class CampaignRepository:
         )
 
     def get_campaign_detail(self, campaign_id) -> Campaign:
-        campaign_model = self.db.session.query(CampaignModel).filter_by(id=campaign_id).first()
+        campaign_model = self.db.session.query(CampaignModel)\
+            .filter_by(id=campaign_id)\
+            .filter(CampaignModel.deleted_at is null) \
+            .first()
         if campaign_model is None:
             raise NotFoundException(CAMPAIGN_NOT_FOUND)
         return campaign_model.to_campaign_entity()

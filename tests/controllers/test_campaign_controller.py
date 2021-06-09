@@ -1,6 +1,8 @@
 import json
 from unittest.mock import patch
 
+from sqlalchemy import null
+
 from my_app.api import create_app
 from my_app.api.domain import Page
 from tests.mock_data import MOCK_CAMPAIGN
@@ -64,7 +66,10 @@ def test_get_campaign_detail_returns_campaign_json(mock_campaign_service):
             "first_name": "John",
             "id": 1,
             "last_name": "Doe",
-            "user_name": "johnDoe5"
+            "user_name": "johnDoe5",
+            "created_at": "Sun, 17 May 2020 00:00:00 GMT",
+            "updated_at": "Sun, 17 May 2020 00:00:00 GMT",
+            "deleted_at": None
         },
         "start_date": "Sun, 17 May 2020 00:00:00 GMT",
         "tech_details": {
@@ -77,5 +82,8 @@ def test_get_campaign_detail_returns_campaign_json(mock_campaign_service):
             "id": 1,
             "material": "material",
             "weight": 100
-        }
+        },
+        "created_at": "Sun, 17 May 2020 00:00:00 GMT",
+        "updated_at": "Sun, 17 May 2020 00:00:00 GMT",
+        "deleted_at": None
     }

@@ -9,7 +9,10 @@ class User:
             last_name: str,
             user_name: str,
             date_of_birth: datetime.datetime,
-            email: str
+            email: str,
+            created_at: datetime.datetime = datetime.datetime.utcnow(),
+            updated_at: datetime.datetime = datetime.datetime.utcnow(),
+            deleted_at: datetime.datetime = None
     ):
         self.id = id
         self.first_name = first_name
@@ -17,6 +20,9 @@ class User:
         self.user_name = user_name
         self.date_of_birth = date_of_birth
         self.email = email
+        self.created_at = created_at
+        self.updated_at = updated_at
+        self.deleted_at = deleted_at
 
     def to_json(self):
         return {
@@ -25,5 +31,8 @@ class User:
             "last_name": self.last_name,
             "user_name": self.user_name,
             "date_of_birth": self.date_of_birth,
-            "email": self.email
+            "email": self.email,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+            "deleted_at": self.deleted_at
         }
