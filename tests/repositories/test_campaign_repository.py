@@ -12,16 +12,16 @@ campaign_repository = CampaignRepository(test_db)
 
 
 def test_get_campaign_detail_returns_campaign():
-    test_db.session.query.return_value.filter_by.return_value.first.return_value = MOCK_CAMPAIGN_MODEL
+    test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.return_value = MOCK_CAMPAIGN_MODEL
 
     response = campaign_repository.get_campaign_detail(1)
 
     assert isinstance(response, Campaign)
-    test_db.session.query.return_value.filter_by.return_value.first.assert_called_once()
+    test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.assert_called_once()
 
 
 def test_get_campaign_detail_throws_error_when_campaign_is_not_found():
-    test_db.session.query.return_value.filter_by.return_value.first.return_value = None
+    test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.return_value = None
 
     with pytest.raises(NotFoundException):
         campaign_repository.get_campaign_detail(1)

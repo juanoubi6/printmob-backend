@@ -11,8 +11,7 @@ class PledgeRepository:
     def create_pledge(self, prototype: PledgePrototype) -> Pledge:
         pledge_model = PledgeModel(campaign_id=prototype.campaign_id,
                                    pledge_price=prototype.pledge_price,
-                                   buyer_id=prototype.buyer_id,
-                                   pledge_date=datetime.now())
+                                   buyer_id=prototype.buyer_id)
         self.db.session.add(pledge_model)
         self.db.session.commit()
 

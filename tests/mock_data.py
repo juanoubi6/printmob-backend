@@ -1,5 +1,7 @@
 import datetime
 
+from sqlalchemy import null
+
 from my_app.api.domain import Campaign, CampaignModelImage, Printer, User, TechDetail, Pledge
 from my_app.api.repositories.models import CampaignModel, TechDetailsModel, PrinterModel, UserModel, PledgeModel, \
     CampaignModelImageModel
@@ -16,7 +18,9 @@ MOCK_CAMPAIGN = Campaign(
         last_name="Doe",
         user_name="johnDoe5",
         date_of_birth=datetime.datetime(2020, 5, 17),
-        email="email@email.com"
+        email="email@email.com",
+        created_at=datetime.datetime(2020, 5, 17),
+        updated_at=datetime.datetime(2020, 5, 17)
     )),
     pledge_price=10.50,
     start_date=datetime.datetime(2020, 5, 17),
@@ -32,7 +36,9 @@ MOCK_CAMPAIGN = Campaign(
         width=100,
         length=100,
         depth=100,
-    )
+    ),
+    created_at=datetime.datetime(2020, 5, 17),
+    updated_at=datetime.datetime(2020, 5, 17)
 )
 
 MOCK_PLEDGE = Pledge(
@@ -40,7 +46,8 @@ MOCK_PLEDGE = Pledge(
     buyer_id=1,
     pledge_price=350.0,
     campaign_id=1,
-    pledge_date=datetime.datetime(2020, 5, 17),
+    created_at=datetime.datetime(2020, 5, 17),
+    updated_at=datetime.datetime(2020, 5, 17)
 )
 
 MOCK_TECH_DETAIL_MODEL = TechDetailsModel(
@@ -50,7 +57,7 @@ MOCK_TECH_DETAIL_MODEL = TechDetailsModel(
     weight=100,
     width=100,
     length=100,
-    depth=100,
+    depth=100
 )
 
 MOCK_USER_MODEL = UserModel(
@@ -59,7 +66,9 @@ MOCK_USER_MODEL = UserModel(
     last_name="Doe",
     user_name="johnDoe5",
     date_of_birth=datetime.datetime(2020, 5, 17),
-    email="email@email.com"
+    email="email@email.com",
+    created_at=datetime.datetime(2020, 5, 17),
+    updated_at=datetime.datetime(2020, 5, 17)
 )
 
 MOCK_PRINTER_MODEL = PrinterModel(
@@ -72,7 +81,8 @@ MOCK_PLEDGE_MODEL = PledgeModel(
     campaign_id=1,
     pledge_price=1.1,
     buyer_id=1,
-    pledge_date=datetime.datetime(2020, 5, 17)
+    created_at=datetime.datetime(2020, 5, 17),
+    updated_at=datetime.datetime(2020, 5, 17)
 )
 
 MOCK_CAMPAIGN_MODEL_IMAGE_MODEL = CampaignModelImageModel(
@@ -94,7 +104,9 @@ MOCK_CAMPAIGN_MODEL = CampaignModel(
     tech_detail=MOCK_TECH_DETAIL_MODEL,
     images=[MOCK_CAMPAIGN_MODEL_IMAGE_MODEL],
     printer=MOCK_PRINTER_MODEL,
-    pledges=[MOCK_PLEDGE_MODEL]
+    pledges=[MOCK_PLEDGE_MODEL],
+    created_at=datetime.datetime(2020, 5, 17),
+    updated_at=datetime.datetime(2020, 5, 17)
 )
 
 MOCK_FILTERS = {"page": 1, "page_size": 1}
