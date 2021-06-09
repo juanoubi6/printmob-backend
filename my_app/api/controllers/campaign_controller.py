@@ -21,7 +21,7 @@ class CampaignController:
             name=body["name"],
             description=body["description"],
             campaign_picture_url=body["campaign_picture_url"],
-            campaign_model_image_urls=body["campaign_model_image_urls"],
+            campaign_model_image_urls=[],
             printer_id=body["printer_id"],
             pledge_price=body["pledge_price"],
             start_date=datetime.strptime(body["start_date"], '%d-%m-%Y %H:%M:%S'),

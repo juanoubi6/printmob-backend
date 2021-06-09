@@ -59,22 +59,11 @@ class CampaignRepository:
                                              length=prototype.tech_details.length,
                                              depth=prototype.tech_details.depth)
 
-        campaign_model_image_models = []
-        for cmi_url in prototype.campaign_model_image_urls:
-            campaign_model_image_models.append(
-                CampaignModelImageModel(model_picture_url=cmi_url)
-            )
-
         self.db.session.add(campaign_model)
         self.db.session.flush()
 
         tech_detail_model.campaign_id = campaign_model.id
         self.db.session.add(tech_detail_model)
-
-        for campaign_model_image_model in campaign_model_image_models:
-            campaign_model_image_model.campaign_id = campaign_model.id
-
-        self.db.session.add_all(campaign_model_image_models)
 
         self.db.session.commit()
 
