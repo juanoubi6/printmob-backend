@@ -20,7 +20,7 @@ class CampaignController:
         prototype = CampaignPrototype(
             name=body["name"],
             description=body["description"],
-            campaign_picture_url=body["campaign_picture_url"],
+            campaign_picture_url=None,
             campaign_model_image_urls=[],
             printer_id=body["printer_id"],
             pledge_price=body["pledge_price"],
