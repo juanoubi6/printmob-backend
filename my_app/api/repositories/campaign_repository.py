@@ -6,8 +6,7 @@ from sqlalchemy.orm import noload
 from my_app.api.domain import Page, Campaign
 from my_app.api.domain.campaign import CampaignPrototype
 from my_app.api.exceptions import NotFoundException
-from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, PledgeModel, \
-    TechDetailsModel, \
+from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, TechDetailsModel, \
     PrinterModel, BuyerModel
 from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE
 
@@ -53,7 +52,30 @@ class CampaignRepository:
                                        end_date=prototype.end_date,
                                        min_pledgers=prototype.min_pledgers,
                                        max_pledgers=prototype.max_pledgers)
+
+        tech_detail_model = TechDetailsModel(material=prototype.tech_details.material,
+                                             weight=prototype.tech_details.weight,
+                                             width=prototype.tech_details.width,
+                                             length=prototype.tech_details.length,
+                                             depth=prototype.tech_details.depth)
+
+        campaign_model_image_models = []
+        for cmi_url in prototype.campaign_model_image_urls:
+            campaign_model_image_models.append(
+                CampaignModelImageModel(model_picture_url=cmi_url)
+            )
+
         self.db.session.add(campaign_model)
+        self.db.session.flush()
+
+        tech_detail_model.campaign_id = campaign_model.id
+        self.db.session.add(tech_detail_model)
+
+        for campaign_model_image_model in campaign_model_image_models:
+            campaign_model_image_model.campaign_id = campaign_model.id
+
+        self.db.session.add_all(campaign_model_image_models)
+
         self.db.session.commit()
 
         return campaign_model.to_campaign_entity()

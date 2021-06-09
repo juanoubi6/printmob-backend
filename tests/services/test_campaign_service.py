@@ -5,7 +5,8 @@ from my_app.api.services import CampaignService
 from tests.mock_data import MOCK_CAMPAIGN
 
 mock_campaign_repository = Mock()
-campaign_service = CampaignService(mock_campaign_repository)
+mock_printer_repository = Mock()
+campaign_service = CampaignService(mock_campaign_repository, mock_printer_repository)
 
 
 def test_get_campaigns_returns_campaigns_page():
