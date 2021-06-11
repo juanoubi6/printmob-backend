@@ -8,13 +8,17 @@ class Pledge:
             buyer_id: int,
             pledge_price: float,
             campaign_id: int,
-            pledge_date: datetime.datetime
+            created_at: datetime.datetime = datetime.datetime.utcnow(),
+            updated_at: datetime.datetime = datetime.datetime.utcnow(),
+            deleted_at: datetime.datetime = None
     ):
         self.id = id
         self.buyer_id = buyer_id
         self.pledge_price = pledge_price
         self.campaign_id = campaign_id
-        self.pledge_date = pledge_date
+        self.created_at = created_at
+        self.updated_at = updated_at
+        self.deleted_at = deleted_at
 
     def to_json(self):
         return {
@@ -22,7 +26,9 @@ class Pledge:
             "buyer_id": self.buyer_id,
             "pledge_price": self.pledge_price,
             "campaign_id": self.campaign_id,
-            "pledge_date": self.pledge_date
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+            "deleted_at": self.deleted_at
         }
 
 
