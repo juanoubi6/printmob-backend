@@ -4,6 +4,13 @@ from my_app.api import route
 
 campaignBlueprint = Blueprint('campaignController', __name__, url_prefix='/campaigns')
 pledgeBlueprint = Blueprint('pledgeController', __name__, url_prefix='/pledges')
+healthBlueprint = Blueprint('healthController', __name__, url_prefix='/health')
+
+
+# for load balancing purposes
+@route(healthBlueprint, '/', methods=['GET'])
+def healthy():
+    return ''
 
 
 @route(campaignBlueprint, '/', methods=['GET'])
