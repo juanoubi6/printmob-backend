@@ -1,14 +1,25 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+from tests.utils.mock_data import MOCK_CAMPAIGN_MODEL, MOCK_FILTERS
+from tests.utils.test_data import TEST_CAMPAIGN_PROTOTYPE
 
 from my_app.api.domain import Campaign, Page
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories import CampaignRepository
-from tests.mock_data import MOCK_CAMPAIGN_MODEL, MOCK_FILTERS
 
 test_db = MagicMock()
 campaign_repository = CampaignRepository(test_db)
+
+
+def test_create_campaign_creates_campaign():
+    response = campaign_repository.create_campaign(TEST_CAMPAIGN_PROTOTYPE)
+
+    assert isinstance(response, Campaign)
+
+    test_db.session.add.assert_called()
+    test_db.session.flush.assert_called_once()
+    test_db.session.commit.assert_called_once()
 
 
 def test_get_campaign_detail_returns_campaign():

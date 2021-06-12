@@ -4,9 +4,9 @@ from sqlalchemy import asc, null
 from sqlalchemy.orm import noload
 
 from my_app.api.domain import Page, Campaign
+from my_app.api.domain.campaign import CampaignPrototype
 from my_app.api.exceptions import NotFoundException
-from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, PledgeModel, \
-    TechDetailsModel, \
+from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, TechDetailsModel, \
     PrinterModel, BuyerModel
 from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE
 
@@ -42,37 +42,31 @@ class CampaignRepository:
         self.db.session.add(buyer_model)
         self.db.session.commit()
 
-        campaign_model = CampaignModel(name='Vaso calavera',
-                                       description='Un vaso con forma de calavera',
-                                       campaign_picture_url='https://free3d.com/imgd/l80/1089780.jpg',
-                                       printer_id=printer_model.id,
-                                       pledge_price=350.0,
-                                       start_date=datetime.strptime("21 May, 2021", "%d %B, %Y"),
-                                       end_date=datetime.now(),
-                                       min_pledgers=6,
-                                       max_pledgers=10)
+    def create_campaign(self, prototype: CampaignPrototype) -> Campaign:
+        campaign_model = CampaignModel(name=prototype.name,
+                                       description=prototype.description,
+                                       campaign_picture_url=prototype.campaign_picture_url,
+                                       printer_id=prototype.printer_id,
+                                       pledge_price=prototype.pledge_price,
+                                       end_date=prototype.end_date,
+                                       min_pledgers=prototype.min_pledgers,
+                                       max_pledgers=prototype.max_pledgers)
+
+        tech_detail_model = TechDetailsModel(material=prototype.tech_details.material,
+                                             weight=prototype.tech_details.weight,
+                                             width=prototype.tech_details.width,
+                                             length=prototype.tech_details.length,
+                                             depth=prototype.tech_details.depth)
+
         self.db.session.add(campaign_model)
+        self.db.session.flush()
+
+        tech_detail_model.campaign_id = campaign_model.id
+        self.db.session.add(tech_detail_model)
+
         self.db.session.commit()
 
-        tech_detail = TechDetailsModel(campaign_id=campaign_model.id,
-                                       material='PLA',
-                                       weight=80,
-                                       width=80,
-                                       length=80,
-                                       depth=78)
-        self.db.session.add(tech_detail)
-        self.db.session.commit()
-
-        first_pledge = PledgeModel(campaign_id=campaign_model.id,
-                                   pledge_price=350.0,
-                                   buyer_id=buyer_model.id)
-        self.db.session.add(first_pledge)
-        self.db.session.commit()
-
-        model_image = CampaignModelImageModel(campaign_id=campaign_model.id,
-                                              model_picture_url="https://free3d.com/imgd/l80/1089780.jpg")
-        self.db.session.add(model_image)
-        self.db.session.commit()
+        return campaign_model.to_campaign_entity()
 
     def get_campaigns(self, filters) -> Page[Campaign]:
         """

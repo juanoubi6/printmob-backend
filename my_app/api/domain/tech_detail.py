@@ -29,3 +29,19 @@ class TechDetail:
                 "depth": self.depth
             }
         }
+
+
+class TechDetailPrototype:
+    def __init__(
+            self,
+            material: str,
+            weight: int,
+            width: int,
+            length: int,
+            depth: int
+    ):
+        self.material = material
+        self.weight = weight
+        self.width = width
+        self.length = length
+        self.depth = depth
