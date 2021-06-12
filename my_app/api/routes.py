@@ -13,11 +13,6 @@ def healthy():
     return ''
 
 
-@route(campaignBlueprint, '/', methods=['POST'])
-def post_campaigns():
-    return current_app.campaign_controller.post_campaign(request)
-
-
 # Campaigns
 @route(campaignBlueprint, '/', methods=['POST'])
 def post_campaigns():

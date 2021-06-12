@@ -10,7 +10,6 @@ TEST_CAMPAIGN_PROTOTYPE = CampaignPrototype(
     campaign_model_image_urls=[],
     printer_id=1,
     pledge_price=250.0,
-    start_date=datetime.datetime.strptime("21-05-2022 02:00:00", '%d-%m-%Y %H:%M:%S'),
     end_date=datetime.datetime.strptime("21-05-2022 02:00:00", '%d-%m-%Y %H:%M:%S'),
     min_pledgers=2,
     max_pledgers=3,

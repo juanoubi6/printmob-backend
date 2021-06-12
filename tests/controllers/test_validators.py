@@ -5,7 +5,7 @@ import pytest
 
 from my_app.api.controllers.validators import validate_pagination_filters, validate_alphanumeric_field, \
     validate_url_field, validate_positive_integer_field, validate_positive_decimal_field, \
-    validate_campaign_time_interval, validate_campaign_pledgers_interval
+    validate_time_interval, validate_campaign_pledgers_interval
 from my_app.api.exceptions import InvalidParamException
 
 
@@ -107,35 +107,35 @@ class TestValidators(unittest.TestCase):
     def test_validate_campaign_interval_works_with_valid_values(self):
         start_date = datetime.datetime.now() + datetime.timedelta(days=1)
         end_date = datetime.datetime.now() + datetime.timedelta(days=2)
-        validate_campaign_time_interval(start_date, end_date)
+        validate_time_interval(start_date, end_date)
 
     def test_validate_campaign_interval_throws_exception_with_none_start_date(self):
         end_date = datetime.datetime.now() + datetime.timedelta(days=2)
         with pytest.raises(InvalidParamException):
-            validate_campaign_time_interval(None, end_date)
+            validate_time_interval(None, end_date)
 
     def test_validate_campaign_interval_throws_exception_with_past_start_date(self):
         start_date = datetime.datetime.now() + datetime.timedelta(days=-1)
         end_date = datetime.datetime.now() + datetime.timedelta(days=2)
         with pytest.raises(InvalidParamException):
-            validate_campaign_time_interval(start_date, end_date)
+            validate_time_interval(start_date, end_date)
 
     def test_validate_campaign_interval_throws_exception_with_none_end_date(self):
         start_date = datetime.datetime.now() + datetime.timedelta(days=1)
         with pytest.raises(InvalidParamException):
-            validate_campaign_time_interval(start_date, None)
+            validate_time_interval(start_date, None)
 
     def test_validate_campaign_interval_throws_exception_with_past_end_date(self):
         start_date = datetime.datetime.now() + datetime.timedelta(days=1)
         end_date = datetime.datetime.now() + datetime.timedelta(days=-2)
         with pytest.raises(InvalidParamException):
-            validate_campaign_time_interval(start_date, end_date)
+            validate_time_interval(start_date, end_date)
 
     def test_validate_campaign_interval_throws_exception_with_invalid_interval(self):
         start_date = datetime.datetime.now() + datetime.timedelta(days=2)
         end_date = datetime.datetime.now() + datetime.timedelta(days=1)
         with pytest.raises(InvalidParamException):
-            validate_campaign_time_interval(start_date, end_date)
+            validate_time_interval(start_date, end_date)
 
     def test_validate_campaign_pledgers_interval_works_with_valid_values(self):
         validate_campaign_pledgers_interval(1, 2)

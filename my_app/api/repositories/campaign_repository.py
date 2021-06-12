@@ -47,7 +47,6 @@ class CampaignRepository:
                                        campaign_picture_url='https://free3d.com/imgd/l80/1089780.jpg',
                                        printer_id=printer_model.id,
                                        pledge_price=350.0,
-                                       start_date=datetime.strptime("21 May, 2021", "%d %B, %Y"),
                                        end_date=datetime.now(),
                                        min_pledgers=6,
                                        max_pledgers=10)

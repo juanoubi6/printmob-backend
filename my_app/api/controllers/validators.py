@@ -27,9 +27,9 @@ def validate_campaign_prototype(campaign_prototype: CampaignPrototype):
         validate_url_field(image_url, "url of the campaign image")
     validate_positive_integer_field(campaign_prototype.printer_id, "id of the campaign printer")
     validate_positive_decimal_field(campaign_prototype.pledge_price, "price of the campaign pledge")
-    validate_campaign_time_interval(campaign_prototype.start_date, campaign_prototype.end_date)
     validate_campaign_pledgers_interval(campaign_prototype.min_pledgers, campaign_prototype.max_pledgers)
     validate_tech_detail_prototype(campaign_prototype.tech_details)
+    validate_future_date(campaign_prototype.end_date)
 
 
 def validate_alphanumeric_field(field_value: str, field_name: str):
@@ -59,16 +59,16 @@ def validate_positive_decimal_field(field_value: float, field_name: str):
         raise InvalidParamException("The {field_name} is invalid".format(field_name=field_name))
 
 
-def validate_campaign_time_interval(start_date: datetime.datetime, end_date: datetime.datetime):
-    now = datetime.datetime.now()
-    if (start_date is None or
-            start_date < now):
-        raise InvalidParamException("The start date of the campaign is invalid")
-    if (end_date is None or
-            end_date < now):
-        raise InvalidParamException("The end date of the campaign is invalid")
+def validate_time_interval(start_date: datetime.datetime, end_date: datetime.datetime):
+    validate_future_date(start_date)
+    validate_future_date(end_date)
     if start_date >= end_date:
-        raise InvalidParamException("The campaign time interval is invalid")
+        raise InvalidParamException("The start date can't be bigger or equal than the end date")
+
+
+def validate_future_date(date: datetime.datetime):
+    if date is None or date <= datetime.datetime.now():
+        raise InvalidParamException("The date must be a future date (bigger than now)")
 
 
 def validate_campaign_pledgers_interval(min_pledgers: int, max_pledgers: int):

@@ -28,7 +28,6 @@ CAMPAIGN_GET_RESPONSE_JSON = {
         "updated_at": "Sun, 17 May 2020 00:00:00 GMT",
         "deleted_at": None
     },
-    "start_date": "Sun, 17 May 2020 00:00:00 GMT",
     "tech_details": {
         "campaign_id": 1,
         "dimensions": {
@@ -56,7 +55,6 @@ CAMPAIGN_POST_REQUEST_JSON = {
     ],
     "printer_id": 1,
     "pledge_price": 20.0,
-    "start_date": "21-05-2022 02:00:00",
     "end_date": "21-05-2023 01:00:00",
     "min_pledgers": 6,
     "max_pledgers": 7,
@@ -93,7 +91,6 @@ CAMPAIGN_POST_RESPONSE_JSON = {
         "updated_at": "Sun, 17 May 2020 00:00:00 GMT",
         "user_name": "johnDoe5"
     },
-    "start_date": "Sun, 17 May 2020 00:00:00 GMT",
     "tech_details": {
         "campaign_id": 1,
         "dimensions": {
