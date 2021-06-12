@@ -2,7 +2,7 @@ import datetime
 
 from sqlalchemy import null
 
-from my_app.api.domain import Campaign, CampaignModelImage, Printer, User, TechDetail, Pledge
+from my_app.api.domain import Campaign, Printer, User, TechDetail, Pledge
 from my_app.api.repositories.models import CampaignModel, TechDetailsModel, PrinterModel, UserModel, PledgeModel, \
     CampaignModelImageModel
 
@@ -10,8 +10,8 @@ MOCK_CAMPAIGN = Campaign(
     id=1,
     name="Campaign name",
     description="Description",
-    campaign_picture_url="campaign picture url",
-    campaign_model_images=[CampaignModelImage(1, "model image url", 1)],
+    campaign_picture_url=None,
+    campaign_model_images=[],
     printer=Printer(User(
         id=1,
         first_name="John",

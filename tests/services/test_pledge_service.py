@@ -2,7 +2,7 @@ from unittest.mock import Mock
 
 from my_app.api.domain import PledgePrototype
 from my_app.api.services import PledgeService
-from tests.mock_data import MOCK_PLEDGE
+from tests.utils.mock_data import MOCK_PLEDGE
 
 mock_pledge_repository = Mock()
 pledge_service = PledgeService(mock_pledge_repository)
