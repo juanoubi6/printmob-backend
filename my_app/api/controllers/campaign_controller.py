@@ -24,7 +24,6 @@ class CampaignController:
             campaign_model_image_urls=[],
             printer_id=body["printer_id"],
             pledge_price=body["pledge_price"],
-            start_date=datetime.strptime(body["start_date"], '%d-%m-%Y %H:%M:%S'),
             end_date=datetime.strptime(body["end_date"], '%d-%m-%Y %H:%M:%S'),
             min_pledgers=body["min_pledgers"],
             max_pledgers=body["max_pledgers"],

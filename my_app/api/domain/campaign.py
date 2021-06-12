@@ -16,7 +16,6 @@ class Campaign:
             campaign_model_images: List[CampaignModelImage],
             printer: Printer,
             pledge_price: float,
-            start_date: datetime.datetime,
             end_date: datetime.datetime,
             min_pledgers: int,
             max_pledgers: int,
@@ -33,7 +32,6 @@ class Campaign:
         self.campaign_model_images = campaign_model_images
         self.printer = printer
         self.pledge_price = pledge_price
-        self.start_date = start_date
         self.end_date = end_date
         self.min_pledgers = min_pledgers
         self.max_pledgers = max_pledgers
@@ -52,7 +50,6 @@ class Campaign:
             "campaign_model_images": list(map(lambda cmi: cmi.to_json(), self.campaign_model_images)),
             "printer": self.printer.to_json() if self.printer is not None else None,
             "pledge_price": self.pledge_price,
-            "start_date": self.start_date,
             "end_date": self.end_date,
             "min_pledgers": self.min_pledgers,
             "max_pledgers": self.max_pledgers,
@@ -73,7 +70,6 @@ class CampaignPrototype:
             campaign_model_image_urls: List[str],
             printer_id: int,
             pledge_price: float,
-            start_date: datetime.datetime,
             end_date: datetime.datetime,
             min_pledgers: int,
             max_pledgers: int,
@@ -86,7 +82,6 @@ class CampaignPrototype:
         self.campaign_model_image_urls = campaign_model_image_urls
         self.printer_id = printer_id
         self.pledge_price = pledge_price
-        self.start_date = start_date
         self.end_date = end_date
         self.min_pledgers = min_pledgers
         self.max_pledgers = max_pledgers

@@ -22,7 +22,6 @@ MOCK_CAMPAIGN = Campaign(
         updated_at=datetime.datetime(2020, 5, 17)
     )),
     pledge_price=10.50,
-    start_date=datetime.datetime(2020, 5, 17),
     end_date=datetime.datetime(2020, 5, 17),
     min_pledgers=5,
     max_pledgers=10,
@@ -96,7 +95,6 @@ MOCK_CAMPAIGN_MODEL = CampaignModel(
     description="Description",
     campaign_picture_url="campaign picture url",
     pledge_price=10.50,
-    start_date=datetime.datetime(2020, 5, 17),
     end_date=datetime.datetime(2020, 5, 17),
     min_pledgers=5,
     max_pledgers=10,

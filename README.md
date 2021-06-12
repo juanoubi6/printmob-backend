@@ -1,6 +1,10 @@
 #Printmob-backend
 Backend de la aplicacion Printmob
 
+#Antes de correr
+1. Crear un archivo `aws.env` partiendo de `aws.env.default`
+1. En él, colocar tus credenciales. Las mismas serán pasadas a tu container local para ejecutar API calls a AWS con tu usuario y permisos
+
 #Levantar proyecto con docker
 1. Pararse en el directorio raiz
 1. Ejecutar `make build` para crear los contenedores
@@ -17,3 +21,9 @@ Backend de la aplicacion Printmob
 1. Correr `alembic revision -m "Descripcion de la migracion"`. Se va a crear un archivo en el directorio /alembic/versions
 1. Modificar el archivo agregando la migracion (tanto el upgrade como el downgrade)
 1. Ejecutar las migraciones utilizando `alembic upgrade head` (si lo tenemos local) o usar `make migrate`
+
+
+#Pushear container a la nube de AWS
+1. Verificar que haya una entrada llamada `printmob` en el archivo `~/.aws`
+1. Correr `make push`
+1. Ir a la consola de AWS o mediante la CLI, matar el container que esta corriendo para que el nuevo container que se lance use la nueva imagen

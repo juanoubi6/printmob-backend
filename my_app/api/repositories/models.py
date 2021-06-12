@@ -17,7 +17,6 @@ class CampaignModel(Base):
     campaign_picture_url = Column(String)
     printer_id = Column(Integer, ForeignKey('printers.id'))
     pledge_price = Column(DECIMAL)
-    start_date = Column(DateTime)
     end_date = Column(DateTime)
     min_pledgers = Column(Integer)
     max_pledgers = Column(Integer)
@@ -42,7 +41,6 @@ class CampaignModel(Base):
             campaign_model_images=list(map(lambda ci: ci.to_campaign_model_image_entity(), self.images)),
             printer=Printer(self.printer.user.to_user_entity()) if self.printer is not None else None,
             pledge_price=float(self.pledge_price),
-            start_date=self.start_date,
             end_date=self.end_date,
             min_pledgers=self.min_pledgers,
             max_pledgers=self.max_pledgers,

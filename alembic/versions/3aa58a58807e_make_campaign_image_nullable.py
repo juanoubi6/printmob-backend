@@ -18,7 +18,9 @@ depends_on = None
 
 def upgrade():
     op.alter_column('campaign', 'campaign_picture_url', nullable=True)
+    op.drop_column('campaign', 'start_date')
 
 
 def downgrade():
     op.alter_column('campaign', 'campaign_picture_url', nullable=False)
+    op.add_column('campaign', sa.Column('start_date', sa.DateTime, nullable=False))

@@ -42,16 +42,15 @@ class CampaignRepository:
         self.db.session.add(buyer_model)
         self.db.session.commit()
 
-        campaign_model = CampaignModel(name="name",
-                                       description="desc",
-                                       campaign_picture_url=None,
-                                       printer_id=printer_user_model.id,
-                                       pledge_price=10,
-                                       start_date=datetime.now(),
+        campaign_model = CampaignModel(name='Vaso calavera',
+                                       description='Un vaso con forma de calavera',
+                                       campaign_picture_url='https://free3d.com/imgd/l80/1089780.jpg',
+                                       printer_id=printer_model.id,
+                                       pledge_price=350.0,
+                                       start_date=datetime.strptime("21 May, 2021", "%d %B, %Y"),
                                        end_date=datetime.now(),
-                                       min_pledgers=100,
-                                       max_pledgers=200)
-
+                                       min_pledgers=6,
+                                       max_pledgers=10)
         self.db.session.add(campaign_model)
         self.db.session.commit()
 
@@ -61,7 +60,6 @@ class CampaignRepository:
                                        campaign_picture_url=prototype.campaign_picture_url,
                                        printer_id=prototype.printer_id,
                                        pledge_price=prototype.pledge_price,
-                                       start_date=prototype.start_date,
                                        end_date=prototype.end_date,
                                        min_pledgers=prototype.min_pledgers,
                                        max_pledgers=prototype.max_pledgers)
