@@ -1,6 +1,6 @@
 import uuid
 
-from my_app.api.domain import Page, Campaign, CampaignModelImage, CampaignModelImagePrototype
+from my_app.api.domain import Page, Campaign, CampaignModelImage, CampaignModelImagePrototype, File
 from my_app.api.domain.campaign import CampaignPrototype
 from my_app.api.exceptions.unprocessable_entity_exception import UnprocessableEntityException
 
@@ -31,9 +31,9 @@ class CampaignService:
     def get_campaign_detail(self, campaign_id: int) -> Campaign:
         return self.campaign_repository.get_campaign_detail(campaign_id)
 
-    def create_campaign_model_image(self, campaign_id: int, image_bytes: bytes) -> CampaignModelImage:
+    def create_campaign_model_image(self, campaign_id: int, image: File) -> CampaignModelImage:
         file_name = self._generate_campaign_model_image_name()
-        image_url = self.s3_repository.create_image(image_bytes, file_name)
+        image_url = self.s3_repository.create_image(image, file_name)
 
         campaign_model_image_prototype = CampaignModelImagePrototype(
             campaign_id=campaign_id,
@@ -44,4 +44,4 @@ class CampaignService:
         return self.campaign_repository.create_campaign_model_image(campaign_model_image_prototype)
 
     def _generate_campaign_model_image_name(self) -> str:
-        return "/campaign_model_images/{}".format(uuid.uuid4())
+        return "campaign_model_images/{}".format(uuid.uuid4())

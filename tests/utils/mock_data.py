@@ -1,7 +1,7 @@
 import datetime
 
 from my_app.api.domain import Campaign, Printer, User, TechDetail, Pledge, CampaignModelImage, \
-    CampaignModelImagePrototype
+    CampaignModelImagePrototype, File
 from my_app.api.repositories.models import CampaignModel, TechDetailsModel, PrinterModel, UserModel, PledgeModel, \
     CampaignModelImageModel
 
@@ -119,4 +119,9 @@ MOCK_CAMPAIGN_MODEL_IMAGE_PROTOTYPE = CampaignModelImagePrototype(
     campaign_id=1,
     file_name="file_name",
     model_picture_url="image_url"
+)
+
+MOCK_FILE = File(
+    content=bytes(b"someImageData"),
+    mimetype="image/jpeg"
 )

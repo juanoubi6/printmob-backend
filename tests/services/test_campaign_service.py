@@ -6,7 +6,7 @@ import pytest
 from my_app.api.domain import Page
 from my_app.api.exceptions.unprocessable_entity_exception import UnprocessableEntityException
 from my_app.api.services import CampaignService
-from tests.utils.mock_data import MOCK_CAMPAIGN, MOCK_CAMPAIGN_MODEL_IMAGE
+from tests.utils.mock_data import MOCK_CAMPAIGN, MOCK_CAMPAIGN_MODEL_IMAGE, MOCK_FILE
 from tests.utils.test_data import TEST_CAMPAIGN_PROTOTYPE
 
 mock_campaign_repository = Mock()
@@ -63,11 +63,11 @@ class TestCampaignService(unittest.TestCase):
         mock_campaign_repository.create_campaign_model_image.return_value = MOCK_CAMPAIGN_MODEL_IMAGE
         uuid_mock.uuid4.return_value = "uuid4_value"
 
-        campaign_model_image = campaign_service.create_campaign_model_image(1, bytes(b"someImageData"))
-        expected_image_path = "/campaign_model_images/uuid4_value"
+        campaign_model_image = campaign_service.create_campaign_model_image(1, MOCK_FILE)
+        expected_image_path = "campaign_model_images/uuid4_value"
 
         assert campaign_model_image == MOCK_CAMPAIGN_MODEL_IMAGE
-        mock_s3_repository.create_image.assert_called_once_with(bytes(b"someImageData"), expected_image_path)
+        mock_s3_repository.create_image.assert_called_once_with(MOCK_FILE, expected_image_path)
         mock_campaign_repository.create_campaign_model_image.assert_called_once()
 
         called_prototype = mock_campaign_repository.create_campaign_model_image.call_args[0][0]

@@ -6,6 +6,7 @@ from my_app.api.exceptions import InvalidParamException
 
 PAGE_FILTER_NAME = "page"
 PAGE_SIZE_FILTER_NAME = "page_size"
+VALID_IMAGE_MIMETYPES = ['image/jpeg', "image/png"]
 
 
 def validate_pagination_filters(filters: dict):
@@ -87,3 +88,11 @@ def validate_tech_detail_prototype(tech_details_prototype: TechDetailPrototype):
     validate_positive_integer_field(tech_details_prototype.width, "weight of the 3D model")
     validate_positive_integer_field(tech_details_prototype.length, "weight of the 3D model")
     validate_positive_integer_field(tech_details_prototype.depth, "weight of the 3D model")
+
+
+def validate_image_upload(file_dict: dict, image_name: str):
+    if image_name not in file_dict:
+        raise InvalidParamException("image not in request body")
+
+    if file_dict[image_name].mimetype not in VALID_IMAGE_MIMETYPES:
+        raise InvalidParamException("Invalid image format. Only jpg and png are allowed")

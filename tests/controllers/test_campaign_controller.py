@@ -77,4 +77,8 @@ class TestCampaignController(unittest.TestCase):
 
         assert res.status_code == 201
         assert json.loads(res.data.decode("utf-8")) == CAMPAIGN_MODEL_IMAGE_JSON
-        mock_campaign_service.create_campaign_model_image.assert_called_once_with(1, bytes(b"someImageData"))
+        mock_campaign_service.create_campaign_model_image.assert_called_once()
+
+        called_file = mock_campaign_service.create_campaign_model_image.call_args[0][1]
+        assert called_file.content == bytes(b"someImageData")
+        assert called_file.mimetype == "image/jpeg"

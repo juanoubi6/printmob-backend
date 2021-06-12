@@ -3,8 +3,9 @@ from datetime import datetime
 
 from flask import request
 
-from my_app.api.controllers.validators import validate_pagination_filters, validate_campaign_prototype
-from my_app.api.domain import Page, Campaign, CampaignModelImage
+from my_app.api.controllers.validators import validate_pagination_filters, validate_campaign_prototype, \
+    validate_image_upload
+from my_app.api.domain import Page, Campaign, CampaignModelImage, File
 from my_app.api.domain.campaign import CampaignPrototype
 from my_app.api.domain.tech_detail import TechDetailPrototype
 
@@ -53,7 +54,10 @@ class CampaignController:
         return campaign.to_json(), 200
 
     def create_campaign_model_image(self, req: request, campaign_id: int) -> (CampaignModelImage, int):
-        image_bytes = req.files['image'].stream.read()
-        campaign_model_image = self.campaign_service.create_campaign_model_image(int(campaign_id), image_bytes)
+        validate_image_upload(req.files, 'image')
+        image_data = req.files['image']
+        file = File(content=image_data.stream.read(), mimetype=image_data.mimetype)
+
+        campaign_model_image = self.campaign_service.create_campaign_model_image(int(campaign_id), file)
 
         return campaign_model_image.to_json(), 201
