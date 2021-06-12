@@ -59,7 +59,7 @@ class TestCampaignService(unittest.TestCase):
 
     @patch('my_app.api.services.campaign_service.uuid')
     def test_create_campaign_model_image_returns_campaign_model_image_on_success(self, uuid_mock):
-        mock_s3_repository.create_image.return_value = "image_url"
+        mock_s3_repository.upload_file.return_value = "image_url"
         mock_campaign_repository.create_campaign_model_image.return_value = MOCK_CAMPAIGN_MODEL_IMAGE
         uuid_mock.uuid4.return_value = "uuid4_value"
 
@@ -67,7 +67,7 @@ class TestCampaignService(unittest.TestCase):
         expected_image_path = "campaign_model_images/uuid4_value"
 
         assert campaign_model_image == MOCK_CAMPAIGN_MODEL_IMAGE
-        mock_s3_repository.create_image.assert_called_once_with(MOCK_FILE, expected_image_path)
+        mock_s3_repository.upload_file.assert_called_once_with(MOCK_FILE, expected_image_path)
         mock_campaign_repository.create_campaign_model_image.assert_called_once()
 
         called_prototype = mock_campaign_repository.create_campaign_model_image.call_args[0][0]

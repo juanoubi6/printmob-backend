@@ -22,7 +22,7 @@ class TestS3Repository(unittest.TestCase):
         put_object_mock.return_value = "mocked result"
         test_s3_client.meta.endpoint_url = "https://s3.us-east-2.amazonaws.com"
 
-        response = s3_repository.create_image(MOCK_FILE, "keyOfThe/image")
+        response = s3_repository.upload_file(MOCK_FILE, "keyOfThe/image")
 
         assert response == "https://s3.us-east-2.amazonaws.com/{bucket}/keyOfThe/image".format(bucket=bucket_name)
 
@@ -31,4 +31,4 @@ class TestS3Repository(unittest.TestCase):
         put_object_mock.side_effect = Exception("Some S3 error")
 
         with pytest.raises(ServerException):
-            s3_repository.create_image(MOCK_FILE, "keyOfThe/image")
+            s3_repository.upload_file(MOCK_FILE, "keyOfThe/image")

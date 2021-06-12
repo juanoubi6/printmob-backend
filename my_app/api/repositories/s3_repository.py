@@ -7,7 +7,7 @@ class S3Repository:
         self.s3_client = s3_client
         self.bucket_name = bucket_name
 
-    def create_image(self, file: File, key: str) -> str:
+    def upload_file(self, file: File, key: str) -> str:
         try:
             self.s3_client.put_object(
                 Body=file.content,

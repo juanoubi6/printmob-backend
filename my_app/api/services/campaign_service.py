@@ -33,7 +33,7 @@ class CampaignService:
 
     def create_campaign_model_image(self, campaign_id: int, image: File) -> CampaignModelImage:
         file_name = self._generate_campaign_model_image_name()
-        image_url = self.s3_repository.create_image(image, file_name)
+        image_url = self.s3_repository.upload_file(image, file_name)
 
         campaign_model_image_prototype = CampaignModelImagePrototype(
             campaign_id=campaign_id,
