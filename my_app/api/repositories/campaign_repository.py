@@ -93,7 +93,7 @@ class CampaignRepository:
         """
         self.init_campaigns()
         query = self.db.session.query(CampaignModel) \
-            .filter(CampaignModel.deleted_at is null)\
+            .filter(CampaignModel.deleted_at == None)\
             .options(noload(CampaignModel.tech_detail)) \
             .options(noload(CampaignModel.images)) \
             .order_by(asc(CampaignModel.id))
@@ -111,7 +111,7 @@ class CampaignRepository:
     def get_campaign_detail(self, campaign_id) -> Campaign:
         campaign_model = self.db.session.query(CampaignModel)\
             .filter_by(id=campaign_id)\
-            .filter(CampaignModel.deleted_at is null) \
+            .filter(CampaignModel.deleted_at == None) \
             .first()
         if campaign_model is None:
             raise NotFoundException(CAMPAIGN_NOT_FOUND)
