@@ -74,3 +74,11 @@ class TestCampaignService(unittest.TestCase):
         assert called_prototype.campaign_id == 1
         assert called_prototype.file_name == expected_image_path
         assert called_prototype.model_picture_url == "image_url"
+
+    def test_delete_campaign_model_image_deletes_image(self):
+        mock_campaign_repository.delete_campaign_model_image.return_value = MOCK_CAMPAIGN_MODEL_IMAGE
+
+        campaign_service.delete_campaign_model_image(1)
+
+        mock_campaign_repository.delete_campaign_model_image.assert_called_once_with(1)
+        mock_s3_repository.delete_file.assert_called_once_with(MOCK_CAMPAIGN_MODEL_IMAGE.file_name)

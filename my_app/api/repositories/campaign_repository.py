@@ -3,14 +3,14 @@ from datetime import datetime
 from sqlalchemy import asc
 from sqlalchemy.orm import noload
 
-from my_app.api.domain import Page, Campaign, CampaignModelImagePrototype
-from my_app.api.domain.campaign import CampaignPrototype
+from my_app.api.domain import Page, Campaign, CampaignModelImagePrototype, CampaignModelImage, CampaignPrototype
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, TechDetailsModel, \
     PrinterModel, BuyerModel
 from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE
 
 CAMPAIGN_NOT_FOUND = 'Non-existent campaign'
+CAMPAIGN_MODEL_IMAGE_NOT_FOUND = 'Non-existent campaign model image'
 
 
 class CampaignRepository:
@@ -114,7 +114,7 @@ class CampaignRepository:
             raise NotFoundException(CAMPAIGN_NOT_FOUND)
         return campaign_model.to_campaign_entity()
 
-    def create_campaign_model_image(self, prototype: CampaignModelImagePrototype) -> CampaignModelImageModel:
+    def create_campaign_model_image(self, prototype: CampaignModelImagePrototype) -> CampaignModelImage:
         campaign_model_image_model = CampaignModelImageModel(
             campaign_id=prototype.campaign_id,
             model_picture_url=prototype.model_picture_url,
@@ -122,6 +122,18 @@ class CampaignRepository:
         )
 
         self.db.session.add(campaign_model_image_model)
+        self.db.session.commit()
+
+        return campaign_model_image_model.to_campaign_model_image_entity()
+
+    def delete_campaign_model_image(self, campaign_model_image_id: int) -> CampaignModelImage:
+        campaign_model_image_model = self.db.session.query(CampaignModelImageModel) \
+            .filter_by(id=campaign_model_image_id) \
+            .first()
+        if campaign_model_image_model is None:
+            raise NotFoundException(CAMPAIGN_MODEL_IMAGE_NOT_FOUND)
+
+        self.db.session.delete(campaign_model_image_model)
         self.db.session.commit()
 
         return campaign_model_image_model.to_campaign_model_image_entity()

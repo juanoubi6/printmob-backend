@@ -7,7 +7,7 @@ def paginate(query, filters: dict):
     """
     Applies pagination from filters to the given query
 
-    Parameters
+    Parameterscampaign_repository.get_campaign_detail(1)
     ----------
     query: BaseQuery
         Query to paginate
