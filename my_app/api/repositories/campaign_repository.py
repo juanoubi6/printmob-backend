@@ -42,6 +42,19 @@ class CampaignRepository:
         self.db.session.add(buyer_model)
         self.db.session.commit()
 
+        campaign_model = CampaignModel(name="name",
+                                       description="desc",
+                                       campaign_picture_url=None,
+                                       printer_id=printer_user_model.id,
+                                       pledge_price=10,
+                                       start_date=datetime.now(),
+                                       end_date=datetime.now(),
+                                       min_pledgers=100,
+                                       max_pledgers=200)
+
+        self.db.session.add(campaign_model)
+        self.db.session.commit()
+
     def create_campaign(self, prototype: CampaignPrototype) -> Campaign:
         campaign_model = CampaignModel(name=prototype.name,
                                        description=prototype.description,

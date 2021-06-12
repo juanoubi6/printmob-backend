@@ -6,6 +6,7 @@ campaignBlueprint = Blueprint('campaignController', __name__, url_prefix='/campa
 pledgeBlueprint = Blueprint('pledgeController', __name__, url_prefix='/pledges')
 
 
+# Campaigns
 @route(campaignBlueprint, '/', methods=['POST'])
 def post_campaigns():
     return current_app.campaign_controller.post_campaign(request)
@@ -21,6 +22,12 @@ def get_campaign_detail(campaign_id):
     return current_app.campaign_controller.get_campaign_detail(request, campaign_id)
 
 
+@route(campaignBlueprint, '/<campaign_id>/model-images', methods=['POST'])
+def create_campaign_model_image():
+    return current_app.campaign_controller.create_campaign_model_image(request)
+
+
+# Pledges
 @route(pledgeBlueprint, '/', methods=['POST'])
 def create_pledge():
     return current_app.pledge_controller.create_pledge(request)

@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import request
 
 from my_app.api.controllers.validators import validate_pagination_filters, validate_campaign_prototype
-from my_app.api.domain import Page, Campaign
+from my_app.api.domain import Page, Campaign, CampaignModelImage
 from my_app.api.domain.campaign import CampaignPrototype
 from my_app.api.domain.tech_detail import TechDetailPrototype
 
@@ -52,3 +52,6 @@ class CampaignController:
         campaign = self.campaign_service.get_campaign_detail(campaign_id)
 
         return campaign.to_json(), 200
+
+    def create_campaign_model_image(self, campaign_id: int, req: request) -> (CampaignModelImage, int):
+        return "jeje", 200
