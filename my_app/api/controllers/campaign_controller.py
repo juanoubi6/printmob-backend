@@ -53,5 +53,8 @@ class CampaignController:
 
         return campaign.to_json(), 200
 
-    def create_campaign_model_image(self, campaign_id: int, req: request) -> (CampaignModelImage, int):
-        return "jeje", 200
+    def create_campaign_model_image(self, req: request, campaign_id: int) -> (CampaignModelImage, int):
+        image_bytes = req.files['image'].stream.read()
+        campaign_model_image = self.campaign_service.create_campaign_model_image(int(campaign_id), image_bytes)
+
+        return campaign_model_image.to_json(), 201

@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from sqlalchemy import asc, null
+from sqlalchemy import asc
 from sqlalchemy.orm import noload
 
-from my_app.api.domain import Page, Campaign
+from my_app.api.domain import Page, Campaign, CampaignModelImagePrototype
 from my_app.api.domain.campaign import CampaignPrototype
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, TechDetailsModel, \
@@ -82,7 +82,7 @@ class CampaignRepository:
 
         return campaign_model.to_campaign_entity()
 
-    def get_campaigns(self, filters) -> Page[Campaign]:
+    def get_campaigns(self, filters: dict) -> Page[Campaign]:
         """
         Returns paginated campaigns using filters
 
@@ -93,7 +93,7 @@ class CampaignRepository:
         """
         self.init_campaigns()
         query = self.db.session.query(CampaignModel) \
-            .filter(CampaignModel.deleted_at == None)\
+            .filter(CampaignModel.deleted_at == None) \
             .options(noload(CampaignModel.tech_detail)) \
             .options(noload(CampaignModel.images)) \
             .order_by(asc(CampaignModel.id))
@@ -108,11 +108,23 @@ class CampaignRepository:
             data=list(map(lambda cm: cm.to_campaign_entity(), campaign_models))
         )
 
-    def get_campaign_detail(self, campaign_id) -> Campaign:
-        campaign_model = self.db.session.query(CampaignModel)\
-            .filter_by(id=campaign_id)\
+    def get_campaign_detail(self, campaign_id: int) -> Campaign:
+        campaign_model = self.db.session.query(CampaignModel) \
+            .filter_by(id=campaign_id) \
             .filter(CampaignModel.deleted_at == None) \
             .first()
         if campaign_model is None:
             raise NotFoundException(CAMPAIGN_NOT_FOUND)
         return campaign_model.to_campaign_entity()
+
+    def create_campaign_model_image(self, prototype: CampaignModelImagePrototype) -> CampaignModelImageModel:
+        campaign_model_image_model = CampaignModelImageModel(
+            campaign_id=prototype.campaign_id,
+            model_picture_url=prototype.model_picture_url,
+            file_name=prototype.file_name
+        )
+
+        self.db.session.add(campaign_model_image_model)
+        self.db.session.commit()
+
+        return campaign_model_image_model.to_campaign_model_image_entity()

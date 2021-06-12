@@ -16,4 +16,4 @@ Backend de la aplicacion Printmob
 #Crear una nueva migracion
 1. Correr `alembic revision -m "Descripcion de la migracion"`. Se va a crear un archivo en el directorio /alembic/versions
 1. Modificar el archivo agregando la migracion (tanto el upgrade como el downgrade)
-1. Ejecutar la migracione utilizando `alembic upgrade head`
+1. Ejecutar las migraciones utilizando `alembic upgrade head` (si lo tenemos local) o usar `make migrate`

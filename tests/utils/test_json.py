@@ -1,12 +1,4 @@
-import datetime
-
-from sqlalchemy import null
-
-from my_app.api.domain import Campaign, CampaignModelImage, Printer, User, TechDetail, Pledge
-from my_app.api.domain.campaign import CampaignPrototype
-from my_app.api.domain.tech_detail import TechDetailPrototype
-from my_app.api.repositories.models import CampaignModel, TechDetailsModel, PrinterModel, UserModel, PledgeModel, \
-    CampaignModelImageModel
+from tests.utils.mock_data import MOCK_CAMPAIGN_MODEL_IMAGE
 
 PLEDGE_POST_REQUEST_JSON = {
     "buyer_id": 1,
@@ -114,4 +106,10 @@ CAMPAIGN_POST_RESPONSE_JSON = {
         "weight": 100
     },
     "updated_at": "Sun, 17 May 2020 00:00:00 GMT"
+}
+
+CAMPAIGN_MODEL_IMAGE_JSON = {
+    "id": MOCK_CAMPAIGN_MODEL_IMAGE.id,
+    "campaign_id": MOCK_CAMPAIGN_MODEL_IMAGE.campaign_id,
+    "model_picture_url": MOCK_CAMPAIGN_MODEL_IMAGE.model_picture_url
 }

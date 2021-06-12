@@ -23,8 +23,8 @@ def get_campaign_detail(campaign_id):
 
 
 @route(campaignBlueprint, '/<campaign_id>/model-images', methods=['POST'])
-def create_campaign_model_image():
-    return current_app.campaign_controller.create_campaign_model_image(request)
+def create_campaign_model_image(campaign_id):
+    return current_app.campaign_controller.create_campaign_model_image(request, campaign_id)
 
 
 # Pledges
