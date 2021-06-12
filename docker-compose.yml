@@ -11,9 +11,9 @@ services:
         condition: service_healthy
     volumes:
       - ./:/app
-      - ${HOME}/.aws:/usr/local/airflow/.aws # copy aws credentials from host to container
     env_file:
       - ./.env
+      - ./aws.env
 
   postgres:
     image: postgres:10-alpine

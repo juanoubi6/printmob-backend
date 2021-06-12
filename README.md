@@ -17,3 +17,9 @@ Backend de la aplicacion Printmob
 1. Correr `alembic revision -m "Descripcion de la migracion"`. Se va a crear un archivo en el directorio /alembic/versions
 1. Modificar el archivo agregando la migracion (tanto el upgrade como el downgrade)
 1. Ejecutar la migracione utilizando `alembic upgrade head`
+
+
+#Pushear container a la nube de AWS
+1. Verificar que haya una entrada llamada `printmob` en el archivo `~/.aws`
+1. Correr `make push`
+1. Ir a la consola de AWS o mediante la CLI, matar el container que esta corriendo para que el nuevo container que se lance use la nueva imagen
