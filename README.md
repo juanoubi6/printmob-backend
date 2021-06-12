@@ -1,6 +1,10 @@
 #Printmob-backend
 Backend de la aplicacion Printmob
 
+#Antes de correr
+1. Crear un archivo `aws.env` partiendo de `aws.env.default`
+1. En él, colocar tus credenciales. Las mismas serán pasadas a tu container local para ejecutar API calls a AWS con tu usuario y permisos
+
 #Levantar proyecto con docker
 1. Pararse en el directorio raiz
 1. Ejecutar `make build` para crear los contenedores
