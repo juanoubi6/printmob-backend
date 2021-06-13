@@ -1,7 +1,6 @@
 import datetime
 
 from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey
-
 from sqlalchemy.orm import declarative_base, relationship, backref
 
 from my_app.api.domain import Pledge, TechDetail, User, Campaign, CampaignModelImage, Printer
@@ -155,7 +154,7 @@ class PledgeModel(Base):
     deleted_at = Column(DateTime)
 
     def __repr__(self):
-        return "<Pledge(id='{id}}',campaign_id='{campaign_id}',buyer_id='{buyer_id}')>"\
+        return "<Pledge(id='{id}}',campaign_id='{campaign_id}',buyer_id='{buyer_id}')>" \
             .format(id=self.id, campaign_id=self.campaign_id, buyer_id=self.buyer_id)
 
     def to_pledge_entity(self):
@@ -175,15 +174,17 @@ class CampaignModelImageModel(Base):
 
     id = Column(Integer, primary_key=True)
     model_picture_url = Column(String)
+    file_name = Column(String)
     campaign_id = Column(Integer, ForeignKey('campaign.id'))
 
     def __repr__(self):
-        return "<CampaignModelImage(id='{id}}',campaign_id='{campaign_id}',picture_url='{picture_url}')>"\
-            .format(id=self.id, campaign_id=self.campaign_id,picture_url=self.model_picture_url)
+        return "<CampaignModelImage(id='{id}}',campaign_id='{campaign_id}',picture_url='{picture_url}')>" \
+            .format(id=self.id, campaign_id=self.campaign_id, picture_url=self.model_picture_url)
 
     def to_campaign_model_image_entity(self):
         return CampaignModelImage(
             id=self.id,
             model_picture_url=self.model_picture_url,
-            campaign_id=self.campaign_id
+            campaign_id=self.campaign_id,
+            file_name=self.file_name
         )

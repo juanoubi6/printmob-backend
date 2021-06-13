@@ -1,8 +1,7 @@
 import datetime
 
-from sqlalchemy import null
-
-from my_app.api.domain import Campaign, Printer, User, TechDetail, Pledge
+from my_app.api.domain import Campaign, Printer, User, TechDetail, Pledge, CampaignModelImage, \
+    CampaignModelImagePrototype, File
 from my_app.api.repositories.models import CampaignModel, TechDetailsModel, PrinterModel, UserModel, PledgeModel, \
     CampaignModelImageModel
 
@@ -108,3 +107,21 @@ MOCK_CAMPAIGN_MODEL = CampaignModel(
 )
 
 MOCK_FILTERS = {"page": 1, "page_size": 1}
+
+MOCK_CAMPAIGN_MODEL_IMAGE = CampaignModelImage(
+    id=1,
+    campaign_id=1,
+    model_picture_url="url",
+    file_name="filename"
+)
+
+MOCK_CAMPAIGN_MODEL_IMAGE_PROTOTYPE = CampaignModelImagePrototype(
+    campaign_id=1,
+    file_name="file_name",
+    model_picture_url="image_url"
+)
+
+MOCK_FILE = File(
+    content=bytes(b"someImageData"),
+    mimetype="image/jpeg"
+)

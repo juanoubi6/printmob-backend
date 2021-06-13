@@ -13,7 +13,6 @@ services:
       - ./:/app
     env_file:
       - ./.env
-      - ./aws.env
 
   postgres:
     image: postgres:10-alpine

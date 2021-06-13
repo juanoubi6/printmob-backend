@@ -1,12 +1,7 @@
 import datetime
 
-from sqlalchemy import null
-
-from my_app.api.domain import Campaign, CampaignModelImage, Printer, User, TechDetail, Pledge
 from my_app.api.domain.campaign import CampaignPrototype
 from my_app.api.domain.tech_detail import TechDetailPrototype
-from my_app.api.repositories.models import CampaignModel, TechDetailsModel, PrinterModel, UserModel, PledgeModel, \
-    CampaignModelImageModel
 
 TEST_CAMPAIGN_PROTOTYPE = CampaignPrototype(
     name="test_campaign",
@@ -26,3 +21,5 @@ TEST_CAMPAIGN_PROTOTYPE = CampaignPrototype(
         depth=15
     )
 )
+
+
