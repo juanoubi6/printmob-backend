@@ -62,7 +62,7 @@ class CampaignController:
 
         return campaign_model_image.to_json(), 201
 
-    def delete_campaign_model_image(self, req: request, campaign_id: int, campaign_model_image_id: int) -> int:
+    def delete_campaign_model_image(self, req: request, campaign_id: int, campaign_model_image_id: int) -> (dict, int):
         self.campaign_service.delete_campaign_model_image(campaign_model_image_id)
 
         return {"status": "ok"}, 200

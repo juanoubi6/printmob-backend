@@ -47,3 +47,8 @@ def delete_campaign_model_image(campaign_id, campaign_model_image_id):
 @route(pledgeBlueprint, '/', methods=['POST'])
 def create_pledge():
     return current_app.pledge_controller.create_pledge(request)
+
+
+@route(pledgeBlueprint, '/<pledge_id>', methods=['DELETE'])
+def cancel_pledge(pledge_id):
+    return current_app.pledge_controller.cancel_pledge(request, int(pledge_id))

@@ -21,3 +21,10 @@ class TestPledgeController(unittest.TestCase):
         res = client.post("/pledges", data=json.dumps(PLEDGE_POST_REQUEST_JSON))
         assert res.status_code == 201
         assert res.json["id"] == MOCK_PLEDGE.id
+
+    @patch.object(app.pledge_controller, "pledge_service")
+    def test_cancel_pledge_returns_200_on_success(self, mock_pledge_service):
+        res = client.delete("/pledges/1")
+
+        assert res.status_code == 200
+        mock_pledge_service.cancel_pledge.assert_called_once_with(1)

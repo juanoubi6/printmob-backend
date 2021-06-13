@@ -19,3 +19,8 @@ class PledgeController:
         created_pledge = self.pledge_service.create_pledge(prototype)
 
         return created_pledge.to_json(), 201
+
+    def cancel_pledge(self, req: request, pledge_id: int) -> (dict, int):
+        self.pledge_service.cancel_pledge(pledge_id)
+
+        return {"status": "ok"}, 200
