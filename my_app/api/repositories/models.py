@@ -1,6 +1,7 @@
 import datetime
 
-from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey
+import sqlalchemy
+from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey, orm
 from sqlalchemy.orm import declarative_base, relationship, backref
 
 from my_app.api.domain import Pledge, TechDetail, User, Campaign, CampaignModelImage, Printer
@@ -26,7 +27,10 @@ class CampaignModel(Base):
 
     printer = relationship("PrinterModel")
     tech_detail = relationship("TechDetailsModel", uselist=False, back_populates='campaign')
-    pledges = relationship('PledgeModel')
+    pledges = relationship(
+        'PledgeModel',
+        primaryjoin="and_(CampaignModel.id==PledgeModel.campaign_id, PledgeModel.deleted_at==None)"
+    )
     images = relationship('CampaignModelImageModel')
 
     def __repr__(self):
