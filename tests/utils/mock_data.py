@@ -86,7 +86,8 @@ MOCK_PLEDGE_MODEL = PledgeModel(
 MOCK_CAMPAIGN_MODEL_IMAGE_MODEL = CampaignModelImageModel(
     id=1,
     model_picture_url="url",
-    campaign_id=1
+    campaign_id=1,
+    file_name="file_name"
 )
 
 MOCK_CAMPAIGN_MODEL = CampaignModel(

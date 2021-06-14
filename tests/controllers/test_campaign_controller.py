@@ -82,3 +82,10 @@ class TestCampaignController(unittest.TestCase):
         called_file = mock_campaign_service.create_campaign_model_image.call_args[0][1]
         assert called_file.content == bytes(b"someImageData")
         assert called_file.mimetype == "image/jpeg"
+
+    @patch.object(app.campaign_controller, "campaign_service")
+    def test_delete_campaign_model_image_returns_200_on_success(self, mock_campaign_service):
+        res = client.delete("/campaigns/1/model-images/2")
+
+        assert res.status_code == 200
+        mock_campaign_service.delete_campaign_model_image.assert_called_once_with(2)

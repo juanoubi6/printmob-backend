@@ -1,3 +1,5 @@
+import logging
+
 from my_app.api.domain import File
 from my_app.api.exceptions import ServerException
 
@@ -20,6 +22,15 @@ class S3Repository:
             return self._generate_file_url(key)
         except Exception as exc:
             raise ServerException("Unexpected error when uploading image to S3: {}".format(str(exc)))
+
+    def delete_file(self, key: str):
+        try:
+            self.s3_client.delete_object(
+                Bucket=self.bucket_name,
+                Key=key,
+            )
+        except Exception as exc:
+            logging.error("File with key {} could not be removed from S3. Error: {}".format(key, str(exc)))
 
     def _generate_file_url(self, key: str) -> str:
         return "{base_url}/{bucket}/{key}".format(

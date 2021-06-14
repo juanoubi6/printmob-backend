@@ -43,5 +43,9 @@ class CampaignService:
 
         return self.campaign_repository.create_campaign_model_image(campaign_model_image_prototype)
 
+    def delete_campaign_model_image(self, campaign_model_image_id: int):
+        deleted_campaign_model_image = self.campaign_repository.delete_campaign_model_image(campaign_model_image_id)
+        self.s3_repository.delete_file(deleted_campaign_model_image.file_name)
+
     def _generate_campaign_model_image_name(self) -> str:
         return "campaign_model_images/{}".format(uuid.uuid4())

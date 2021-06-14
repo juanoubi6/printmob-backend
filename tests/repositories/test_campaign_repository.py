@@ -6,7 +6,8 @@ import pytest
 from my_app.api.domain import Campaign, Page, CampaignModelImage
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories import CampaignRepository
-from tests.utils.mock_data import MOCK_CAMPAIGN_MODEL, MOCK_FILTERS, MOCK_CAMPAIGN_MODEL_IMAGE_PROTOTYPE
+from tests.utils.mock_data import MOCK_CAMPAIGN_MODEL, MOCK_FILTERS, MOCK_CAMPAIGN_MODEL_IMAGE_PROTOTYPE, \
+    MOCK_CAMPAIGN_MODEL_IMAGE_MODEL
 from tests.utils.test_data import TEST_CAMPAIGN_PROTOTYPE
 
 test_db = MagicMock()
@@ -59,3 +60,19 @@ class TestCampaignRepository(unittest.TestCase):
 
         test_db.session.add.assert_called_once()
         test_db.session.commit.assert_called_once()
+
+    def test_delete_campaign_model_image_returns_campaign_model_image_on_success(self):
+        test_db.session.query.return_value.filter_by.return_value.first.return_value = MOCK_CAMPAIGN_MODEL_IMAGE_MODEL
+
+        response = campaign_repository.delete_campaign_model_image(1)
+
+        assert isinstance(response, CampaignModelImage)
+        test_db.session.query.return_value.filter_by.return_value.first.assert_called_once()
+        test_db.session.delete.assert_called_once_with(MOCK_CAMPAIGN_MODEL_IMAGE_MODEL)
+        test_db.session.commit.assert_called_once()
+
+    def test_delete_campaign_model_image_throws_error_when_campaign_model_image_is_not_found(self):
+        test_db.session.query.return_value.filter_by.return_value.first.return_value = None
+
+        with pytest.raises(NotFoundException):
+            campaign_repository.delete_campaign_model_image(1)

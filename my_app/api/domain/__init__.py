@@ -1,4 +1,4 @@
-from .campaign import Campaign
+from .campaign import Campaign, CampaignPrototype
 from .campaign_model_image import CampaignModelImage, CampaignModelImagePrototype
 from .file import File
 from .page import Page

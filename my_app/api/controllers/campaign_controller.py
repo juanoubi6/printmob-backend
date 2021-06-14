@@ -58,6 +58,11 @@ class CampaignController:
         image_data = req.files['image']
         file = File(content=image_data.stream.read(), mimetype=image_data.mimetype)
 
-        campaign_model_image = self.campaign_service.create_campaign_model_image(int(campaign_id), file)
+        campaign_model_image = self.campaign_service.create_campaign_model_image(campaign_id, file)
 
         return campaign_model_image.to_json(), 201
+
+    def delete_campaign_model_image(self, req: request, campaign_id: int, campaign_model_image_id: int) -> int:
+        self.campaign_service.delete_campaign_model_image(campaign_model_image_id)
+
+        return {"status": "ok"}, 200
