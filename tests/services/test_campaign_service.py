@@ -78,7 +78,7 @@ class TestCampaignService(unittest.TestCase):
     def test_delete_campaign_model_image_deletes_image(self):
         mock_campaign_repository.delete_campaign_model_image.return_value = MOCK_CAMPAIGN_MODEL_IMAGE
 
-        campaign_service.delete_campaign_model_image(1)
+        campaign_service.delete_campaign_model_image(MOCK_CAMPAIGN_MODEL_IMAGE.id)
 
         mock_campaign_repository.delete_campaign_model_image.assert_called_once_with(1)
         mock_s3_repository.delete_file.assert_called_once_with(MOCK_CAMPAIGN_MODEL_IMAGE.file_name)
