@@ -92,7 +92,6 @@ class CampaignRepository:
         query = self.db.session.query(CampaignModel) \
             .filter(CampaignModel.deleted_at == None) \
             .options(noload(CampaignModel.tech_detail)) \
-            .options(noload(CampaignModel.images)) \
             .order_by(asc(CampaignModel.id))
 
         campaign_models = paginate(query, filters).all()
