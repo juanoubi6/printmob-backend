@@ -1,3 +1,6 @@
+import multiprocessing
+from concurrent.futures import ThreadPoolExecutor
+
 import boto3
 
 from my_app.api.controllers import CampaignController, PledgeController
@@ -8,13 +11,13 @@ from my_app.settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
 
 
 def inject_controllers(app, db):
-    app.campaign_controller = build_campaign_controller(db)
+    s3_client = build_s3_client()
+
+    app.campaign_controller = build_campaign_controller(db, s3_client)
     app.pledge_controller = build_pledge_controller(db)
 
 
-def build_campaign_controller(db):
-    s3_client = build_s3_client()
-
+def build_campaign_controller(db, s3_client):
     campaign_repository = CampaignRepository(db)
     printer_repository = PrinterRepository(db)
     s3_repository = S3Repository(s3_client, AWS_BUCKET_NAME)
@@ -39,4 +42,11 @@ def build_s3_client():
         aws_access_key_id=AWS_ACCESS_KEY_ID,
         aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
         region_name=AWS_REGION
+    )
+
+
+def create_thread_pool_executor():
+    return ThreadPoolExecutor(
+        max_workers=multiprocessing.cpu_count(),
+        thread_name_prefix="flask_pool_executor_thread"
     )
