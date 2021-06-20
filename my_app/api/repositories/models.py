@@ -4,7 +4,7 @@ import sqlalchemy
 from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey, orm
 from sqlalchemy.orm import declarative_base, relationship, backref
 
-from my_app.api.domain import Pledge, TechDetail, User, Campaign, CampaignModelImage, Printer
+from my_app.api.domain import Pledge, TechDetail, User, Campaign, CampaignModelImage, Printer, CampaignStatus
 
 Base = declarative_base()
 
@@ -24,6 +24,7 @@ class CampaignModel(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow)
     deleted_at = Column(DateTime)
+    status = Column(String)
 
     printer = relationship("PrinterModel")
     tech_detail = relationship("TechDetailsModel", uselist=False, back_populates='campaign')
@@ -50,6 +51,7 @@ class CampaignModel(Base):
             max_pledgers=self.max_pledgers,
             current_pledgers=len(self.pledges),
             tech_details=self.tech_detail.to_tech_detail_entity() if self.tech_detail is not None else None,
+            status=CampaignStatus(self.status),
             created_at=self.created_at,
             updated_at=self.updated_at,
             deleted_at=self.deleted_at
@@ -80,7 +82,7 @@ class BuyerModel(Base):
     __tablename__ = 'buyers'
 
     id = Column(Integer, ForeignKey('users.id'), primary_key=True)
-    user = relationship("UserModel", backref=backref("buyers", uselist=False))
+    user = relationship("UserModel", uselist=False, back_populates="buyer")
 
     def __repr__(self):
         return "<Buyer(id='{id}}')>".format(id=self.id)
@@ -100,6 +102,7 @@ class UserModel(Base):
     deleted_at = Column(DateTime)
 
     printer = relationship("PrinterModel", back_populates="user")
+    buyer = relationship("BuyerModel", back_populates="user")
 
     def __repr__(self):
         return "<User(id='{id}}',username='{user_name}')>".format(id=self.id, user_name=self.user_name)
@@ -152,10 +155,12 @@ class PledgeModel(Base):
     id = Column(Integer, primary_key=True)
     campaign_id = Column(Integer, ForeignKey('campaign.id'))
     pledge_price = Column(DECIMAL)
-    buyer_id = Column(Integer)
+    buyer_id = Column(Integer, ForeignKey('buyers.id'))
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow)
     deleted_at = Column(DateTime)
+
+    buyer = relationship("BuyerModel")
 
     def __repr__(self):
         return "<Pledge(id='{id}}',campaign_id='{campaign_id}',buyer_id='{buyer_id}')>" \

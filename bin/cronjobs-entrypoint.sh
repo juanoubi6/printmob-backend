@@ -1,2 +1,2 @@
 #!/bin/bash
-python3 /app/cronjobs.py
+python3 -u /app/cronjobs.py

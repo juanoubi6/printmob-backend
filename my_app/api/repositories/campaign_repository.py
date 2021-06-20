@@ -3,10 +3,10 @@ from datetime import datetime
 from sqlalchemy import asc
 from sqlalchemy.orm import noload
 
-from my_app.api.domain import Page, Campaign, CampaignModelImagePrototype, CampaignModelImage, CampaignPrototype
+from my_app.api.domain import Page, Campaign, CampaignModelImagePrototype, CampaignModelImage, CampaignPrototype, CampaignStatus
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, TechDetailsModel, \
-    PrinterModel, BuyerModel
+    PrinterModel, BuyerModel, PledgeModel
 from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE
 
 CAMPAIGN_NOT_FOUND = 'Non-existent campaign'
@@ -49,8 +49,33 @@ class CampaignRepository:
                                        pledge_price=350.0,
                                        end_date=datetime.now(),
                                        min_pledgers=6,
-                                       max_pledgers=10)
+                                       max_pledgers=10,
+                                       status=CampaignStatus.IN_PROGRESS.value)
         self.db.session.add(campaign_model)
+        self.db.session.commit()
+
+        campaign_model_image = CampaignModelImageModel(
+            campaign_id=campaign_model.id,
+            model_picture_url="image url",
+            file_name="image file name"
+        )
+
+        self.db.session.add(campaign_model_image)
+        self.db.session.commit()
+
+        pledge_model = PledgeModel(campaign_id=campaign_model.id,
+                                   pledge_price=campaign_model.pledge_price,
+                                   buyer_id=buyer_model.id)
+        self.db.session.add(pledge_model)
+        self.db.session.commit()
+
+        tech_detail_model = TechDetailsModel(material="Material",
+                                             weight=10,
+                                             campaign_id=campaign_model.id,
+                                             width=11,
+                                             length=12,
+                                             depth=13)
+        self.db.session.add(tech_detail_model)
         self.db.session.commit()
 
     def create_campaign(self, prototype: CampaignPrototype) -> Campaign:
@@ -61,7 +86,8 @@ class CampaignRepository:
                                        pledge_price=prototype.pledge_price,
                                        end_date=prototype.end_date,
                                        min_pledgers=prototype.min_pledgers,
-                                       max_pledgers=prototype.max_pledgers)
+                                       max_pledgers=prototype.max_pledgers,
+                                       status=prototype.status.value)
 
         tech_detail_model = TechDetailsModel(material=prototype.tech_details.material,
                                              weight=prototype.tech_details.weight,
@@ -91,6 +117,7 @@ class CampaignRepository:
         self.init_campaigns()
         query = self.db.session.query(CampaignModel) \
             .filter(CampaignModel.deleted_at == None) \
+            .filter(CampaignModel.status == CampaignStatus.IN_PROGRESS.value) \
             .options(noload(CampaignModel.tech_detail)) \
             .order_by(asc(CampaignModel.id))
 
