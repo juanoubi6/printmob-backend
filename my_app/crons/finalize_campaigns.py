@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker, noload
 
 from my_app.api.domain import CampaignStatus
 from my_app.api.repositories import EmailRepository
-from my_app.api.repositories.models import CampaignModel
+from my_app.api.repositories.models import CampaignModel, FailedToRefundPledgeModel
 from my_app.api.utils.email import create_completed_campaign_email, create_unsatisfied_campaign_email
 
 
@@ -30,6 +30,7 @@ def finalize_campaign(
                 .all()
 
             emails_to_send = []
+            failed_to_refund_pledges = []
 
             for campaign_to_finish in campaigns_to_finish:
                 if len(campaign_to_finish.pledges) >= campaign_to_finish.min_pledgers:
@@ -97,22 +98,30 @@ def finalize_campaign(
                                 )
                             """
 
-                            session.commit()
-
                             # Create an unsatisfied campaign email to send to the buyer
                             emails_to_send.append(
                                 create_unsatisfied_campaign_email(pledge_to_cancel.buyer.user.email, campaign_to_finish)
                             )
+
+                            session.commit()
                         except Exception as exc:
-                            logging.error("Pledge {} could not be refunded. Error: {}".format(
-                                pledge_to_cancel.id, str(exc)
-                            ))
                             session.rollback()
-                            # Guardar en BD en una tabla de pledges fallidos el pledge que fallo
+                            error = str(exc)
+                            logging.error("Pledge {} could not be refunded. Err: {}".format(pledge_to_cancel.id, error))
+                            failed_to_refund_pledges.append(FailedToRefundPledgeModel(
+                                pledge_id=pledge_to_cancel.id,
+                                fail_date=datetime.datetime.now(),
+                                error=error
+                            ))
         except Exception as exc:
-            logging.error("Unhandled error on finalize campaign process: {}".format(str(exc)))
             session.rollback()
+            logging.error("Unhandled error on finalize campaign process: {}".format(str(exc)))
             return
+
+    # Save failed pledges
+    if len(failed_to_refund_pledges) > 0:
+        session.add_all(failed_to_refund_pledges)
+        session.commit()
 
     # Send emails on background
     if len(emails_to_send) > 0:

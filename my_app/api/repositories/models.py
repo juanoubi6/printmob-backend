@@ -197,3 +197,16 @@ class CampaignModelImageModel(Base):
             campaign_id=self.campaign_id,
             file_name=self.file_name
         )
+
+
+class FailedToRefundPledgeModel(Base):
+    __tablename__ = 'failed_to_refund_pledges'
+
+    id = Column(Integer, primary_key=True)
+    pledge_id = Column(Integer, ForeignKey('pledges.id'))
+    fail_date = Column(DateTime)
+    error = Column(String)
+
+    def __repr__(self):
+        return "<FailedToRefundPledgeModel(id='{id}}',pledge_id='{pledge_id}', error='{error}')>" \
+            .format(id=self.id, pledge_id=self.pledge_id, error=self.error)

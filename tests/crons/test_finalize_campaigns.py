@@ -56,7 +56,7 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
         session_mock = Mock()
         session_factory_mock.return_value.__enter__.return_value = session_mock
 
-        successful_campaign, unsuccessful_campaign = self._prepare_test_campaigns()
+        _, unsuccessful_campaign = self._prepare_test_campaigns()
 
         session_mock. \
             query.return_value. \
@@ -65,15 +65,16 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
             filter.return_value. \
             options.return_value. \
             options.return_value. \
-            all.return_value = [successful_campaign, unsuccessful_campaign]
+            all.return_value = [unsuccessful_campaign]
 
-        session_mock.commit.side_effect = Exception("Unexpected error")
+        session_mock.commit.side_effect = [None, None, Exception("Unexpected error"), None]
 
         finalize_campaign(session_factory_mock, email_repository_mock, executor_mock, mercadopago_repository_mock)
 
         # Assert calls to repositories
-        assert session_mock.rollback.call_count == 2
-        executor_mock.submit.assert_not_called()
+        assert session_mock.rollback.call_count == 1  # Rollback the 2nd pledge
+        assert session_mock.add_all.call_count == 1  # Add 2nd pledge failure to DB
+        executor_mock.submit.assert_called_once()
 
     def _prepare_test_campaigns(self) -> (CampaignModel, CampaignModel):
         mock_printer = PrinterModel(
