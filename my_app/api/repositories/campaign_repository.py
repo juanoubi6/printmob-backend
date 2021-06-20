@@ -56,7 +56,7 @@ class CampaignRepository:
 
         campaign_model_image = CampaignModelImageModel(
             campaign_id=campaign_model.id,
-            model_picture_url="image url",
+            model_picture_url="https://studio.cults3d.com/VCfRrqC4AV2iS8IgdaJRJgkeDs8=/516x516/https://files.cults3d.com/uploaders/15273061/illustration-file/a3c6700e-2e2d-4479-b8e9-f40ca1d791b0/4.png",
             file_name="image file name"
         )
 

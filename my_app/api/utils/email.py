@@ -16,7 +16,7 @@ class Email:
 
 def create_completed_campaign_email(receiver: str, campaign: CampaignModel) -> Email:
     email_body = """
-        La campaña '{name}', la cual financiaste con ${price}, finalizo con exito. Te dejamos los datos del 
+        La campaña '{name}', en la que participaste con ${price}, finalizo con éxito. Te dejamos los datos del 
         vendedor para que puedas contactarlo ante cualquier duda que tengas.
         
         Nombre: {first_name} {last_name}
@@ -33,16 +33,15 @@ def create_completed_campaign_email(receiver: str, campaign: CampaignModel) -> E
 
     return Email(
         to=receiver,
-        subject="Una campaña que financiaste finalizo con exito!",
+        subject="Una campaña en la que participastes finalizo con éxito!",
         body=email_body
     )
 
 
 def create_unsatisfied_campaign_email(receiver: str, campaign: CampaignModel) -> Email:
     email_body = """
-        La campaña '{name}', la cual financiaste con ${price}, lamentablemente no pudo alcanzar su objetivo minimo. 
-        En los proximos dias estaras recibiendo la devolucion de tu dinero al medio de pago que hayas utilizado
-        para pagar.
+        La campaña '{name}', en la que participaste con ${price}, lamentablemente no pudo alcanzar su objetivo mínimo. 
+        En los próximos días recuperarás el monto de tu reserva en el mismo medio de pago que utilizaste.
 
         Saludos!
     """.format(
@@ -52,6 +51,6 @@ def create_unsatisfied_campaign_email(receiver: str, campaign: CampaignModel) ->
 
     return Email(
         to=receiver,
-        subject="Una campaña que financiaste no alcanzo su objetivo",
+        subject="Una campaña en la que participastes no alcanzo su objetivo",
         body=email_body
     )
