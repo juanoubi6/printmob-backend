@@ -30,81 +30,87 @@ def finalize_campaign(
                 .all()
 
             emails_to_send = []
-            mercadopago_payment_ids_to_refund = []
-            refund_transactions = []
 
             for campaign_to_finish in campaigns_to_finish:
                 if len(campaign_to_finish.pledges) >= campaign_to_finish.min_pledgers:
-                    # Change campaign status
-                    campaign_to_finish.status = CampaignStatus.COMPLETED.value
+                    try:
+                        # Change campaign status to COMPLETED
+                        campaign_to_finish.status = CampaignStatus.COMPLETED.value
+                        session.commit()
 
-                    # Create a complete campaign email to send to each pledger
-                    emails_to_send.extend(
-                        [
-                            create_completed_campaign_email(pledge.buyer.user.email, campaign_to_finish)
-                            for pledge in campaign_to_finish.pledges
-                        ]
-                    )
+                        # Create a complete campaign email to send to each pledger
+                        emails_to_send.extend(
+                            [
+                                create_completed_campaign_email(pledge.buyer.user.email, campaign_to_finish)
+                                for pledge in campaign_to_finish.pledges
+                            ]
+                        )
+                    except Exception as exc:
+                        logging.error("Successful campaign of id {} could not be updated. Error: {}".format(
+                            campaign_to_finish.id, str(exc)
+                        ))
+                        session.rollback()
                 else:
-                    # Change campaign status
+                    # Change campaign status to UNSATISFIED
                     campaign_to_finish.status = CampaignStatus.UNSATISFIED.value
+                    session.commit()
 
                     # For each pledge...
                     for pledge_to_cancel in campaign_to_finish.pledges:
+                        try:
+                            # Delete pledge
+                            pledge_to_cancel.deleted_at = datetime.datetime.now()
 
-                        # Create an unsatisfied campaign email to send to the buyer
-                        emails_to_send.append(
-                            create_unsatisfied_campaign_email(pledge_to_cancel.buyer.user.email, campaign_to_finish)
-                        )
-
-                        # Delete pledge
-                        pledge_to_cancel.deleted_at = datetime.datetime.now()
-
-                        # TODO Get mercadopago payment id of printer's transaction and create a refund transaction
-                        """ 
-                        mercadopago_payment_ids_to_refund.append(pledge_to_cancel.printer_transaction.mp_payment_id)
-                        
-                        refund_transactions.append(
-                            TransactionModel(
-                                mp_payment_id=pledge_to_cancel.printer_transaction.mp_payment_id,
-                                user_id=pledge_to_cancel.printer_transaction.user_id,
-                                amount=pledge_to_cancel.printer_transaction.amount,
-                                type=TransactionStatus.REFUND,
-                                is_future=False
-                            )
-                        )
-                        """
-
-                        # TODO Get mercadopago payment id of desginer's transaction and create a refund transaction
-                        #  (may not be necessary)
-                        """
-                        if pledge_to_cancel.designer_transaction is not None:
-                            mercadopago_payment_ids_to_refund.append(pledge_to_cancel.designer_transaction.mp_payment_id)
-        
-                            refund_transactions.append(
-                                designer_refund_transaction = TransactionModel(
-                                    mp_payment_id=pledge_to_cancel.designer_transaction.mp_payment_id,
-                                    user_id=pledge_to_cancel.designer_transaction.user_id,
-                                    amount=pledge_to_cancel.designer_transaction.amount,
+                            # TODO Get mercadopago payment id of printer's transaction, refund it and create a refund transaction
+                            """ 
+                            mp_printer_payment_id_to_refund = pledge_to_cancel.printer_transaction.mp_payment_id
+                            
+                            mercadopagoRepository.refund_transactions(mp_printer_payment_id_to_refund)
+                            
+                            session.add(
+                                TransactionModel(
+                                    mp_payment_id=pledge_to_cancel.printer_transaction.mp_payment_id,
+                                    user_id=pledge_to_cancel.printer_transaction.user_id,
+                                    amount=pledge_to_cancel.printer_transaction.amount,
                                     type=TransactionStatus.REFUND,
                                     is_future=False
                                 )
                             )
-                        """
+                            """
 
-            # TODO Refund transactions. If this fails..., TDB.
-            """
-            mercadopagoRepository.refund_transactions(mercadopago_payment_ids_to_refund)
-            """
+                            # TODO Get mercadopago payment id of desginer's transaction, refund it and create a refund transaction
+                            #  (may not be necessary)
+                            """
+                            if pledge_to_cancel.designer_transaction is not None:
+                                mp_designer_payment_id_to_refund = pledge_to_cancel.designer_transaction.mp_payment_id
+                                
+                                mercadopagoRepository.refund_transactions(mp_designer_payment_id_to_refund)
+            
+                                session.add(
+                                    TransactionModel(
+                                        mp_payment_id=pledge_to_cancel.designer_transaction.mp_payment_id,
+                                        user_id=pledge_to_cancel.designer_transaction.user_id,
+                                        amount=pledge_to_cancel.designer_transaction.amount,
+                                        type=TransactionStatus.REFUND,
+                                        is_future=False
+                                    )
+                                )
+                            """
 
-            # TODO Create refund transactions
-            """
-            session.add_all(refund_transactions)
-            """
+                            session.commit()
 
-            session.commit()
+                            # Create an unsatisfied campaign email to send to the buyer
+                            emails_to_send.append(
+                                create_unsatisfied_campaign_email(pledge_to_cancel.buyer.user.email, campaign_to_finish)
+                            )
+                        except Exception as exc:
+                            logging.error("Pledge {} could not be refunded. Error: {}".format(
+                                pledge_to_cancel.id, str(exc)
+                            ))
+                            session.rollback()
+                            # Guardar en BD en una tabla de pledges fallidos el pledge que fallo
         except Exception as exc:
-            logging.error("Transaction error: {}".format(str(exc)))
+            logging.error("Unhandled error on finalize campaign process: {}".format(str(exc)))
             session.rollback()
             return
 

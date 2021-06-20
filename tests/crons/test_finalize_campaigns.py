@@ -39,7 +39,8 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
         finalize_campaign(session_factory_mock, email_repository_mock, executor_mock, mercadopago_repository_mock)
 
         # Assert calls to repositories
-        session_mock.commit.assert_called_once()
+        assert session_mock.commit.call_count == 4
+        assert session_mock.rollback.call_count == 0
         executor_mock.submit.assert_called_once()
 
         # Assert campaign final statuses
@@ -71,7 +72,7 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
         finalize_campaign(session_factory_mock, email_repository_mock, executor_mock, mercadopago_repository_mock)
 
         # Assert calls to repositories
-        session_mock.rollback.assert_called_once()
+        assert session_mock.rollback.call_count == 2
         executor_mock.submit.assert_not_called()
 
     def _prepare_test_campaigns(self) -> (CampaignModel, CampaignModel):
