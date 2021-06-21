@@ -2,11 +2,11 @@ import unittest
 from unittest.mock import MagicMock
 
 import pytest
+from tests.utils.mock_data import MOCK_CAMPAIGN_MODEL, MOCK_PLEDGE_MODEL
 
 from my_app.api.domain import PledgePrototype, Pledge, Campaign
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories import PledgeRepository
-from tests.utils.mock_data import MOCK_CAMPAIGN_MODEL, MOCK_PLEDGE_MODEL
 
 test_db = MagicMock()
 pledge_repository = PledgeRepository(test_db)
@@ -20,8 +20,8 @@ class TestPledgeRepository(unittest.TestCase):
     def test_create_pledge_returns_created_pledge(self):
         test_proto = PledgePrototype(
             buyer_id=1,
-            pledge_price=34,
-            campaign_id=1
+            campaign_id=1,
+            pledge_price=34
         )
 
         response = pledge_repository.create_pledge(test_proto)

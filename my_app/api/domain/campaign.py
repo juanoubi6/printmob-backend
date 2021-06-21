@@ -51,8 +51,11 @@ class Campaign:
         self.updated_at = updated_at
         self.deleted_at = deleted_at
 
-    def has_reached_goal(self) -> bool:
+    def has_reached_confirmation_goal(self) -> bool:
         return self.current_pledgers >= self.min_pledgers
+
+    def has_reached_maximum_pledgers(self) -> bool:
+        return self.current_pledgers >= self.max_pledgers
 
     def to_json(self):
         return {

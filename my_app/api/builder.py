@@ -31,7 +31,8 @@ def build_campaign_controller(db, s3_client):
 
 def build_pledge_controller(db):
     pledge_repository = PledgeRepository(db)
-    pledge_service = PledgeService(pledge_repository)
+    campaign_repository = CampaignRepository(db)
+    pledge_service = PledgeService(pledge_repository, campaign_repository)
 
     return PledgeController(pledge_service)
 

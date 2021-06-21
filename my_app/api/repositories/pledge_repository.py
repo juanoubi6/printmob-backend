@@ -27,7 +27,6 @@ class PledgeRepository:
                                    buyer_id=prototype.buyer_id)
         self.db.session.add(pledge_model)
         self.db.session.commit()
-
         return pledge_model.to_pledge_entity()
 
     def get_pledge_campaign(self, pledge_id: int) -> Campaign:
