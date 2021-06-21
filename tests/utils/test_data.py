@@ -1,7 +1,7 @@
 import datetime
 
-from my_app.api.domain.campaign import CampaignPrototype
-from my_app.api.domain.tech_detail import TechDetailPrototype
+from my_app.api.domain import CampaignPrototype, CampaignStatus
+from my_app.api.domain import TechDetailPrototype
 
 TEST_CAMPAIGN_PROTOTYPE = CampaignPrototype(
     name="test_campaign",
@@ -19,7 +19,8 @@ TEST_CAMPAIGN_PROTOTYPE = CampaignPrototype(
         width=12,
         length=14,
         depth=15
-    )
+    ),
+    status=CampaignStatus.IN_PROGRESS
 )
 
 

@@ -6,7 +6,7 @@ from flask import request
 from my_app.api.controllers.validators import validate_pagination_filters, validate_campaign_prototype, \
     validate_image_upload
 from my_app.api.domain import Page, Campaign, CampaignModelImage, File
-from my_app.api.domain.campaign import CampaignPrototype
+from my_app.api.domain.campaign import CampaignPrototype, CampaignStatus
 from my_app.api.domain.tech_detail import TechDetailPrototype
 
 CAMPAIGN_DETAIL_FAILED = 'Campaign detail retrieval has failed'
@@ -34,7 +34,8 @@ class CampaignController:
                 width=body["tech_details"]["width"],
                 length=body["tech_details"]["length"],
                 depth=body["tech_details"]["depth"],
-            )
+            ),
+            status=CampaignStatus.IN_PROGRESS
         )
         validate_campaign_prototype(prototype)
         created_campaign = self.campaign_service.create_campaign(prototype)

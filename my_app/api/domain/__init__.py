@@ -1,8 +1,8 @@
-from .campaign import Campaign, CampaignPrototype
+from .campaign import Campaign, CampaignPrototype, CampaignStatus
 from .campaign_model_image import CampaignModelImage, CampaignModelImagePrototype
 from .file import File
 from .page import Page
 from .pledge import Pledge, PledgePrototype
 from .printer import Printer
-from .tech_detail import TechDetail
+from .tech_detail import TechDetail, TechDetailPrototype
 from .user import User

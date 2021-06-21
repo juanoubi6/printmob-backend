@@ -41,7 +41,8 @@ CAMPAIGN_GET_RESPONSE_JSON = {
     },
     "created_at": "Sun, 17 May 2020 00:00:00 GMT",
     "updated_at": "Sun, 17 May 2020 00:00:00 GMT",
-    "deleted_at": None
+    "deleted_at": None,
+    "status": "In progress"
 }
 
 CAMPAIGN_POST_REQUEST_JSON = {
@@ -102,7 +103,8 @@ CAMPAIGN_POST_RESPONSE_JSON = {
         "material": "material",
         "weight": 100
     },
-    "updated_at": "Sun, 17 May 2020 00:00:00 GMT"
+    "updated_at": "Sun, 17 May 2020 00:00:00 GMT",
+    "status": "In progress"
 }
 
 CAMPAIGN_MODEL_IMAGE_JSON = {

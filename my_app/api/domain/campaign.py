@@ -1,9 +1,17 @@
 import datetime
+import enum
 from typing import List
 
 from my_app.api.domain.campaign_model_image import CampaignModelImage
 from my_app.api.domain.printer import Printer
 from my_app.api.domain.tech_detail import TechDetail, TechDetailPrototype
+
+
+class CampaignStatus(enum.Enum):
+    IN_PROGRESS = "In progress"
+    COMPLETED = "Completed"
+    CANCELLED = "Cancelled"
+    UNSATISFIED = "Unsatisfied"
 
 
 class Campaign:
@@ -21,6 +29,7 @@ class Campaign:
             max_pledgers: int,
             current_pledgers: int,
             tech_details: TechDetail,
+            status: CampaignStatus,
             created_at: datetime.datetime = datetime.datetime.utcnow(),
             updated_at: datetime.datetime = datetime.datetime.utcnow(),
             deleted_at: datetime.datetime = None
@@ -37,6 +46,7 @@ class Campaign:
         self.max_pledgers = max_pledgers
         self.current_pledgers = current_pledgers
         self.tech_details = tech_details
+        self.status = status
         self.created_at = created_at
         self.updated_at = updated_at
         self.deleted_at = deleted_at
@@ -58,6 +68,7 @@ class Campaign:
             "max_pledgers": self.max_pledgers,
             "current_pledgers": self.current_pledgers,
             "tech_details": self.tech_details.to_json() if self.tech_details is not None else None,
+            "status": self.status.value,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
             "deleted_at": self.deleted_at
@@ -76,7 +87,8 @@ class CampaignPrototype:
             end_date: datetime.datetime,
             min_pledgers: int,
             max_pledgers: int,
-            tech_details: TechDetailPrototype
+            tech_details: TechDetailPrototype,
+            status: CampaignStatus
     ):
         self.id = id
         self.name = name
@@ -89,3 +101,4 @@ class CampaignPrototype:
         self.min_pledgers = min_pledgers
         self.max_pledgers = max_pledgers
         self.tech_details = tech_details
+        self.status = status

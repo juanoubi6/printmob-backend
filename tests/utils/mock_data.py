@@ -1,7 +1,7 @@
 import datetime
 
 from my_app.api.domain import Campaign, Printer, User, TechDetail, Pledge, CampaignModelImage, \
-    CampaignModelImagePrototype, File
+    CampaignModelImagePrototype, File, CampaignStatus
 from my_app.api.repositories.models import CampaignModel, TechDetailsModel, PrinterModel, UserModel, PledgeModel, \
     CampaignModelImageModel
 
@@ -36,7 +36,8 @@ MOCK_CAMPAIGN = Campaign(
         depth=100,
     ),
     created_at=datetime.datetime(2020, 5, 17),
-    updated_at=datetime.datetime(2020, 5, 17)
+    updated_at=datetime.datetime(2020, 5, 17),
+    status=CampaignStatus.IN_PROGRESS
 )
 
 MOCK_PLEDGE = Pledge(
@@ -74,11 +75,17 @@ MOCK_PRINTER_MODEL = PrinterModel(
     user=MOCK_USER_MODEL
 )
 
+MOCK_BUYER_MODEL = PrinterModel(
+    id=2,
+    user=MOCK_USER_MODEL
+)
+
 MOCK_PLEDGE_MODEL = PledgeModel(
     id=1,
     campaign_id=1,
     pledge_price=1.1,
     buyer_id=1,
+    buyer=MOCK_BUYER_MODEL,
     created_at=datetime.datetime(2020, 5, 17),
     updated_at=datetime.datetime(2020, 5, 17)
 )
@@ -104,7 +111,8 @@ MOCK_CAMPAIGN_MODEL = CampaignModel(
     printer=MOCK_PRINTER_MODEL,
     pledges=[MOCK_PLEDGE_MODEL],
     created_at=datetime.datetime(2020, 5, 17),
-    updated_at=datetime.datetime(2020, 5, 17)
+    updated_at=datetime.datetime(2020, 5, 17),
+    status="In progress"
 )
 
 MOCK_FILTERS = {"page": 1, "page_size": 1}
