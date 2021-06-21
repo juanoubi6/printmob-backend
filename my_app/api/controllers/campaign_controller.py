@@ -16,10 +16,6 @@ class CampaignController:
     def __init__(self, campaign_service):
         self.campaign_service = campaign_service
 
-    def create_test_data(self, req: request) -> (dict, int):
-        self.campaign_service.create_test_data()
-        return {"status": "ok"}, 200
-
     def post_campaign(self, req: request) -> (Campaign, int):
         body = json.loads(req.data)
         prototype = CampaignPrototype(

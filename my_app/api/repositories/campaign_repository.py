@@ -44,7 +44,7 @@ class CampaignRepository:
 
         campaign_model = CampaignModel(name='Vaso calavera',
                                        description='Un vaso con forma de calavera',
-                                       campaign_picture_url='https://s3.us-east-2.amazonaws.com/printmob-dev/campaign_model_images/default_logo',
+                                       campaign_picture_url='https://free3d.com/imgd/l80/1089780.jpg',
                                        printer_id=printer_model.id,
                                        pledge_price=350.0,
                                        end_date=datetime.now(),
@@ -56,7 +56,7 @@ class CampaignRepository:
 
         campaign_model_image = CampaignModelImageModel(
             campaign_id=campaign_model.id,
-            model_picture_url="https://s3.us-east-2.amazonaws.com/printmob-dev/campaign_model_images/default_logo",
+            model_picture_url="https://studio.cults3d.com/VCfRrqC4AV2iS8IgdaJRJgkeDs8=/516x516/https://files.cults3d.com/uploaders/15273061/illustration-file/a3c6700e-2e2d-4479-b8e9-f40ca1d791b0/4.png",
             file_name="image file name"
         )
 
@@ -114,6 +114,7 @@ class CampaignRepository:
         filters: dict[str,str]
             Dict with filters to apply.
         """
+        self.init_campaigns()
         query = self.db.session.query(CampaignModel) \
             .filter(CampaignModel.deleted_at == None) \
             .filter(CampaignModel.status == CampaignStatus.IN_PROGRESS.value) \
