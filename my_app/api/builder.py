@@ -7,7 +7,7 @@ from my_app.api.controllers import CampaignController, PledgeController
 from my_app.api.repositories import CampaignRepository, PledgeRepository, S3Repository
 from my_app.api.repositories.printer_repository import PrinterRepository
 from my_app.api.services import CampaignService, PledgeService
-from my_app.settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_BUCKET_NAME
+from my_app.settings import AWS_BUCKET_NAME
 
 
 def inject_controllers(app, db):
@@ -38,10 +38,7 @@ def build_pledge_controller(db):
 
 def build_s3_client():
     return boto3.client(
-        's3',
-        aws_access_key_id=AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-        region_name=AWS_REGION
+        's3'
     )
 
 
