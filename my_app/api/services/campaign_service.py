@@ -16,6 +16,9 @@ class CampaignService:
         self.printer_repository = printer_repository
         self.s3_repository = s3_repository
 
+    def create_data(self):
+        self.campaign_repository.init_campaigns()
+
     def create_campaign(self, prototype: CampaignPrototype) -> Campaign:
         self._validate_campaign_printer(prototype)
 
