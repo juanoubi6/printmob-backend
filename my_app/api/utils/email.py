@@ -72,8 +72,8 @@ def create_completed_campaign_email_for_printer(receiver: str, campaign: Campaig
 
 def create_unsatisfied_campaign_email_for_printer(receiver: str, campaign: CampaignModel) -> Email:
     email_body = """
-        La campaña '{name}' que creaste lamentablemente no pudo alcanzar su objetivo mínimo. A no bajar los brazos!,
-        podes crear otra campaña cuando quieras.
+        La campaña '{name}' que creaste lamentablemente ha finalizado sin alcanzar el objetivo que estableciste. 
+        A no bajar los brazos!, podes crear otra campaña cuando quieras.
 
         Saludos!
     """.format(name=campaign.name)
