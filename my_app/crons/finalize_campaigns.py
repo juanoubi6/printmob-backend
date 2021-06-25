@@ -2,7 +2,7 @@ import datetime
 import logging
 from concurrent.futures import Executor
 
-from sqlalchemy import func
+from sqlalchemy import func, and_, or_
 from sqlalchemy.orm import sessionmaker, noload
 
 from my_app.api.domain import CampaignStatus
@@ -22,9 +22,15 @@ def finalize_campaign(
     with session_factory() as session:
         try:
             campaigns_to_finish = session.query(CampaignModel) \
-                .filter(CampaignModel.deleted_at == None) \
-                .filter(CampaignModel.status == CampaignStatus.IN_PROGRESS.value) \
-                .filter(func.date(CampaignModel.end_date) <= datetime.date.today()) \
+                .filter(
+                and_(CampaignModel.deleted_at == None,
+                     or_(CampaignModel.status == CampaignStatus.TO_BE_FINALIZED,
+                         and_(
+                             CampaignModel.status == CampaignStatus.IN_PROGRESS.value,
+                             func.date(CampaignModel.end_date) <= datetime.date.today()
+                         ))
+                     )
+                ) \
                 .options(noload(CampaignModel.tech_detail)) \
                 .options(noload(CampaignModel.images)) \
                 .all()

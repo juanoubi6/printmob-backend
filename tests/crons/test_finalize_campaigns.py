@@ -30,8 +30,6 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
         session_mock. \
             query.return_value. \
             filter.return_value. \
-            filter.return_value. \
-            filter.return_value. \
             options.return_value. \
             options.return_value. \
             all.return_value = [successful_campaign, unsuccessful_campaign]
@@ -60,8 +58,6 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
 
         session_mock. \
             query.return_value. \
-            filter.return_value. \
-            filter.return_value. \
             filter.return_value. \
             options.return_value. \
             options.return_value. \

@@ -12,6 +12,7 @@ class CampaignStatus(enum.Enum):
     COMPLETED = "Completed"
     CANCELLED = "Cancelled"
     UNSATISFIED = "Unsatisfied"
+    TO_BE_FINALIZED = "To be finalized"
 
 
 class Campaign:
@@ -56,6 +57,9 @@ class Campaign:
 
     def has_reached_maximum_pledgers(self) -> bool:
         return self.current_pledgers >= self.max_pledgers
+
+    def has_one_pledge_left(self) -> bool:
+        return self.max_pledgers - self.current_pledgers == 1
 
     def to_json(self):
         return {

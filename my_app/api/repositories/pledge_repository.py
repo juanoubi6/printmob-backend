@@ -1,11 +1,13 @@
 import datetime
 
-from my_app.api.domain import PledgePrototype, Pledge, Campaign
+from my_app.api.domain import PledgePrototype, Pledge, Campaign, CampaignStatus
 from my_app.api.exceptions import NotFoundException
+from my_app.api.exceptions.pledge_creation_exception import PledgeCreationException
 from my_app.api.repositories.models import PledgeModel, CampaignModel
 
 PLEDGE_NOT_FOUND = "Pledge could not be found"
 PLEDGE_CAMPAIGN_NOT_FOUND = "Pledge's campaign could not be found"
+MAX_PLEDGERS_REACHED = "Pledge cannot be created once the maximum number of pledgers has been reached"
 
 
 class PledgeRepository:
@@ -22,11 +24,23 @@ class PledgeRepository:
         # 4- Create designer transaction (if necessary)
         # 5- Create pledge with the previous transaction ids
         # If any of the database operation fails, try to issue a refund of the payment
+
+        campaign_model = self._get_campaign_model_by_id(prototype.campaign_id)
+
+        current_pledgers = len(campaign_model.pledges)
+        if current_pledgers >= campaign_model.max_pledgers:
+            raise PledgeCreationException(MAX_PLEDGERS_REACHED)
+
         pledge_model = PledgeModel(campaign_id=prototype.campaign_id,
                                    pledge_price=prototype.pledge_price,
                                    buyer_id=prototype.buyer_id)
         self.db.session.add(pledge_model)
+
+        if campaign_model.max_pledgers - current_pledgers <= 1:
+            campaign_model.status = CampaignStatus.TO_BE_FINALIZED.value
+
         self.db.session.commit()
+
         return pledge_model.to_pledge_entity()
 
     def get_pledge_campaign(self, pledge_id: int) -> Campaign:
@@ -37,7 +51,7 @@ class PledgeRepository:
             .filter(CampaignModel.deleted_at == None) \
             .first()
 
-        if campaign_model is None:
+        if campaign_model == None:
             raise NotFoundException(PLEDGE_CAMPAIGN_NOT_FOUND)
 
         return campaign_model.to_campaign_entity()
@@ -62,13 +76,24 @@ class PledgeRepository:
 
         return pledge_model.to_pledge_entity()
 
+    def _get_campaign_model_by_id(self, campaign_id: int) -> CampaignModel:
+        campaign_model = self.db.session.query(CampaignModel) \
+            .filter_by(id=campaign_id) \
+            .filter(CampaignModel.deleted_at == None) \
+            .first()
+
+        if campaign_model == None:
+            raise NotFoundException(PLEDGE_CAMPAIGN_NOT_FOUND)
+
+        return campaign_model
+
     def _get_pledge_model_by_id(self, pledge_id: int) -> PledgeModel:
         pledge_model = self.db.session.query(PledgeModel) \
             .filter_by(id=pledge_id) \
             .filter(PledgeModel.deleted_at == None) \
             .first()
 
-        if pledge_model is None:
+        if pledge_model == None:
             raise NotFoundException(PLEDGE_NOT_FOUND)
 
         return pledge_model
