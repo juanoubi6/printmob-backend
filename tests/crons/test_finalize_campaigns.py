@@ -41,7 +41,7 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
         # Assert calls to repositories
         assert session_mock.commit.call_count == 4
         assert session_mock.rollback.call_count == 0
-        executor_mock.submit.assert_called_once()
+        assert executor_mock.submit.call_count == 4
 
         # Assert campaign final statuses
         assert successful_campaign.status == CampaignStatus.COMPLETED.value
@@ -51,7 +51,7 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
         assert unsuccessful_campaign.pledges[0].deleted_at is not None
         assert unsuccessful_campaign.pledges[1].deleted_at is not None
 
-    def test_finalize_campaign_rollbacks_on_exception(self):
+    def test_finalize_campaign_rollbacks_pledge_on_exception(self):
         # Mock context manager
         session_mock = Mock()
         session_factory_mock.return_value.__enter__.return_value = session_mock
@@ -67,14 +67,40 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
             options.return_value. \
             all.return_value = [unsuccessful_campaign]
 
-        session_mock.commit.side_effect = [None, None, Exception("Unexpected error"), None]
+        session_mock.commit.side_effect = [None, None, Exception("Unexpected commit error"), None]
 
         finalize_campaign(session_factory_mock, email_repository_mock, executor_mock, mercadopago_repository_mock)
 
         # Assert calls to repositories
         assert session_mock.rollback.call_count == 1  # Rollback the 2nd pledge
         assert session_mock.add_all.call_count == 1  # Add 2nd pledge failure to DB
-        executor_mock.submit.assert_called_once()
+        assert executor_mock.submit.call_count == 2  # Emails of unsatisfied campaign (for printer and the pledger whose transaction could be refunded)
+
+    def test_finalize_campaign_rollbacks_when_updating_campaign_status_fails(self):
+        # Mock context manager
+        session_mock = Mock()
+        session_factory_mock.return_value.__enter__.return_value = session_mock
+
+        successful_campaign, unsuccessful_campaign = self._prepare_test_campaigns()
+
+        session_mock. \
+            query.return_value. \
+            filter.return_value. \
+            filter.return_value. \
+            filter.return_value. \
+            options.return_value. \
+            options.return_value. \
+            all.return_value = [successful_campaign, unsuccessful_campaign]
+
+        # Just fail on the successful campaign update
+        session_mock.commit.side_effect = [Exception("Unexpected commit error"), None, None, None]
+
+        finalize_campaign(session_factory_mock, email_repository_mock, executor_mock, mercadopago_repository_mock)
+
+        # Assert calls to repositories
+        assert session_mock.rollback.call_count == 1  # Rollback the update of the first campaign
+        assert session_mock.add_all.call_count == 0  # There are no pledge refund fails
+        assert executor_mock.submit.call_count == 2  # Emails of unsatisfied campaign (for printer and pledgers)
 
     def _prepare_test_campaigns(self) -> (CampaignModel, CampaignModel):
         mock_printer = PrinterModel(

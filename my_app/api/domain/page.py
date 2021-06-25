@@ -39,5 +39,5 @@ class Page(Generic[T]):
             "page": self.page,
             "page_size": self.page_size,
             "total_records": self.total_records,
-            "data": list(map(lambda element: element.to_json(), self.data)),
+            "data": [element.to_json() for element in self.data],
         }

@@ -38,9 +38,11 @@ def build_pledge_controller(db):
 
 
 def build_s3_client():
-    return boto3.client(
-        's3'
-    )
+    return boto3.client('s3')
+
+
+def build_ses_client():
+    return boto3.client('ses')
 
 
 def create_thread_pool_executor():
