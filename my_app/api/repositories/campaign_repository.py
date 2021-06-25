@@ -127,7 +127,7 @@ class CampaignRepository:
             page=filters.get("page", DEFAULT_PAGE),
             page_size=filters.get("page_size", DEFAULT_PAGE_SIZE),
             total_records=total_records,
-            data=list(map(lambda cm: cm.to_campaign_entity(), campaign_models))
+            data=[cm.to_campaign_entity() for cm in campaign_models]
         )
 
     def get_campaign_detail(self, campaign_id: int) -> Campaign:
