@@ -112,3 +112,17 @@ CAMPAIGN_MODEL_IMAGE_JSON = {
     "campaign_id": MOCK_CAMPAIGN_MODEL_IMAGE.campaign_id,
     "model_picture_url": MOCK_CAMPAIGN_MODEL_IMAGE.model_picture_url
 }
+
+CAMPAIGN_BUYERS_JSON_RESPONSE = [
+    {
+        'created_at': 'Sun, 17 May 2020 00:00:00 GMT',
+        'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
+        'deleted_at': None,
+        'email': 'email@email.com',
+        'first_name': 'John',
+        'id': 1,
+        'last_name': 'Doe',
+        'updated_at': 'Sun, 17 May 2020 00:00:00 GMT',
+        'user_name': 'johnDoe5'
+    }
+]

@@ -48,6 +48,11 @@ def delete_campaign_model_image(campaign_id, campaign_model_image_id):
     )
 
 
+@route(campaignBlueprint, '/<campaign_id>/buyers', methods=['GET'])
+def get_campaign_buyers(campaign_id):
+    return current_app.campaign_controller.get_campaign_buyers(request, int(campaign_id))
+
+
 # Pledges
 @route(pledgeBlueprint, '/', methods=['POST'])
 def create_pledge():

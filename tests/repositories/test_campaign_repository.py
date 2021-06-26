@@ -1,9 +1,10 @@
 import unittest
+from typing import List
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from my_app.api.domain import Campaign, Page, CampaignModelImage
+from my_app.api.domain import Campaign, Page, CampaignModelImage, Buyer
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories import CampaignRepository
 from tests.utils.mock_data import MOCK_CAMPAIGN_MODEL, MOCK_FILTERS, MOCK_CAMPAIGN_MODEL_IMAGE_PROTOTYPE, \
@@ -76,3 +77,11 @@ class TestCampaignRepository(unittest.TestCase):
 
         with pytest.raises(NotFoundException):
             campaign_repository.delete_campaign_model_image(1)
+
+    def test_get_campaign_buyers_returns_buyer_list(self):
+        test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.return_value = MOCK_CAMPAIGN_MODEL
+
+        response = campaign_repository.get_campaign_buyers(1)
+
+        assert isinstance(response[0], Buyer)
+        test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.assert_called_once()

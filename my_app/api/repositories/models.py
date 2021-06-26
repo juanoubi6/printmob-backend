@@ -1,10 +1,9 @@
 import datetime
 
-import sqlalchemy
-from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey, orm, func
-from sqlalchemy.orm import declarative_base, relationship, backref
+from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey
+from sqlalchemy.orm import declarative_base, relationship
 
-from my_app.api.domain import Pledge, TechDetail, User, Campaign, CampaignModelImage, Printer, CampaignStatus
+from my_app.api.domain import Pledge, TechDetail, User, Campaign, CampaignModelImage, Printer, CampaignStatus, Buyer
 
 Base = declarative_base()
 
@@ -83,6 +82,16 @@ class BuyerModel(Base):
 
     id = Column(Integer, ForeignKey('users.id'), primary_key=True)
     user = relationship("UserModel", uselist=False, back_populates="buyer")
+
+    def to_buyer_entity(self):
+        return Buyer(User(
+            id=self.id,
+            first_name=self.user.first_name,
+            last_name=self.user.last_name,
+            user_name=self.user.user_name,
+            date_of_birth=self.user.date_of_birth,
+            email=self.user.email
+        ))
 
     def __repr__(self):
         return "<Buyer(id='{id}}')>".format(id=self.id)

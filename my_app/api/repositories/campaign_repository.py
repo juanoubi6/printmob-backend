@@ -1,9 +1,11 @@
 from datetime import datetime
+from typing import List
 
 from sqlalchemy import asc
 from sqlalchemy.orm import noload
 
-from my_app.api.domain import Page, Campaign, CampaignModelImagePrototype, CampaignModelImage, CampaignPrototype, CampaignStatus
+from my_app.api.domain import Page, Campaign, CampaignModelImagePrototype, CampaignModelImage, CampaignPrototype, \
+    CampaignStatus, Buyer
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, TechDetailsModel, \
     PrinterModel, BuyerModel, PledgeModel
@@ -154,7 +156,7 @@ class CampaignRepository:
         campaign_model_image_model = self.db.session.query(CampaignModelImageModel) \
             .filter_by(id=campaign_model_image_id) \
             .first()
-        if campaign_model_image_model == None:
+        if campaign_model_image_model is None:
             raise NotFoundException(CAMPAIGN_MODEL_IMAGE_NOT_FOUND)
 
         self.db.session.delete(campaign_model_image_model)
@@ -162,13 +164,18 @@ class CampaignRepository:
 
         return campaign_model_image_model.to_campaign_model_image_entity()
 
+    def get_campaign_buyers(self, campaign_id: int) -> List[Buyer]:
+        campaign = self._get_campaign_model_by_id(campaign_id)
+
+        return [pledge.buyer.to_buyer_entity() for pledge in campaign.pledges]
+
     def _get_campaign_model_by_id(self, campaign_id: int) -> CampaignModel:
         campaign_model = self.db.session.query(CampaignModel) \
             .filter_by(id=campaign_id) \
             .filter(CampaignModel.deleted_at == None) \
             .first()
 
-        if campaign_model == None:
+        if campaign_model is None:
             raise NotFoundException(CAMPAIGN_NOT_FOUND)
 
         return campaign_model

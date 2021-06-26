@@ -1,10 +1,9 @@
 import datetime
 
 from my_app.api.domain import Campaign, Printer, User, TechDetail, Pledge, CampaignModelImage, \
-    CampaignModelImagePrototype, File, CampaignStatus
+    CampaignModelImagePrototype, File, CampaignStatus, Buyer
 from my_app.api.repositories.models import CampaignModel, TechDetailsModel, PrinterModel, UserModel, PledgeModel, \
-    CampaignModelImageModel
-
+    CampaignModelImageModel, BuyerModel
 
 MOCK_CAMPAIGN = Campaign(
     id=1,
@@ -76,7 +75,7 @@ MOCK_PRINTER_MODEL = PrinterModel(
     user=MOCK_USER_MODEL
 )
 
-MOCK_BUYER_MODEL = PrinterModel(
+MOCK_BUYER_MODEL = BuyerModel(
     id=2,
     user=MOCK_USER_MODEL
 )
@@ -171,3 +170,16 @@ MOCK_FILE = File(
     content=bytes(b"someImageData"),
     mimetype="image/jpeg"
 )
+
+MOCK_USER = User(
+    id=1,
+    first_name="John",
+    last_name="Doe",
+    user_name="johnDoe5",
+    date_of_birth=datetime.datetime(2020, 5, 17),
+    email="email@email.com",
+    created_at=datetime.datetime(2020, 5, 17),
+    updated_at=datetime.datetime(2020, 5, 17)
+)
+
+MOCK_BUYER = Buyer(MOCK_USER)

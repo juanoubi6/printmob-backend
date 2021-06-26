@@ -1,11 +1,12 @@
 import json
 from datetime import datetime
+from typing import List
 
 from flask import request
 
 from my_app.api.controllers.validators import validate_pagination_filters, validate_campaign_prototype, \
     validate_image_upload
-from my_app.api.domain import Page, Campaign, CampaignModelImage, File
+from my_app.api.domain import Page, Campaign, CampaignModelImage, File, Buyer
 from my_app.api.domain.campaign import CampaignPrototype, CampaignStatus
 from my_app.api.domain.tech_detail import TechDetailPrototype
 
@@ -71,3 +72,8 @@ class CampaignController:
         self.campaign_service.delete_campaign_model_image(campaign_model_image_id)
 
         return {"status": "ok"}, 200
+
+    def get_campaign_buyers(self, req: request, campaign_id) -> (List[Buyer], int):
+        buyers = self.campaign_service.get_campaign_buyers(campaign_id)
+
+        return [buyer.to_json() for buyer in buyers], 200
