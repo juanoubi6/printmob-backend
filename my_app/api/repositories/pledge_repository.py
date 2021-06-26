@@ -1,18 +1,21 @@
 import datetime
 
-from my_app.api.domain import PledgePrototype, Pledge, Campaign
+from my_app.api.domain import PledgePrototype, Pledge, Campaign, CampaignStatus
 from my_app.api.exceptions import NotFoundException
+from my_app.api.repositories import CampaignRepository
 from my_app.api.repositories.models import PledgeModel, CampaignModel
 
 PLEDGE_NOT_FOUND = "Pledge could not be found"
 PLEDGE_CAMPAIGN_NOT_FOUND = "Pledge's campaign could not be found"
+MAX_PLEDGERS_REACHED = "Pledge cannot be created once the maximum number of pledgers has been reached"
 
 
 class PledgeRepository:
-    def __init__(self, db):
+    def __init__(self, db, campaign_repository: CampaignRepository):
         self.db = db
+        self._campaign_repository = campaign_repository
 
-    def create_pledge(self, prototype: PledgePrototype) -> Pledge:
+    def create_pledge(self, prototype: PledgePrototype, finalize_campaign: bool = False) -> Pledge:
         # TODO for mercadopago: we will need to add MercadopagoRepository here
         # 1- Call MercadopagoRepository and create the payment
         # 2- With the payment object, search the net transaction amount (without commissions) and calculate both the
@@ -26,7 +29,13 @@ class PledgeRepository:
                                    pledge_price=prototype.pledge_price,
                                    buyer_id=prototype.buyer_id)
         self.db.session.add(pledge_model)
+
+        if finalize_campaign:
+            campaign_model = self._campaign_repository.get_campaign_detail(prototype.campaign_id)
+            campaign_model.status = CampaignStatus.TO_BE_FINALIZED.value
+
         self.db.session.commit()
+
         return pledge_model.to_pledge_entity()
 
     def get_pledge_campaign(self, pledge_id: int) -> Campaign:

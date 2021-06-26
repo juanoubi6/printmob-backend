@@ -2,30 +2,53 @@ import unittest
 from unittest.mock import MagicMock
 
 import pytest
-from tests.utils.mock_data import MOCK_CAMPAIGN_MODEL, MOCK_PLEDGE_MODEL
 
-from my_app.api.domain import PledgePrototype, Pledge, Campaign
+from my_app.api.domain import PledgePrototype, Pledge, Campaign, CampaignStatus
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories import PledgeRepository
+from tests.utils.mock_data import MOCK_CAMPAIGN_MODEL, MOCK_PLEDGE_MODEL, MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED
 
 test_db = MagicMock()
-pledge_repository = PledgeRepository(test_db)
+test_mock_campaign_repository = MagicMock()
+pledge_repository = PledgeRepository(test_db, test_mock_campaign_repository)
 
 
 class TestPledgeRepository(unittest.TestCase):
 
     def setUp(self):
         test_db.reset_mock()
+        test_mock_campaign_repository.reset_mock()
 
     def test_create_pledge_returns_created_pledge(self):
+        test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.side_effect = [
+            MOCK_CAMPAIGN_MODEL
+        ]
+
         test_proto = PledgePrototype(
             buyer_id=1,
             campaign_id=1,
             pledge_price=34
         )
 
-        response = pledge_repository.create_pledge(test_proto)
+        response = pledge_repository.create_pledge(test_proto, False)
 
+        assert isinstance(response, Pledge)
+        test_db.session.add.assert_called_once()
+        test_db.session.commit.assert_called_once()
+
+    def test_create_pledge_change_campaign_status_and_returns_created_pledge(self):
+        campaign_model = MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED
+        test_mock_campaign_repository.get_campaign_detail.return_value = campaign_model
+
+        test_proto = PledgePrototype(
+            buyer_id=1,
+            campaign_id=1,
+            pledge_price=34
+        )
+
+        response = pledge_repository.create_pledge(test_proto, True)
+
+        assert campaign_model.status == CampaignStatus.TO_BE_FINALIZED.value
         assert isinstance(response, Pledge)
         test_db.session.add.assert_called_once()
         test_db.session.commit.assert_called_once()

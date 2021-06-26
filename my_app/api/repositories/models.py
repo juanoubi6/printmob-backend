@@ -1,7 +1,7 @@
 import datetime
 
 import sqlalchemy
-from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey, orm
+from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey, orm, func
 from sqlalchemy.orm import declarative_base, relationship, backref
 
 from my_app.api.domain import Pledge, TechDetail, User, Campaign, CampaignModelImage, Printer, CampaignStatus

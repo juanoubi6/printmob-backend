@@ -131,13 +131,12 @@ class CampaignRepository:
         )
 
     def get_campaign_detail(self, campaign_id: int) -> Campaign:
-        campaign_model = self.db.session.query(CampaignModel) \
-            .filter_by(id=campaign_id) \
-            .filter(CampaignModel.deleted_at == None) \
-            .first()
-        if campaign_model is None:
-            raise NotFoundException(CAMPAIGN_NOT_FOUND)
-        return campaign_model.to_campaign_entity()
+        return self._get_campaign_model_by_id(campaign_id).to_campaign_entity()
+
+    def change_campaign_status(self, campaign_id: int, new_status: CampaignStatus):
+        campaign_model = self._get_campaign_model_by_id(campaign_id)
+        campaign_model.status = new_status.value
+        self.db.session.commit()
 
     def create_campaign_model_image(self, prototype: CampaignModelImagePrototype) -> CampaignModelImage:
         campaign_model_image_model = CampaignModelImageModel(
@@ -155,10 +154,21 @@ class CampaignRepository:
         campaign_model_image_model = self.db.session.query(CampaignModelImageModel) \
             .filter_by(id=campaign_model_image_id) \
             .first()
-        if campaign_model_image_model is None:
+        if campaign_model_image_model == None:
             raise NotFoundException(CAMPAIGN_MODEL_IMAGE_NOT_FOUND)
 
         self.db.session.delete(campaign_model_image_model)
         self.db.session.commit()
 
         return campaign_model_image_model.to_campaign_model_image_entity()
+
+    def _get_campaign_model_by_id(self, campaign_id: int) -> CampaignModel:
+        campaign_model = self.db.session.query(CampaignModel) \
+            .filter_by(id=campaign_id) \
+            .filter(CampaignModel.deleted_at == None) \
+            .first()
+
+        if campaign_model == None:
+            raise NotFoundException(CAMPAIGN_NOT_FOUND)
+
+        return campaign_model
