@@ -3,11 +3,12 @@ import unittest
 from unittest.mock import Mock
 
 import pytest
-from tests.utils.mock_data import MOCK_PLEDGE, MOCK_CAMPAIGN
 
 from my_app.api.domain import PledgePrototype
 from my_app.api.exceptions import CancellationException
+from my_app.api.exceptions.pledge_creation_exception import PledgeCreationException
 from my_app.api.services import PledgeService
+from tests.utils.mock_data import MOCK_PLEDGE, MOCK_CAMPAIGN
 
 mock_pledge_repository = Mock()
 pledge_service = PledgeService(mock_pledge_repository)
@@ -18,7 +19,13 @@ class TestPledgeService(unittest.TestCase):
     def setUp(self):
         mock_pledge_repository.reset_mock()
 
-    def test_create_pledge_returns_created_pledge(self):
+    def test_create_pledge_returns_created_pledge_when_campaign_is_not_completed(self):
+        uncompleted_campaign = copy.deepcopy(MOCK_CAMPAIGN)
+        uncompleted_campaign.min_pledgers = 100
+        uncompleted_campaign.max_pledgers = 150
+        uncompleted_campaign.current_pledgers = 50
+
+        mock_pledge_repository.get_pledge_campaign.return_value = uncompleted_campaign
         mock_pledge_repository.create_pledge.return_value = MOCK_PLEDGE
 
         created_pledge = pledge_service.create_pledge(
@@ -31,6 +38,43 @@ class TestPledgeService(unittest.TestCase):
 
         assert created_pledge.id == MOCK_PLEDGE.id
         mock_pledge_repository.create_pledge.assert_called_once()
+
+    def test_create_pledge_returns_created_pledge_when_campaign_has_no_maximum_pledgers_value(self):
+        uncompleted_campaign = copy.deepcopy(MOCK_CAMPAIGN)
+        uncompleted_campaign.min_pledgers = 100
+        uncompleted_campaign.max_pledgers = None
+        uncompleted_campaign.current_pledgers = 50
+
+        mock_pledge_repository.get_pledge_campaign.return_value = uncompleted_campaign
+        mock_pledge_repository.create_pledge.return_value = MOCK_PLEDGE
+
+        created_pledge = pledge_service.create_pledge(
+            PledgePrototype(
+                buyer_id=1,
+                campaign_id=1,
+                pledge_price=34
+            )
+        )
+
+        assert created_pledge.id == MOCK_PLEDGE.id
+        mock_pledge_repository.create_pledge.assert_called_once()
+
+    def test_create_pledge_throws_exception_if_campaign_has_reached_max_pledgers(self):
+        completed_campaign = copy.deepcopy(MOCK_CAMPAIGN)
+        completed_campaign.min_pledgers = 100
+        completed_campaign.max_pledgers = 120
+        completed_campaign.current_pledgers = 120
+
+        mock_pledge_repository.get_pledge_campaign.return_value = completed_campaign
+
+        with pytest.raises(PledgeCreationException):
+            pledge_service.create_pledge(
+                PledgePrototype(
+                    buyer_id=1,
+                    campaign_id=1,
+                    pledge_price=34
+                )
+            )
 
     def test_cancel_pledge_executes_successfully_when_its_campaign_has_not_reached_its_goal(self):
         uncompleted_campaign = copy.deepcopy(MOCK_CAMPAIGN)

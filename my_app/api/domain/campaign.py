@@ -56,10 +56,16 @@ class Campaign:
         return self.current_pledgers >= self.min_pledgers
 
     def has_reached_maximum_pledgers(self) -> bool:
-        return self.current_pledgers >= self.max_pledgers
+        if self.max_pledgers is None:
+            return False
+        else:
+            return self.current_pledgers >= self.max_pledgers
 
     def has_one_pledge_left(self) -> bool:
-        return self.max_pledgers - self.current_pledgers == 1
+        if self.max_pledgers is None:
+            return False
+        else:
+            return self.max_pledgers - self.current_pledgers == 1
 
     def to_json(self):
         return {

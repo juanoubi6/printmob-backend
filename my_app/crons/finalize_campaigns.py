@@ -2,7 +2,7 @@ import datetime
 import logging
 from concurrent.futures import Executor
 
-from sqlalchemy import func, and_, or_
+from sqlalchemy import func
 from sqlalchemy.orm import sessionmaker, noload
 
 from my_app.api.domain import CampaignStatus
@@ -24,15 +24,9 @@ def finalize_campaign(
     with session_factory() as session:
         try:
             campaigns_to_finish = session.query(CampaignModel) \
-                .filter(
-                and_(CampaignModel.deleted_at == None,
-                     or_(CampaignModel.status == CampaignStatus.TO_BE_FINALIZED,
-                         and_(
-                             CampaignModel.status == CampaignStatus.IN_PROGRESS.value,
-                             func.date(CampaignModel.end_date) <= datetime.date.today()
-                         ))
-                     )
-                ) \
+                .filter(CampaignModel.deleted_at == None) \
+                .filter(CampaignModel.status.in_([CampaignStatus.IN_PROGRESS.value, CampaignStatus.TO_BE_FINALIZED.value])) \
+                .filter(func.date(CampaignModel.end_date) <= datetime.date.today()) \
                 .options(noload(CampaignModel.tech_detail)) \
                 .options(noload(CampaignModel.images)) \
                 .all()
@@ -140,7 +134,6 @@ def finalize_campaign(
                     ))
                     session.rollback()
         except Exception as exc:
-            session.rollback()
             logging.error("Unhandled error on finalize campaign process: {}".format(str(exc)))
             return
 
