@@ -43,7 +43,7 @@ class CampaignModel(Base):
             name=self.name,
             description=self.description,
             campaign_picture_url=self.campaign_picture_url,
-            campaign_model_images=list(map(lambda ci: ci.to_campaign_model_image_entity(), self.images)),
+            campaign_model_images=[ci.to_campaign_model_image_entity() for ci in self.images],
             printer=Printer(self.printer.user.to_user_entity()) if self.printer is not None else None,
             pledge_price=float(self.pledge_price),
             end_date=self.end_date,

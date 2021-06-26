@@ -11,10 +11,9 @@ class Email:
         self.to = to
         self.subject = subject
         self.body = body
-        self.sender = "noreply@printmob.com"
 
 
-def create_completed_campaign_email(receiver: str, campaign: CampaignModel) -> Email:
+def create_completed_campaign_email_for_client(receiver: str, campaign: CampaignModel) -> Email:
     email_body = """
         La campaña '{name}', en la que participaste con ${price}, finalizo con éxito. Te dejamos los datos del 
         vendedor para que puedas contactarlo ante cualquier duda que tengas.
@@ -38,7 +37,7 @@ def create_completed_campaign_email(receiver: str, campaign: CampaignModel) -> E
     )
 
 
-def create_unsatisfied_campaign_email(receiver: str, campaign: CampaignModel) -> Email:
+def create_unsatisfied_campaign_email_for_client(receiver: str, campaign: CampaignModel) -> Email:
     email_body = """
         La campaña '{name}', en la que participaste con ${price}, lamentablemente no pudo alcanzar su objetivo mínimo. 
         En los próximos días recuperarás el monto de tu reserva en el mismo medio de pago que utilizaste.
@@ -52,5 +51,35 @@ def create_unsatisfied_campaign_email(receiver: str, campaign: CampaignModel) ->
     return Email(
         to=receiver,
         subject="Una campaña en la que participastes no alcanzo su objetivo",
+        body=email_body
+    )
+
+
+def create_completed_campaign_email_for_printer(receiver: str, campaign: CampaignModel) -> Email:
+    email_body = """
+        La campaña '{name}' que creaste finalizo con éxito. En las próximas horas actualizaremos tu saldo disponible
+        para que puedas retirarlo y empezar a imprimir.
+
+        Saludos!
+    """.format(name=campaign.name)
+
+    return Email(
+        to=receiver,
+        subject="Una campaña que creaste finalizo con éxito!",
+        body=email_body
+    )
+
+
+def create_unsatisfied_campaign_email_for_printer(receiver: str, campaign: CampaignModel) -> Email:
+    email_body = """
+        La campaña '{name}' que creaste lamentablemente ha finalizado sin alcanzar el objetivo que estableciste. 
+        A no bajar los brazos!, podes crear otra campaña cuando quieras.
+
+        Saludos!
+    """.format(name=campaign.name)
+
+    return Email(
+        to=receiver,
+        subject="Una campaña que creaste no alcanzo su objetivo",
         body=email_body
     )

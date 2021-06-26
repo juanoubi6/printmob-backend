@@ -67,7 +67,7 @@ class Campaign:
             "name": self.name,
             "description": self.description,
             "campaign_picture_url": self.campaign_picture_url,
-            "campaign_model_images": list(map(lambda cmi: cmi.to_json(), self.campaign_model_images)),
+            "campaign_model_images": [cmi.to_json() for cmi in self.campaign_model_images],
             "printer": self.printer.to_json() if self.printer is not None else None,
             "pledge_price": self.pledge_price,
             "end_date": self.end_date,
