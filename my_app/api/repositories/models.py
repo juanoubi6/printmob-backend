@@ -3,7 +3,8 @@ import datetime
 from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship
 
-from my_app.api.domain import Pledge, TechDetail, User, Campaign, CampaignModelImage, Printer, CampaignStatus, Buyer
+from my_app.api.domain import Pledge, TechDetail, User, Campaign, CampaignModelImage, Printer, CampaignStatus, Buyer, \
+    Address
 
 Base = declarative_base()
 
@@ -81,17 +82,23 @@ class BuyerModel(Base):
     __tablename__ = 'buyers'
 
     id = Column(Integer, ForeignKey('users.id'), primary_key=True)
+    address_id = Column(Integer, ForeignKey('addresses.id'))
+
     user = relationship("UserModel", uselist=False, back_populates="buyer")
+    address = relationship("AddressModel", uselist=False, back_populates='buyer')
 
     def to_buyer_entity(self):
-        return Buyer(User(
-            id=self.id,
-            first_name=self.user.first_name,
-            last_name=self.user.last_name,
-            user_name=self.user.user_name,
-            date_of_birth=self.user.date_of_birth,
-            email=self.user.email
-        ))
+        return Buyer(
+            user=User(
+                id=self.id,
+                first_name=self.user.first_name,
+                last_name=self.user.last_name,
+                user_name=self.user.user_name,
+                date_of_birth=self.user.date_of_birth,
+                email=self.user.email
+            ),
+            address=self.address.to_address_entity()
+        )
 
     def __repr__(self):
         return "<Buyer(id='{id}}')>".format(id=self.id)
@@ -219,3 +226,32 @@ class FailedToRefundPledgeModel(Base):
     def __repr__(self):
         return "<FailedToRefundPledgeModel(id='{id}}',pledge_id='{pledge_id}', error='{error}')>" \
             .format(id=self.id, pledge_id=self.pledge_id, error=self.error)
+
+
+class AddressModel(Base):
+    __tablename__ = 'addresses'
+
+    id = Column(Integer, primary_key=True)
+    address = Column(String)
+    zip_code = Column(String)
+    province = Column(String)
+    city = Column(String)
+    floor = Column(String)
+    apartment = Column(String)
+
+    buyer = relationship('BuyerModel', back_populates='address')
+
+    def __repr__(self):
+        return "<Address(id='{id}}',address='{address}',zip_code='{zip_code}')>" \
+            .format(id=self.id, address=self.address, zip_code=self.zip_code)
+
+    def to_address_entity(self):
+        return Address(
+            id=self.id,
+            address=self.address,
+            zip_code=self.zip_code,
+            province=self.province,
+            city=self.city,
+            floor=self.floor,
+            apartment=self.apartment
+        )

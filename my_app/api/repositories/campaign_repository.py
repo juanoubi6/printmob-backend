@@ -8,7 +8,7 @@ from my_app.api.domain import Page, Campaign, CampaignModelImagePrototype, Campa
     CampaignStatus, Buyer
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, TechDetailsModel, \
-    PrinterModel, BuyerModel, PledgeModel
+    PrinterModel, BuyerModel, PledgeModel, AddressModel
 from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE
 
 CAMPAIGN_NOT_FOUND = 'Non-existent campaign'
@@ -40,7 +40,18 @@ class CampaignRepository:
         self.db.session.add(printer_model)
         self.db.session.commit()
 
-        buyer_model = BuyerModel(id=buyer_user_model.id)
+        address_model = AddressModel(
+            address="Calle falsa 123",
+            zip_code="C1425",
+            province="CABA",
+            city="CABA",
+            floor="7",
+            apartment="A"
+        )
+        self.db.session.add(address_model)
+        self.db.session.commit()
+
+        buyer_model = BuyerModel(id=buyer_user_model.id, address_id=address_model.id)
         self.db.session.add(buyer_model)
         self.db.session.commit()
 

@@ -115,6 +115,15 @@ CAMPAIGN_MODEL_IMAGE_JSON = {
 
 CAMPAIGN_BUYERS_JSON_RESPONSE = [
     {
+        'address': {
+            'address': 'Calle falsa 123',
+            'apartment': 'A',
+            'city': 'CABA',
+            'floor': '7',
+            'id': 1,
+            'province': 'CABA',
+            'zip_code': 'C1425'
+        },
         'created_at': 'Sun, 17 May 2020 00:00:00 GMT',
         'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
         'deleted_at': None,

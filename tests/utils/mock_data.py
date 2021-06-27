@@ -1,9 +1,9 @@
 import datetime
 
 from my_app.api.domain import Campaign, Printer, User, TechDetail, Pledge, CampaignModelImage, \
-    CampaignModelImagePrototype, File, CampaignStatus, Buyer
+    CampaignModelImagePrototype, File, CampaignStatus, Buyer, Address
 from my_app.api.repositories.models import CampaignModel, TechDetailsModel, PrinterModel, UserModel, PledgeModel, \
-    CampaignModelImageModel, BuyerModel
+    CampaignModelImageModel, BuyerModel, AddressModel
 
 MOCK_CAMPAIGN = Campaign(
     id=1,
@@ -74,10 +74,22 @@ MOCK_PRINTER_MODEL = PrinterModel(
     id=1,
     user=MOCK_USER_MODEL
 )
+MOCK_ADDRESS_MODEL = AddressModel(
+    id=1,
+    address="Calle falsa 123",
+    zip_code="C1425",
+    province="CABA",
+    city="CABA",
+    floor="7",
+    apartment="A"
+)
+
 
 MOCK_BUYER_MODEL = BuyerModel(
     id=2,
-    user=MOCK_USER_MODEL
+    address_id=1,
+    user=MOCK_USER_MODEL,
+    address=MOCK_ADDRESS_MODEL
 )
 
 MOCK_PLEDGE_MODEL = PledgeModel(
@@ -182,4 +194,14 @@ MOCK_USER = User(
     updated_at=datetime.datetime(2020, 5, 17)
 )
 
-MOCK_BUYER = Buyer(MOCK_USER)
+MOCK_ADDRESS = Address(
+    id=1,
+    address="Calle falsa 123",
+    zip_code="C1425",
+    province="CABA",
+    city="CABA",
+    floor="7",
+    apartment="A"
+)
+
+MOCK_BUYER = Buyer(MOCK_USER, MOCK_ADDRESS)

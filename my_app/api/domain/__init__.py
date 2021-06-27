@@ -1,3 +1,4 @@
+from .address import Address
 from .buyer import Buyer
 from .campaign import Campaign, CampaignPrototype, CampaignStatus
 from .campaign_model_image import CampaignModelImage, CampaignModelImagePrototype
