@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship
 
 from my_app.api.domain import Pledge, TechDetail, User, Campaign, CampaignModelImage, Printer, CampaignStatus, Buyer, \
-    Address
+    Address, Order, OrderStatus
 
 Base = declarative_base()
 
@@ -254,4 +254,35 @@ class AddressModel(Base):
             city=self.city,
             floor=self.floor,
             apartment=self.apartment
+        )
+
+
+class OrderModel(Base):
+    __tablename__ = 'orders'
+
+    id = Column(Integer, primary_key=True)
+    campaign_id = Column(Integer, ForeignKey('campaign.id'))
+    pledge_id = Column(Integer, ForeignKey('pledges.id'))
+    buyer_id = Column(Integer, ForeignKey('buyers.id'))
+    status = Column(String)
+    mail_company = Column(String, nullable=True)
+    tracking_code = Column(String, nullable=True)
+    comments = Column(String, nullable=True)
+
+    buyer = relationship("BuyerModel")
+
+    def __repr__(self):
+        return "<Order(id='{id}}',campaign_id='{campaign_id}',buyer_id='{buyer_id}')>" \
+            .format(id=self.id, campaign_id=self.campaign_id, buyer_id=self.buyer_id)
+
+    def to_order_entity(self):
+        return Order(
+            id=self.id,
+            campaign_id=self.campaign_id,
+            pledge_id=self.pledge_id,
+            buyer=self.buyer.to_buyer_entity(),
+            status=OrderStatus(self.status),
+            mail_company=self.mail_company,
+            tracking_code=self.tracking_code,
+            comments=self.comments,
         )

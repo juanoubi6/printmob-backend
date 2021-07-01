@@ -36,7 +36,38 @@ def upgrade():
         ['address_id'], ['id']
     )
 
+    op.create_table(
+        'orders',
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('campaign_id', sa.Integer, nullable=False),
+        sa.Column('pledge_id', sa.Integer, nullable=False),
+        sa.Column('buyer_id', sa.Integer, nullable=False),
+        sa.Column('status', sa.String(100), nullable=False),
+        sa.Column('mail_company', sa.String(100), nullable=True),
+        sa.Column('tracking_code', sa.String(255), nullable=True),
+        sa.Column('comments', sa.String(255), nullable=True)
+    )
+
+    op.create_foreign_key(
+        'fk_orders_campaign',
+        'orders', 'campaign',
+        ['campaign_id'], ['id']
+    )
+
+    op.create_foreign_key(
+        'fk_orders_pledge',
+        'orders', 'pledges',
+        ['pledge_id'], ['id']
+    )
+
+    op.create_foreign_key(
+        'fk_orders_buyers',
+        'orders', 'buyers',
+        ['buyer_id'], ['id']
+    )
+
 
 def downgrade():
     op.drop_column('buyers', 'address_id')
     op.drop_table('addresses')
+    op.drop_table('orders')
