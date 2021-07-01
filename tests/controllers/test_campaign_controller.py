@@ -6,9 +6,9 @@ from unittest.mock import patch
 from my_app.api import create_app
 from my_app.api.domain import Page
 from my_app.api.exceptions.unprocessable_entity_exception import UnprocessableEntityException
-from tests.utils.mock_data import MOCK_CAMPAIGN, MOCK_CAMPAIGN_MODEL_IMAGE, MOCK_BUYER, MOCK_ORDER
+from tests.utils.mock_entities import MOCK_CAMPAIGN, MOCK_CAMPAIGN_MODEL_IMAGE, MOCK_ORDER
 from tests.utils.test_json import CAMPAIGN_GET_RESPONSE_JSON, CAMPAIGN_POST_REQUEST_JSON, CAMPAIGN_POST_RESPONSE_JSON, \
-    CAMPAIGN_MODEL_IMAGE_JSON, CAMPAIGN_BUYERS_JSON_RESPONSE
+    CAMPAIGN_MODEL_IMAGE_JSON
 
 app = create_app()
 app.config['TESTING'] = True

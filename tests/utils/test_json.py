@@ -1,4 +1,4 @@
-from tests.utils.mock_data import MOCK_CAMPAIGN_MODEL_IMAGE
+from tests.utils.mock_entities import MOCK_CAMPAIGN_MODEL_IMAGE
 
 PLEDGE_POST_REQUEST_JSON = {
     "buyer_id": 1,

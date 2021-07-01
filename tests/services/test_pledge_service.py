@@ -8,7 +8,7 @@ from my_app.api.domain import PledgePrototype
 from my_app.api.exceptions import CancellationException
 from my_app.api.exceptions.pledge_creation_exception import PledgeCreationException
 from my_app.api.services import PledgeService
-from tests.utils.mock_data import MOCK_PLEDGE, MOCK_CAMPAIGN
+from tests.utils.mock_entities import MOCK_PLEDGE, MOCK_CAMPAIGN
 
 mock_pledge_repository = Mock()
 pledge_service = PledgeService(mock_pledge_repository)

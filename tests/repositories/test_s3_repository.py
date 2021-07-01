@@ -5,7 +5,7 @@ import pytest
 
 from my_app.api.exceptions import ServerException
 from my_app.api.repositories import S3Repository
-from tests.utils.mock_data import MOCK_FILE
+from tests.utils.mock_entities import MOCK_FILE
 
 test_s3_client = MagicMock()
 bucket_name = "bucketName"

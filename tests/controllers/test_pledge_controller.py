@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import patch
 
 from my_app.api import create_app
-from tests.utils.mock_data import MOCK_PLEDGE
+from tests.utils.mock_entities import MOCK_PLEDGE
 from tests.utils.test_json import PLEDGE_POST_REQUEST_JSON
 
 from my_app.api.exceptions import NotFoundException
