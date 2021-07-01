@@ -1,14 +1,13 @@
 from datetime import datetime
-from typing import List
 
 from sqlalchemy import asc
 from sqlalchemy.orm import noload
 
 from my_app.api.domain import Page, Campaign, CampaignModelImagePrototype, CampaignModelImage, CampaignPrototype, \
-    CampaignStatus, Buyer
+    CampaignStatus, Order
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, TechDetailsModel, \
-    PrinterModel, BuyerModel, PledgeModel, AddressModel
+    PrinterModel, BuyerModel, PledgeModel, AddressModel, OrderModel
 from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE
 
 CAMPAIGN_NOT_FOUND = 'Non-existent campaign'
@@ -175,10 +174,30 @@ class CampaignRepository:
 
         return campaign_model_image_model.to_campaign_model_image_entity()
 
-    def get_campaign_buyers(self, campaign_id: int) -> List[Buyer]:
-        campaign = self._get_campaign_model_by_id(campaign_id)
+    def get_campaign_orders(self, campaign_id: int, filters: dict) -> Page[Order]:
+        """
+        Returns paginated orders of a campaign using filters
 
-        return [pledge.buyer.to_buyer_entity() for pledge in campaign.pledges]
+        Parameters
+        ----------
+        campaign_id: int
+            Campaign id reference.
+        filters: dict[str,str]
+            Dict with filters to apply.
+        """
+        query = self.db.session.query(OrderModel) \
+            .filter(OrderModel.campaign_id == campaign_id) \
+            .order_by(asc(OrderModel.id))
+
+        order_models = paginate(query, filters).all()
+        total_records = query.count()
+
+        return Page(
+            page=filters.get("page", DEFAULT_PAGE),
+            page_size=filters.get("page_size", DEFAULT_PAGE_SIZE),
+            total_records=total_records,
+            data=[om.to_order_entity() for om in order_models]
+        )
 
     def _get_campaign_model_by_id(self, campaign_id: int) -> CampaignModel:
         campaign_model = self.db.session.query(CampaignModel) \

@@ -8,7 +8,7 @@ from my_app.api.domain import Campaign, Page, CampaignModelImage, Buyer
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories import CampaignRepository
 from tests.utils.mock_data import MOCK_CAMPAIGN_MODEL, MOCK_FILTERS, MOCK_CAMPAIGN_MODEL_IMAGE_PROTOTYPE, \
-    MOCK_CAMPAIGN_MODEL_IMAGE_MODEL
+    MOCK_CAMPAIGN_MODEL_IMAGE_MODEL, MOCK_ORDER_MODEL
 from tests.utils.test_data import TEST_CAMPAIGN_PROTOTYPE
 
 test_db = MagicMock()
@@ -78,10 +78,13 @@ class TestCampaignRepository(unittest.TestCase):
         with pytest.raises(NotFoundException):
             campaign_repository.delete_campaign_model_image(1)
 
-    def test_get_campaign_buyers_returns_buyer_list(self):
-        test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.return_value = MOCK_CAMPAIGN_MODEL
+    @patch('my_app.api.repositories.campaign_repository.paginate')
+    def test_get_campaign_orders_returns_order_page(self, paginate_mock):
+        paginate_mock.return_value.all.return_value = [MOCK_ORDER_MODEL]
 
-        response = campaign_repository.get_campaign_buyers(1)
+        response = campaign_repository.get_campaign_orders(1, MOCK_FILTERS)
 
-        assert isinstance(response[0], Buyer)
-        test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.assert_called_once()
+        assert isinstance(response, Page)
+        assert response.page == MOCK_FILTERS["page"]
+        assert response.page_size == MOCK_FILTERS["page_size"]
+        paginate_mock.return_value.all.assert_called_once()

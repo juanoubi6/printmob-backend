@@ -6,7 +6,7 @@ from unittest.mock import patch
 from my_app.api import create_app
 from my_app.api.domain import Page
 from my_app.api.exceptions.unprocessable_entity_exception import UnprocessableEntityException
-from tests.utils.mock_data import MOCK_CAMPAIGN, MOCK_CAMPAIGN_MODEL_IMAGE, MOCK_BUYER
+from tests.utils.mock_data import MOCK_CAMPAIGN, MOCK_CAMPAIGN_MODEL_IMAGE, MOCK_BUYER, MOCK_ORDER
 from tests.utils.test_json import CAMPAIGN_GET_RESPONSE_JSON, CAMPAIGN_POST_REQUEST_JSON, CAMPAIGN_POST_RESPONSE_JSON, \
     CAMPAIGN_MODEL_IMAGE_JSON, CAMPAIGN_BUYERS_JSON_RESPONSE
 
@@ -91,9 +91,17 @@ class TestCampaignController(unittest.TestCase):
         mock_campaign_service.delete_campaign_model_image.assert_called_once_with(2)
 
     @patch.object(app.campaign_controller, "campaign_service")
-    def test_get_campaign_buyers_returns_buyers(self, mock_campaign_service):
-        mock_campaign_service.get_campaign_buyers.return_value = [MOCK_BUYER]
+    def test_get_campaign_orders_returns_orders_page(self, mock_campaign_service):
+        mock_campaign_service.get_campaign_orders.return_value = Page(
+            page=1,
+            page_size=10,
+            total_records=100,
+            data=[MOCK_ORDER]
+        )
 
-        res = client.get("/campaigns/1/buyers")
+        res = client.get("/campaigns/1/orders?page=1&page_size=10")
         assert res.status_code == 200
-        assert res.json == CAMPAIGN_BUYERS_JSON_RESPONSE
+        assert res.json["page"] == 1
+        assert res.json["page_size"] == 10
+        assert res.json["total_records"] == 100
+        assert res.json["data"][0]["id"] == MOCK_ORDER.id

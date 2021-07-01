@@ -1,12 +1,11 @@
 import json
 from datetime import datetime
-from typing import List
 
 from flask import request
 
 from my_app.api.controllers.validators import validate_pagination_filters, validate_campaign_prototype, \
     validate_image_upload
-from my_app.api.domain import Page, Campaign, CampaignModelImage, File, Buyer
+from my_app.api.domain import Page, Campaign, CampaignModelImage, File, Order
 from my_app.api.domain.campaign import CampaignPrototype, CampaignStatus
 from my_app.api.domain.tech_detail import TechDetailPrototype
 
@@ -73,7 +72,9 @@ class CampaignController:
 
         return {"status": "ok"}, 200
 
-    def get_campaign_buyers(self, req: request, campaign_id) -> (List[Buyer], int):
-        buyers = self.campaign_service.get_campaign_buyers(campaign_id)
+    def get_campaign_orders(self, req: request, campaign_id) -> (Page[Order], int):
+        filters = req.args
+        validate_pagination_filters(filters)
+        orders_page = self.campaign_service.get_campaign_orders(campaign_id, filters)
 
-        return [buyer.to_json() for buyer in buyers], 200
+        return orders_page.to_json(), 200

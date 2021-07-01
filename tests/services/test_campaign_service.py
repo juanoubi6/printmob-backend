@@ -6,7 +6,7 @@ import pytest
 from my_app.api.domain import Page
 from my_app.api.exceptions.unprocessable_entity_exception import UnprocessableEntityException
 from my_app.api.services import CampaignService
-from tests.utils.mock_data import MOCK_CAMPAIGN, MOCK_CAMPAIGN_MODEL_IMAGE, MOCK_FILE, MOCK_BUYER
+from tests.utils.mock_data import MOCK_CAMPAIGN, MOCK_CAMPAIGN_MODEL_IMAGE, MOCK_FILE, MOCK_BUYER, MOCK_ORDER
 from tests.utils.test_data import TEST_CAMPAIGN_PROTOTYPE
 
 mock_campaign_repository = Mock()
@@ -83,10 +83,11 @@ class TestCampaignService(unittest.TestCase):
         mock_campaign_repository.delete_campaign_model_image.assert_called_once_with(1)
         mock_s3_repository.delete_file.assert_called_once_with(MOCK_CAMPAIGN_MODEL_IMAGE.file_name)
 
-    def test_get_campaign_buyers_returns_buyer_list(self):
-        mock_campaign_repository.get_campaign_buyers.return_value = [MOCK_BUYER]
+    def test_get_campaign_orders_returns_order_page(self):
+        mock_campaign_repository.get_campaign_orders.return_value = Page(1, 2, 3, [MOCK_ORDER])
 
-        buyers = campaign_service.get_campaign_buyers(1)
+        filters = {"filter": "filter"}
+        orders_page = campaign_service.get_campaign_orders(1, filters)
 
-        assert buyers == [MOCK_BUYER]
-        mock_campaign_repository.get_campaign_buyers.assert_called_once_with(1)
+        assert orders_page.page == 1
+        mock_campaign_repository.get_campaign_orders.assert_called_once_with(1,filters)

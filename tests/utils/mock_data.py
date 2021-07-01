@@ -1,9 +1,9 @@
 import datetime
 
 from my_app.api.domain import Campaign, Printer, User, TechDetail, Pledge, CampaignModelImage, \
-    CampaignModelImagePrototype, File, CampaignStatus, Buyer, Address
+    CampaignModelImagePrototype, File, CampaignStatus, Buyer, Address, Order, OrderStatus
 from my_app.api.repositories.models import CampaignModel, TechDetailsModel, PrinterModel, UserModel, PledgeModel, \
-    CampaignModelImageModel, BuyerModel, AddressModel
+    CampaignModelImageModel, BuyerModel, AddressModel, OrderModel
 
 MOCK_CAMPAIGN = Campaign(
     id=1,
@@ -83,7 +83,6 @@ MOCK_ADDRESS_MODEL = AddressModel(
     floor="7",
     apartment="A"
 )
-
 
 MOCK_BUYER_MODEL = BuyerModel(
     id=2,
@@ -205,3 +204,26 @@ MOCK_ADDRESS = Address(
 )
 
 MOCK_BUYER = Buyer(MOCK_USER, MOCK_ADDRESS)
+
+MOCK_ORDER = Order(
+    id=1,
+    campaign_id=MOCK_CAMPAIGN.id,
+    pledge_id=MOCK_PLEDGE.id,
+    buyer=MOCK_BUYER,
+    status=OrderStatus.IN_PROGRESS,
+    mail_company="mail_company",
+    tracking_code="tracking_code",
+    comments="comments"
+)
+
+MOCK_ORDER_MODEL = OrderModel(
+    id=1,
+    campaign_id=MOCK_CAMPAIGN_MODEL.id,
+    pledge_id=MOCK_PLEDGE_MODEL.id,
+    buyer_id=MOCK_BUYER_MODEL.id,
+    status=OrderStatus.IN_PROGRESS.value,
+    mail_company="mail_company",
+    tracking_code="tracking_code",
+    comments="comments",
+    buyer=MOCK_BUYER_MODEL
+)
