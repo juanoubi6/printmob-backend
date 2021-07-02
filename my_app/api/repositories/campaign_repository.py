@@ -8,7 +8,7 @@ from my_app.api.domain import Page, Campaign, CampaignModelImagePrototype, Campa
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, TechDetailsModel, \
     PrinterModel, BuyerModel, PledgeModel, AddressModel, OrderModel
-from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE
+from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, apply_campaign_filters
 
 CAMPAIGN_NOT_FOUND = 'Non-existent campaign'
 CAMPAIGN_MODEL_IMAGE_NOT_FOUND = 'Non-existent campaign model image'
@@ -126,13 +126,12 @@ class CampaignRepository:
         filters: dict[str,str]
             Dict with filters to apply.
         """
-        query = self.db.session.query(CampaignModel) \
-            .filter(CampaignModel.deleted_at == None) \
-            .filter(CampaignModel.status == CampaignStatus.IN_PROGRESS.value) \
-            .options(noload(CampaignModel.tech_detail)) \
-            .order_by(asc(CampaignModel.id))
+        query = self.db.session.query(CampaignModel).filter(CampaignModel.deleted_at == None)
+        query = apply_campaign_filters(query, filters)
+        query = query.options(noload(CampaignModel.tech_detail)).order_by(asc(CampaignModel.id))
 
         campaign_models = paginate(query, filters).all()
+
         total_records = query.count()
 
         return Page(
