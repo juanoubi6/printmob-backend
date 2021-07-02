@@ -4,6 +4,7 @@ from my_app.api import route
 
 campaignBlueprint = Blueprint('campaignController', __name__, url_prefix='/campaigns')
 pledgeBlueprint = Blueprint('pledgeController', __name__, url_prefix='/pledges')
+orderBlueprint = Blueprint('orderController', __name__, url_prefix='/orders')
 healthBlueprint = Blueprint('healthController', __name__, url_prefix='/health')
 
 
@@ -62,3 +63,14 @@ def create_pledge():
 @route(pledgeBlueprint, '/<pledge_id>', methods=['DELETE'])
 def cancel_pledge(pledge_id):
     return current_app.pledge_controller.cancel_pledge(request, int(pledge_id))
+
+
+# Orders
+@route(orderBlueprint, '/status/massive', methods=['PATCH'])
+def update_order_statuses():
+    return current_app.order_controller.update_order_statuses_massively(request)
+
+
+@route(orderBlueprint, '/<order_id>', methods=['PATCH'])
+def update_order_status():
+    return current_app.order_controller.update_order_statuses_massively(request)

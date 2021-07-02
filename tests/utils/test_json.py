@@ -1,5 +1,10 @@
 from tests.utils.mock_entities import MOCK_CAMPAIGN_MODEL_IMAGE
 
+UPDATE_ORDER_STATUSES_MASSIVE_REQUEST_JSON = {
+    "order_ids": [1, 2, 3],
+    "status": "Dispatched"
+}
+
 PLEDGE_POST_REQUEST_JSON = {
     "buyer_id": 1,
     "campaign_id": 1,
