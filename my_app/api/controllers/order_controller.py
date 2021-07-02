@@ -2,7 +2,7 @@ import json
 
 from flask import request
 
-from my_app.api.domain import OrderStatus
+from my_app.api.domain import OrderStatus, OrderPrototype, Order
 from my_app.api.services import OrderService
 
 
@@ -18,3 +18,16 @@ class OrderController:
         self.order_service.update_order_statuses_massively(order_ids, new_status)
 
         return {"status": "ok"}, 200
+
+    def update_order(self, req: request, order_id: int) -> (Order, int):
+        body = json.loads(req.data)
+        prototype = OrderPrototype(
+            status=OrderStatus(body["status"]),
+            mail_company=body["mail_company"],
+            tracking_code=body["tracking_code"],
+            comments=body["comments"]
+        )
+
+        updated_order = self.order_service.update_order(order_id, prototype)
+
+        return updated_order.to_json(), 200

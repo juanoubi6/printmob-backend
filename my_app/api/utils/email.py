@@ -99,3 +99,18 @@ def create_updated_order_status_email_for_buyer(receiver: str, order: Order) -> 
         subject="Una de tus órdenes fue actualizada",
         body=email_body
     )
+
+
+def create_updated_order_email_for_buyer(receiver: str, order_id: int) -> Email:
+    email_body = """
+        La orden número #{order_id} que esta a tu nombre fue actualizada. Si querés saber más datos acerca 
+        del estado de tus órdenes, ingresa en la seccion de 'Tus órdenes'.
+
+        Saludos!
+    """.format(order_id=order_id)
+
+    return Email(
+        to=receiver,
+        subject="Una de tus órdenes fue actualizada",
+        body=email_body
+    )

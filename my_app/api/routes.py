@@ -72,5 +72,5 @@ def update_order_statuses():
 
 
 @route(orderBlueprint, '/<order_id>', methods=['PATCH'])
-def update_order_status():
-    return current_app.order_controller.update_order_statuses_massively(request)
+def update_order(order_id):
+    return current_app.order_controller.update_order(request, int(order_id))
