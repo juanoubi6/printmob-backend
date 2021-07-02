@@ -62,7 +62,7 @@ class PrinterModel(Base):
     __tablename__ = 'printers'
 
     id = Column(Integer, ForeignKey('users.id'), primary_key=True)
-    user = relationship("UserModel", uselist=False, back_populates="printer")
+    user = relationship("UserModel")
 
     def __repr__(self):
         return "<Printer(id='{id}}')>".format(id=self.id)
@@ -84,8 +84,8 @@ class BuyerModel(Base):
     id = Column(Integer, ForeignKey('users.id'), primary_key=True)
     address_id = Column(Integer, ForeignKey('addresses.id'))
 
-    user = relationship("UserModel", uselist=False, back_populates="buyer")
-    address = relationship("AddressModel", uselist=False, back_populates='buyer')
+    user = relationship("UserModel")
+    address = relationship("AddressModel")
 
     def to_buyer_entity(self):
         return Buyer(
@@ -238,8 +238,6 @@ class AddressModel(Base):
     city = Column(String)
     floor = Column(String)
     apartment = Column(String)
-
-    buyer = relationship('BuyerModel', back_populates='address')
 
     def __repr__(self):
         return "<Address(id='{id}}',address='{address}',zip_code='{zip_code}')>" \
