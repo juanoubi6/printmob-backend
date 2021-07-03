@@ -1,4 +1,4 @@
-from tests.utils.mock_data import MOCK_CAMPAIGN_MODEL_IMAGE
+from tests.utils.mock_entities import MOCK_CAMPAIGN_MODEL_IMAGE
 
 PLEDGE_POST_REQUEST_JSON = {
     "buyer_id": 1,
@@ -112,3 +112,26 @@ CAMPAIGN_MODEL_IMAGE_JSON = {
     "campaign_id": MOCK_CAMPAIGN_MODEL_IMAGE.campaign_id,
     "model_picture_url": MOCK_CAMPAIGN_MODEL_IMAGE.model_picture_url
 }
+
+CAMPAIGN_BUYERS_JSON_RESPONSE = [
+    {
+        'address': {
+            'address': 'Calle falsa 123',
+            'apartment': 'A',
+            'city': 'CABA',
+            'floor': '7',
+            'id': 1,
+            'province': 'CABA',
+            'zip_code': 'C1425'
+        },
+        'created_at': 'Sun, 17 May 2020 00:00:00 GMT',
+        'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
+        'deleted_at': None,
+        'email': 'email@email.com',
+        'first_name': 'John',
+        'id': 1,
+        'last_name': 'Doe',
+        'updated_at': 'Sun, 17 May 2020 00:00:00 GMT',
+        'user_name': 'johnDoe5'
+    }
+]

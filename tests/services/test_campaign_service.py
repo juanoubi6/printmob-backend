@@ -6,8 +6,8 @@ import pytest
 from my_app.api.domain import Page
 from my_app.api.exceptions.unprocessable_entity_exception import UnprocessableEntityException
 from my_app.api.services import CampaignService
-from tests.utils.mock_data import MOCK_CAMPAIGN, MOCK_CAMPAIGN_MODEL_IMAGE, MOCK_FILE
-from tests.utils.test_data import TEST_CAMPAIGN_PROTOTYPE
+from tests.utils.mock_entities import MOCK_CAMPAIGN, MOCK_CAMPAIGN_MODEL_IMAGE, MOCK_FILE, MOCK_ORDER, \
+    MOCK_CAMPAIGN_PROTOTYPE
 
 mock_campaign_repository = Mock()
 mock_printer_repository = Mock()
@@ -26,18 +26,18 @@ class TestCampaignService(unittest.TestCase):
         mock_printer_repository.exists_printer.return_value = True
         mock_campaign_repository.create_campaign.return_value = MOCK_CAMPAIGN
 
-        created_campaign = campaign_service.create_campaign(TEST_CAMPAIGN_PROTOTYPE)
+        created_campaign = campaign_service.create_campaign(MOCK_CAMPAIGN_PROTOTYPE)
 
         assert created_campaign == MOCK_CAMPAIGN
-        mock_printer_repository.exists_printer.assert_called_once_with(TEST_CAMPAIGN_PROTOTYPE.printer_id)
-        mock_campaign_repository.create_campaign.assert_called_once_with(TEST_CAMPAIGN_PROTOTYPE)
+        mock_printer_repository.exists_printer.assert_called_once_with(MOCK_CAMPAIGN_PROTOTYPE.printer_id)
+        mock_campaign_repository.create_campaign.assert_called_once_with(MOCK_CAMPAIGN_PROTOTYPE)
 
     def test_does_not_create_campaign_if_printer_does_not_exists(self):
         mock_printer_repository.exists_printer.return_value = False
 
         with pytest.raises(UnprocessableEntityException):
-            campaign_service.create_campaign(TEST_CAMPAIGN_PROTOTYPE)
-            mock_printer_repository.exists_printer.assert_called_once_with(TEST_CAMPAIGN_PROTOTYPE.printer_id)
+            campaign_service.create_campaign(MOCK_CAMPAIGN_PROTOTYPE)
+            mock_printer_repository.exists_printer.assert_called_once_with(MOCK_CAMPAIGN_PROTOTYPE.printer_id)
             mock_campaign_repository.create_campaign.assert_not_called()
 
     def test_get_campaigns_returns_campaigns_page(self):
@@ -82,3 +82,12 @@ class TestCampaignService(unittest.TestCase):
 
         mock_campaign_repository.delete_campaign_model_image.assert_called_once_with(1)
         mock_s3_repository.delete_file.assert_called_once_with(MOCK_CAMPAIGN_MODEL_IMAGE.file_name)
+
+    def test_get_campaign_orders_returns_order_page(self):
+        mock_campaign_repository.get_campaign_orders.return_value = Page(1, 2, 3, [MOCK_ORDER])
+
+        filters = {"filter": "filter"}
+        orders_page = campaign_service.get_campaign_orders(1, filters)
+
+        assert orders_page.page == 1
+        mock_campaign_repository.get_campaign_orders.assert_called_once_with(1,filters)

@@ -3,11 +3,12 @@ from datetime import datetime
 from sqlalchemy import asc
 from sqlalchemy.orm import noload
 
-from my_app.api.domain import Page, Campaign, CampaignModelImagePrototype, CampaignModelImage, CampaignPrototype, CampaignStatus
+from my_app.api.domain import Page, Campaign, CampaignModelImagePrototype, CampaignModelImage, CampaignPrototype, \
+    CampaignStatus, Order
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, TechDetailsModel, \
-    PrinterModel, BuyerModel, PledgeModel
-from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE
+    PrinterModel, BuyerModel, PledgeModel, AddressModel, OrderModel
+from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, apply_campaign_filters
 
 CAMPAIGN_NOT_FOUND = 'Non-existent campaign'
 CAMPAIGN_MODEL_IMAGE_NOT_FOUND = 'Non-existent campaign model image'
@@ -38,7 +39,18 @@ class CampaignRepository:
         self.db.session.add(printer_model)
         self.db.session.commit()
 
-        buyer_model = BuyerModel(id=buyer_user_model.id)
+        address_model = AddressModel(
+            address="Calle falsa 123",
+            zip_code="C1425",
+            province="CABA",
+            city="CABA",
+            floor="7",
+            apartment="A"
+        )
+        self.db.session.add(address_model)
+        self.db.session.commit()
+
+        buyer_model = BuyerModel(id=buyer_user_model.id, address_id=address_model.id)
         self.db.session.add(buyer_model)
         self.db.session.commit()
 
@@ -114,13 +126,12 @@ class CampaignRepository:
         filters: dict[str,str]
             Dict with filters to apply.
         """
-        query = self.db.session.query(CampaignModel) \
-            .filter(CampaignModel.deleted_at == None) \
-            .filter(CampaignModel.status == CampaignStatus.IN_PROGRESS.value) \
-            .options(noload(CampaignModel.tech_detail)) \
-            .order_by(asc(CampaignModel.id))
+        query = self.db.session.query(CampaignModel).filter(CampaignModel.deleted_at == None)
+        query = apply_campaign_filters(query, filters)
+        query = query.options(noload(CampaignModel.tech_detail)).order_by(asc(CampaignModel.id))
 
         campaign_models = paginate(query, filters).all()
+
         total_records = query.count()
 
         return Page(
@@ -154,7 +165,7 @@ class CampaignRepository:
         campaign_model_image_model = self.db.session.query(CampaignModelImageModel) \
             .filter_by(id=campaign_model_image_id) \
             .first()
-        if campaign_model_image_model == None:
+        if campaign_model_image_model is None:
             raise NotFoundException(CAMPAIGN_MODEL_IMAGE_NOT_FOUND)
 
         self.db.session.delete(campaign_model_image_model)
@@ -162,13 +173,38 @@ class CampaignRepository:
 
         return campaign_model_image_model.to_campaign_model_image_entity()
 
+    def get_campaign_orders(self, campaign_id: int, filters: dict) -> Page[Order]:
+        """
+        Returns paginated orders of a campaign using filters
+
+        Parameters
+        ----------
+        campaign_id: int
+            Campaign id reference.
+        filters: dict[str,str]
+            Dict with filters to apply.
+        """
+        query = self.db.session.query(OrderModel) \
+            .filter(OrderModel.campaign_id == campaign_id) \
+            .order_by(asc(OrderModel.id))
+
+        order_models = paginate(query, filters).all()
+        total_records = query.count()
+
+        return Page(
+            page=filters.get("page", DEFAULT_PAGE),
+            page_size=filters.get("page_size", DEFAULT_PAGE_SIZE),
+            total_records=total_records,
+            data=[om.to_order_entity() for om in order_models]
+        )
+
     def _get_campaign_model_by_id(self, campaign_id: int) -> CampaignModel:
         campaign_model = self.db.session.query(CampaignModel) \
             .filter_by(id=campaign_id) \
             .filter(CampaignModel.deleted_at == None) \
             .first()
 
-        if campaign_model == None:
+        if campaign_model is None:
             raise NotFoundException(CAMPAIGN_NOT_FOUND)
 
         return campaign_model

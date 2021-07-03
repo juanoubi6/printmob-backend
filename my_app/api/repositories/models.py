@@ -1,10 +1,10 @@
 import datetime
 
-import sqlalchemy
-from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey, orm, func
-from sqlalchemy.orm import declarative_base, relationship, backref
+from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey
+from sqlalchemy.orm import declarative_base, relationship
 
-from my_app.api.domain import Pledge, TechDetail, User, Campaign, CampaignModelImage, Printer, CampaignStatus
+from my_app.api.domain import Pledge, TechDetail, User, Campaign, CampaignModelImage, Printer, CampaignStatus, Buyer, \
+    Address, Order, OrderStatus
 
 Base = declarative_base()
 
@@ -62,7 +62,7 @@ class PrinterModel(Base):
     __tablename__ = 'printers'
 
     id = Column(Integer, ForeignKey('users.id'), primary_key=True)
-    user = relationship("UserModel", uselist=False, back_populates="printer")
+    user = relationship("UserModel")
 
     def __repr__(self):
         return "<Printer(id='{id}}')>".format(id=self.id)
@@ -82,7 +82,23 @@ class BuyerModel(Base):
     __tablename__ = 'buyers'
 
     id = Column(Integer, ForeignKey('users.id'), primary_key=True)
-    user = relationship("UserModel", uselist=False, back_populates="buyer")
+    address_id = Column(Integer, ForeignKey('addresses.id'))
+
+    user = relationship("UserModel")
+    address = relationship("AddressModel")
+
+    def to_buyer_entity(self):
+        return Buyer(
+            user=User(
+                id=self.id,
+                first_name=self.user.first_name,
+                last_name=self.user.last_name,
+                user_name=self.user.user_name,
+                date_of_birth=self.user.date_of_birth,
+                email=self.user.email
+            ),
+            address=self.address.to_address_entity()
+        )
 
     def __repr__(self):
         return "<Buyer(id='{id}}')>".format(id=self.id)
@@ -210,3 +226,61 @@ class FailedToRefundPledgeModel(Base):
     def __repr__(self):
         return "<FailedToRefundPledgeModel(id='{id}}',pledge_id='{pledge_id}', error='{error}')>" \
             .format(id=self.id, pledge_id=self.pledge_id, error=self.error)
+
+
+class AddressModel(Base):
+    __tablename__ = 'addresses'
+
+    id = Column(Integer, primary_key=True)
+    address = Column(String)
+    zip_code = Column(String)
+    province = Column(String)
+    city = Column(String)
+    floor = Column(String)
+    apartment = Column(String)
+
+    def __repr__(self):
+        return "<Address(id='{id}}',address='{address}',zip_code='{zip_code}')>" \
+            .format(id=self.id, address=self.address, zip_code=self.zip_code)
+
+    def to_address_entity(self):
+        return Address(
+            id=self.id,
+            address=self.address,
+            zip_code=self.zip_code,
+            province=self.province,
+            city=self.city,
+            floor=self.floor,
+            apartment=self.apartment
+        )
+
+
+class OrderModel(Base):
+    __tablename__ = 'orders'
+
+    id = Column(Integer, primary_key=True)
+    campaign_id = Column(Integer, ForeignKey('campaign.id'))
+    pledge_id = Column(Integer, ForeignKey('pledges.id'))
+    buyer_id = Column(Integer, ForeignKey('buyers.id'))
+    status = Column(String)
+    mail_company = Column(String, nullable=True)
+    tracking_code = Column(String, nullable=True)
+    comments = Column(String, nullable=True)
+
+    buyer = relationship("BuyerModel")
+
+    def __repr__(self):
+        return "<Order(id='{id}}',campaign_id='{campaign_id}',buyer_id='{buyer_id}')>" \
+            .format(id=self.id, campaign_id=self.campaign_id, buyer_id=self.buyer_id)
+
+    def to_order_entity(self):
+        return Order(
+            id=self.id,
+            campaign_id=self.campaign_id,
+            pledge_id=self.pledge_id,
+            buyer=self.buyer.to_buyer_entity(),
+            status=OrderStatus(self.status),
+            mail_company=self.mail_company,
+            tracking_code=self.tracking_code,
+            comments=self.comments,
+        )

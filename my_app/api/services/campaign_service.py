@@ -1,6 +1,6 @@
 import uuid
 
-from my_app.api.domain import Page, Campaign, CampaignModelImage, CampaignModelImagePrototype, File
+from my_app.api.domain import Page, Campaign, CampaignModelImage, CampaignModelImagePrototype, File, Order
 from my_app.api.domain.campaign import CampaignPrototype
 from my_app.api.exceptions.unprocessable_entity_exception import UnprocessableEntityException
 
@@ -49,6 +49,9 @@ class CampaignService:
     def delete_campaign_model_image(self, campaign_model_image_id: int):
         deleted_campaign_model_image = self.campaign_repository.delete_campaign_model_image(campaign_model_image_id)
         self.s3_repository.delete_file(deleted_campaign_model_image.file_name)
+
+    def get_campaign_orders(self, campaign_id: int, filters: dict) -> Page[Order]:
+        return self.campaign_repository.get_campaign_orders(campaign_id, filters)
 
     def _generate_campaign_model_image_name(self) -> str:
         return "campaign_model_images/{}".format(uuid.uuid4())

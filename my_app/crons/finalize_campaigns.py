@@ -5,9 +5,9 @@ from concurrent.futures import Executor
 from sqlalchemy import func
 from sqlalchemy.orm import sessionmaker, noload
 
-from my_app.api.domain import CampaignStatus
+from my_app.api.domain import CampaignStatus, OrderStatus
 from my_app.api.repositories import EmailRepository
-from my_app.api.repositories.models import CampaignModel, FailedToRefundPledgeModel
+from my_app.api.repositories.models import CampaignModel, FailedToRefundPledgeModel, OrderModel
 from my_app.api.utils.email import create_completed_campaign_email_for_client, \
     create_unsatisfied_campaign_email_for_client, create_completed_campaign_email_for_printer, \
     create_unsatisfied_campaign_email_for_printer
@@ -42,6 +42,20 @@ def finalize_campaign(
                     if len(campaign_to_finish.pledges) >= campaign_to_finish.min_pledgers:
                         # Change campaign status to COMPLETED
                         campaign_to_finish.status = CampaignStatus.COMPLETED.value
+
+                        # For each pledge...
+                        for successful_pledge in campaign_to_finish.pledges:
+
+                            # Create an order
+                            session.add(
+                                OrderModel(
+                                    campaign_id=campaign_to_finish.id,
+                                    pledge_id=successful_pledge.id,
+                                    buyer_id=successful_pledge.buyer.id,
+                                    status=OrderStatus.IN_PROGRESS.value
+                                )
+                            )
+
                         session.commit()
 
                         # Create a complete campaign email to send to each pledger

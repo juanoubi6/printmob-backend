@@ -47,6 +47,13 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
         assert successful_campaign.status == CampaignStatus.COMPLETED.value
         assert unsuccessful_campaign.status == CampaignStatus.UNSATISFIED.value
 
+        # Assert order were created
+        assert session_mock.add.call_count == 2
+        assert session_mock.add.mock_calls[0].args[0].campaign_id == successful_campaign.id
+        assert session_mock.add.mock_calls[0].args[0].buyer_id == successful_campaign.pledges[0].buyer_id
+        assert session_mock.add.mock_calls[1].args[0].campaign_id == successful_campaign.id
+        assert session_mock.add.mock_calls[1].args[0].buyer_id == successful_campaign.pledges[1].buyer_id
+
         # Assert unsuccessful campaign pledges were deleted
         assert unsuccessful_campaign.pledges[0].deleted_at is not None
         assert unsuccessful_campaign.pledges[1].deleted_at is not None
@@ -135,7 +142,7 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
                     id=1,
                     campaign_id=1,
                     pledge_price=10,
-                    buyer_id=1,
+                    buyer_id=2,
                     buyer=BuyerModel(
                         id=2,
                         user=UserModel(
@@ -156,7 +163,7 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
                     id=2,
                     campaign_id=1,
                     pledge_price=10,
-                    buyer_id=1,
+                    buyer_id=3,
                     buyer=BuyerModel(
                         id=3,
                         user=UserModel(
@@ -196,7 +203,7 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
                     id=3,
                     campaign_id=2,
                     pledge_price=20,
-                    buyer_id=1,
+                    buyer_id=4,
                     buyer=BuyerModel(
                         id=4,
                         user=UserModel(
@@ -217,7 +224,7 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
                     id=4,
                     campaign_id=2,
                     pledge_price=20,
-                    buyer_id=1,
+                    buyer_id=5,
                     buyer=BuyerModel(
                         id=5,
                         user=UserModel(

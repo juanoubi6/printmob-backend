@@ -5,7 +5,7 @@ from flask import request
 
 from my_app.api.controllers.validators import validate_pagination_filters, validate_campaign_prototype, \
     validate_image_upload
-from my_app.api.domain import Page, Campaign, CampaignModelImage, File
+from my_app.api.domain import Page, Campaign, CampaignModelImage, File, Order
 from my_app.api.domain.campaign import CampaignPrototype, CampaignStatus
 from my_app.api.domain.tech_detail import TechDetailPrototype
 
@@ -71,3 +71,10 @@ class CampaignController:
         self.campaign_service.delete_campaign_model_image(campaign_model_image_id)
 
         return {"status": "ok"}, 200
+
+    def get_campaign_orders(self, req: request, campaign_id) -> (Page[Order], int):
+        filters = req.args
+        validate_pagination_filters(filters)
+        orders_page = self.campaign_service.get_campaign_orders(campaign_id, filters)
+
+        return orders_page.to_json(), 200
