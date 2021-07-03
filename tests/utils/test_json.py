@@ -1,5 +1,17 @@
 from tests.utils.mock_entities import MOCK_CAMPAIGN_MODEL_IMAGE
 
+GET_PLEDGES_RESPONSE_JSON = [
+    {
+        'buyer_id': 1,
+        'campaign_id': 1,
+        'created_at': 'Sun, 17 May 2020 00:00:00 GMT',
+        'deleted_at': None,
+        'id': 1,
+        'pledge_price': 350.0,
+        'updated_at': 'Sun, 17 May 2020 00:00:00 GMT'
+    }
+]
+
 UPDATE_ORDER_RESPONSE_JSON = {
     'buyer': {
         'address': {

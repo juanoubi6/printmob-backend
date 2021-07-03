@@ -1,6 +1,6 @@
 from sqlalchemy import func
 
-from my_app.api.repositories.models import CampaignModel
+from my_app.api.repositories.models import CampaignModel, PledgeModel
 
 DEFAULT_PAGE = 1
 DEFAULT_PAGE_SIZE = 10
@@ -57,5 +57,34 @@ def apply_campaign_filters(query, filters: dict):
     printer_id = filters.get("printer_id", None)
     if printer_id is not None:
         query = query.filter(CampaignModel.printer_id == printer_id)
+
+    return query
+
+
+def apply_pledge_filters(query, filters: dict):
+    """
+    Applies filters to query
+
+    Parameters
+    ----------
+    query: BaseQuery
+        Query to paginate
+    filters: dict[str,str]
+        Dict with filters to apply.
+
+    Returns
+    ----------
+    query: BaseQuery
+        Query with limit and offset
+    """
+    # Buyer filter
+    buyer_id = filters.get("buyer_id", None)
+    if buyer_id is not None:
+        query = query.filter(PledgeModel.buyer_id == int(buyer_id))
+
+    # Campaign filter
+    campaign_id = filters.get("campaign_id", None)
+    if campaign_id is not None:
+        query = query.filter(PledgeModel.campaign_id == int(campaign_id))
 
     return query

@@ -65,6 +65,11 @@ def cancel_pledge(pledge_id):
     return current_app.pledge_controller.cancel_pledge(request, int(pledge_id))
 
 
+@route(pledgeBlueprint, '/', methods=['GET'])
+def get_pledges():
+    return current_app.pledge_controller.get_pledges(request)
+
+
 # Orders
 @route(orderBlueprint, '/status/massive', methods=['PATCH'])
 def update_order_statuses():
