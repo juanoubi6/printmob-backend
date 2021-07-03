@@ -8,3 +8,5 @@ DB_CONFIG = {
 }
 
 AWS_BUCKET_NAME = os.environ["AWS_BUCKET_NAME"]
+
+SENDER_EMAIL = os.environ["SENDER_EMAIL"]

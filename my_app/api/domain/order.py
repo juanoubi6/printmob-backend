@@ -38,3 +38,17 @@ class Order:
             "tracking_code": self.tracking_code,
             "comments": self.comments
         }
+
+
+class OrderPrototype:
+    def __init__(
+            self,
+            status: OrderStatus,
+            mail_company: str = None,
+            tracking_code: str = None,
+            comments: str = None
+    ):
+        self.status = status
+        self.mail_company = mail_company
+        self.tracking_code = tracking_code
+        self.comments = comments

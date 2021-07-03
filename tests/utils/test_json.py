@@ -1,5 +1,45 @@
 from tests.utils.mock_entities import MOCK_CAMPAIGN_MODEL_IMAGE
 
+UPDATE_ORDER_RESPONSE_JSON = {
+    'buyer': {
+        'address': {
+            'address': 'Calle falsa 123',
+            'apartment': 'A',
+            'city': 'CABA',
+            'floor': '7',
+            'id': 1,
+            'province': 'CABA',
+            'zip_code': 'C1425'
+        },
+        'created_at': 'Sun, 17 May 2020 00:00:00 GMT',
+        'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
+        'deleted_at': None,
+        'email': 'email@email.com',
+        'first_name': 'John',
+        'id': 1,
+        'last_name': 'Doe',
+        'updated_at': 'Sun, 17 May 2020 00:00:00 GMT',
+        'user_name': 'johnDoe5'
+    },
+    'comments': 'comments',
+    'id': 1,
+    'mail_company': 'mail_company',
+    'status': 'In progress',
+    'tracking_code': 'tracking_code'
+}
+
+UPDATE_ORDER_REQUEST_JSON = {
+    "status": "Dispatched",
+    "mail_company": "OCA",
+    "tracking_code": "1234",
+    "comments": "Comment"
+}
+
+UPDATE_ORDER_STATUSES_MASSIVE_REQUEST_JSON = {
+    "order_ids": [1, 2, 3],
+    "status": "Dispatched"
+}
+
 PLEDGE_POST_REQUEST_JSON = {
     "buyer_id": 1,
     "campaign_id": 1,
