@@ -5,6 +5,7 @@ from my_app.api import route
 campaignBlueprint = Blueprint('campaignController', __name__, url_prefix='/campaigns')
 pledgeBlueprint = Blueprint('pledgeController', __name__, url_prefix='/pledges')
 orderBlueprint = Blueprint('orderController', __name__, url_prefix='/orders')
+authBlueprint = Blueprint('authController', __name__, url_prefix='/auth')
 healthBlueprint = Blueprint('healthController', __name__, url_prefix='/health')
 
 
@@ -79,3 +80,9 @@ def update_order_statuses():
 @route(orderBlueprint, '/<order_id>', methods=['PATCH'])
 def update_order(order_id):
     return current_app.order_controller.update_order(request, int(order_id))
+
+
+# Auth
+@route(authBlueprint, '/login', methods=['POST'])
+def login():
+    return current_app.auth_controller.login(request)

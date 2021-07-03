@@ -1,4 +1,11 @@
 import datetime
+import enum
+
+
+class UserType(enum.Enum):
+    PRINTER = "Printer"
+    BUYER = "Buyer"
+    DESIGNER = "Designer"
 
 
 class User:

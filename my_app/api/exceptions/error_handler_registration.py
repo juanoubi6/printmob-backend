@@ -1,5 +1,5 @@
 from my_app.api.exceptions.not_found_exception import NotFoundException
-from my_app.api.exceptions.base import BusinessException, ServerException
+from my_app.api.exceptions.base import BusinessException, ServerException, AuthException
 from my_app.api.exceptions.unprocessable_entity_exception import UnprocessableEntityException
 
 
@@ -7,6 +7,7 @@ def register_error_handlers(app):
     app.register_error_handler(NotFoundException, handle_not_found_errors)
     app.register_error_handler(UnprocessableEntityException, handle_unprocessable_entity_errors)
     app.register_error_handler(BusinessException, handle_business_errors)
+    app.register_error_handler(AuthException, handle_auth_errors)
     app.register_error_handler(ServerException, handle_server_errors)
     app.register_error_handler(Exception, handle_unhandled_errors)
 
@@ -30,6 +31,13 @@ def handle_business_errors(error: BusinessException):
                'error:': 'Business error',
                'message': error.message
            }, 400
+
+
+def handle_auth_errors(error: BusinessException):
+    return {
+               'error:': 'Authentication error',
+               'message': error.message
+           }, 401
 
 
 def handle_server_errors(error: ServerException):

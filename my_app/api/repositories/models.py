@@ -44,7 +44,7 @@ class CampaignModel(Base):
             description=self.description,
             campaign_picture_url=self.campaign_picture_url,
             campaign_model_images=[ci.to_campaign_model_image_entity() for ci in self.images],
-            printer=Printer(self.printer.user.to_user_entity()) if self.printer is not None else None,
+            printer=self.printer.to_printer_entity() if self.printer is not None else None,
             pledge_price=float(self.pledge_price),
             end_date=self.end_date,
             min_pledgers=self.min_pledgers,
@@ -68,14 +68,16 @@ class PrinterModel(Base):
         return "<Printer(id='{id}}')>".format(id=self.id)
 
     def to_printer_entity(self):
-        return Printer(User(
-            id=self.id,
-            first_name=self.user.first_name,
-            last_name=self.user.last_name,
-            user_name=self.user.user_name,
-            date_of_birth=self.user.date_of_birth,
-            email=self.user.email
-        ))
+        return Printer(
+            user=User(
+                id=self.id,
+                first_name=self.user.first_name,
+                last_name=self.user.last_name,
+                user_name=self.user.user_name,
+                date_of_birth=self.user.date_of_birth,
+                email=self.user.email
+            )
+        )
 
 
 class BuyerModel(Base):
@@ -95,7 +97,10 @@ class BuyerModel(Base):
                 last_name=self.user.last_name,
                 user_name=self.user.user_name,
                 date_of_birth=self.user.date_of_birth,
-                email=self.user.email
+                email=self.user.email,
+                created_at=self.user.created_at,
+                updated_at=self.user.updated_at,
+                deleted_at=self.user.deleted_at
             ),
             address=self.address.to_address_entity()
         )
@@ -116,6 +121,7 @@ class UserModel(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow)
     deleted_at = Column(DateTime)
+    type = Column(String)
 
     printer = relationship("PrinterModel", back_populates="user")
     buyer = relationship("BuyerModel", back_populates="user")
