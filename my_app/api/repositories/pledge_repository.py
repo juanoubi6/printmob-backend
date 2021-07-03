@@ -1,9 +1,14 @@
 import datetime
+from typing import List
+
+from sqlalchemy import asc
+from sqlalchemy.orm import noload
 
 from my_app.api.domain import PledgePrototype, Pledge, Campaign, CampaignStatus
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories import CampaignRepository
 from my_app.api.repositories.models import PledgeModel, CampaignModel
+from my_app.api.repositories.utils import apply_pledge_filters
 
 PLEDGE_NOT_FOUND = "Pledge could not be found"
 PLEDGE_CAMPAIGN_NOT_FOUND = "Pledge's campaign could not be found"
@@ -14,6 +19,23 @@ class PledgeRepository:
     def __init__(self, db, campaign_repository: CampaignRepository):
         self.db = db
         self._campaign_repository = campaign_repository
+
+    def get_pledges(self, filters: dict) -> List[Pledge]:
+        """
+        Returns list of pledges that match the provided filters
+
+        Parameters
+        ----------
+        filters: dict[str,str]
+            Dict with filters to apply.
+        """
+        query = self.db.session.query(PledgeModel).filter(PledgeModel.deleted_at == None)
+        query = apply_pledge_filters(query, filters)
+        query = query.options(noload(PledgeModel.buyer)).order_by(asc(PledgeModel.id))
+
+        pledge_models = query.all()
+
+        return [pledge_model.to_pledge_entity() for pledge_model in pledge_models]
 
     def create_pledge(self, prototype: PledgePrototype, finalize_campaign: bool = False) -> Pledge:
         # TODO for mercadopago: we will need to add MercadopagoRepository here

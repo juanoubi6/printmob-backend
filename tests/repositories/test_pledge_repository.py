@@ -118,3 +118,14 @@ class TestPledgeRepository(unittest.TestCase):
 
         with pytest.raises(NotFoundException):
             pledge_repository.delete_pledge(1)
+
+    def test_get_pledges_returns_pledge_list(self):
+        # The 2 filter mocks correspond to the deleted_at filter and campaign_id filter
+        test_db.session.query.return_value.filter.return_value.filter.return_value.options.return_value.order_by.return_value.all.return_value = [
+            MOCK_PLEDGE_MODEL
+        ]
+
+        response = pledge_repository.get_pledges({"campaign_id": 1})
+
+        assert len(response) == 1
+        assert isinstance(response[0], Pledge)

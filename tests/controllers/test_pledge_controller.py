@@ -3,11 +3,10 @@ import unittest
 from unittest.mock import patch
 
 from my_app.api import create_app
-from tests.utils.mock_entities import MOCK_PLEDGE
-from tests.utils.test_json import PLEDGE_POST_REQUEST_JSON
-
 from my_app.api.exceptions import NotFoundException
 from my_app.api.exceptions.pledge_creation_exception import PledgeCreationException
+from tests.utils.mock_entities import MOCK_PLEDGE
+from tests.utils.test_json import PLEDGE_POST_REQUEST_JSON, GET_PLEDGES_RESPONSE_JSON
 
 app = create_app()
 app.config['TESTING'] = True
@@ -49,3 +48,17 @@ class TestPledgeController(unittest.TestCase):
 
         assert res.status_code == 200
         mock_pledge_service.cancel_pledge.assert_called_once_with(1)
+
+    @patch.object(app.pledge_controller, "pledge_service")
+    def test_get_pledges_returns_200_on_success(self, mock_pledge_service):
+        mock_pledge_service.get_pledges.return_value = [MOCK_PLEDGE]
+
+        res = client.get("/pledges?buyer_id=1&campaign_id=2")
+
+        assert res.status_code == 200
+        assert res.json == GET_PLEDGES_RESPONSE_JSON
+        mock_pledge_service.get_pledges.assert_called_once()
+
+        called_filters = mock_pledge_service.get_pledges.mock_calls[0][1][0]
+        assert "campaign_id" in called_filters
+        assert "buyer_id" in called_filters

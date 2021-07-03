@@ -11,13 +11,15 @@ from my_app.api.services import PledgeService
 from tests.utils.mock_entities import MOCK_PLEDGE, MOCK_CAMPAIGN
 
 mock_pledge_repository = Mock()
-pledge_service = PledgeService(mock_pledge_repository)
+mock_campaign_repository = Mock()
+pledge_service = PledgeService(mock_pledge_repository, mock_campaign_repository)
 
 
 class TestPledgeService(unittest.TestCase):
 
     def setUp(self):
         mock_pledge_repository.reset_mock()
+        mock_campaign_repository.reset_mock()
 
     def test_create_pledge_returns_created_pledge_when_campaign_is_not_completed(self):
         uncompleted_campaign = copy.deepcopy(MOCK_CAMPAIGN)
@@ -45,7 +47,7 @@ class TestPledgeService(unittest.TestCase):
         uncompleted_campaign.max_pledgers = None
         uncompleted_campaign.current_pledgers = 50
 
-        mock_pledge_repository.get_pledge_campaign.return_value = uncompleted_campaign
+        mock_campaign_repository.get_campaign_detail.return_value = uncompleted_campaign
         mock_pledge_repository.create_pledge.return_value = MOCK_PLEDGE
 
         created_pledge = pledge_service.create_pledge(
@@ -65,7 +67,7 @@ class TestPledgeService(unittest.TestCase):
         completed_campaign.max_pledgers = 120
         completed_campaign.current_pledgers = 120
 
-        mock_pledge_repository.get_pledge_campaign.return_value = completed_campaign
+        mock_campaign_repository.get_campaign_detail.return_value = completed_campaign
 
         with pytest.raises(PledgeCreationException):
             pledge_service.create_pledge(
@@ -100,3 +102,11 @@ class TestPledgeService(unittest.TestCase):
 
         mock_pledge_repository.get_pledge_campaign.assert_called_once()
         mock_pledge_repository.delete_pledge.assert_not_called()
+
+    def test_get_pledges_return_pledge_list(self):
+        mock_pledge_repository.get_pledges.return_value = [MOCK_PLEDGE]
+
+        pledges = pledge_service.get_pledges({"campaign_id": 1})
+
+        assert pledges == [MOCK_PLEDGE]
+        mock_pledge_repository.get_pledges.assert_called_once_with({"campaign_id": 1})

@@ -1,8 +1,9 @@
 import json
+from typing import List
 
 from flask import request
 
-from my_app.api.domain import PledgePrototype
+from my_app.api.domain import PledgePrototype, Pledge
 
 
 class PledgeController:
@@ -24,3 +25,9 @@ class PledgeController:
         self.pledge_service.cancel_pledge(pledge_id)
 
         return {"status": "ok"}, 200
+
+    def get_pledges(self, req: request) -> (List[Pledge], int):
+        filters = req.args
+        pledges = self.pledge_service.get_pledges(filters)
+
+        return [pledge.to_json() for pledge in pledges], 200
