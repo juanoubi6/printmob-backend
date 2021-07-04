@@ -18,3 +18,5 @@ class TokenManager:
             return jwt.decode(token, self._secret_key, algorithms="HS256")
         except jwt.ExpiredSignatureError:
             raise AuthException("Authorization token expired")
+        except Exception as exc:
+            raise AuthException("There is a problem with the authorization token: {}".format(str(exc)))
