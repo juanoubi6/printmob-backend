@@ -1,3 +1,4 @@
+import http
 import logging
 import time
 
@@ -63,7 +64,7 @@ class GoogleRepository:
     def _fallback_token_validation(self, token) -> dict:
         response = requests.get(self.google_fallback_url + "?id_token={}".format(token))
 
-        if response.status_code != 200:
-            raise AuthException("Invalid token. Error: {}".format(response.json()["error_description"]))
+        if response.status_code != http.HTTPStatus.OK:
+            raise GoogleValidationException("Invalid token. Error: {}".format(response.json()["error_description"]))
 
         return response.json()
