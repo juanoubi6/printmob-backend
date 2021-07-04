@@ -5,8 +5,8 @@ from unittest.mock import patch
 from my_app.api import create_app
 from my_app.api.exceptions import NotFoundException
 from my_app.api.exceptions.pledge_creation_exception import PledgeCreationException
-from tests.utils.mock_entities import MOCK_PLEDGE
-from tests.utils.test_json import PLEDGE_POST_REQUEST_JSON, GET_PLEDGES_RESPONSE_JSON
+from tests.test_utils.mock_entities import MOCK_PLEDGE
+from tests.test_utils.test_json import PLEDGE_POST_REQUEST_JSON, GET_PLEDGES_RESPONSE_JSON
 
 app = create_app()
 app.config['TESTING'] = True

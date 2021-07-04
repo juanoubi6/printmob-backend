@@ -46,3 +46,10 @@ class User:
             "updated_at": self.updated_at,
             "deleted_at": self.deleted_at
         }
+
+    def identity_data(self):
+        return {
+            "id": self.id,
+            "email": self.email,
+            "user_type": self.user_type
+        }

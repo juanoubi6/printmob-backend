@@ -1,4 +1,4 @@
-from tests.utils.mock_entities import MOCK_CAMPAIGN_MODEL_IMAGE
+from tests.test_utils.mock_entities import MOCK_CAMPAIGN_MODEL_IMAGE
 
 GET_PLEDGES_RESPONSE_JSON = [
     {

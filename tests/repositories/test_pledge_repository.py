@@ -6,7 +6,7 @@ import pytest
 from my_app.api.domain import PledgePrototype, Pledge, Campaign, CampaignStatus
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories import PledgeRepository
-from tests.utils.mock_models import MOCK_CAMPAIGN_MODEL, MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED, \
+from tests.test_utils.mock_models import MOCK_CAMPAIGN_MODEL, MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED, \
     MOCK_PLEDGE_MODEL
 
 test_db = MagicMock()

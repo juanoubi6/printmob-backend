@@ -7,7 +7,7 @@ import pytest
 from my_app.api.domain import OrderStatus, Order, OrderPrototype, Printer, Buyer, User
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories import OrderRepository, UserRepository
-from tests.utils.mock_models import MOCK_ORDER_MODEL, MOCK_USER_PRINTER_MODEL, MOCK_PRINTER_MODEL, \
+from tests.test_utils.mock_models import MOCK_ORDER_MODEL, MOCK_USER_PRINTER_MODEL, MOCK_PRINTER_MODEL, \
     MOCK_USER_BUYER_MODEL, MOCK_BUYER_MODEL
 
 test_db = MagicMock()

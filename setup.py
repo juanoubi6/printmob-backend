@@ -24,6 +24,7 @@ setup(
         "schedule==1.1.0",
         "google-auth==1.32.1",
         "requests==2.25.1",
-        "cachecontrol==0.12.6"
+        "cachecontrol==0.12.6",
+        "PyJWT==2.1.0"
     ],
 )

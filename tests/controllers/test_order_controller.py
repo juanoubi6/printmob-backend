@@ -3,8 +3,8 @@ import unittest
 from unittest.mock import patch
 
 from my_app.api import create_app
-from tests.utils.mock_entities import MOCK_ORDER
-from tests.utils.test_json import UPDATE_ORDER_STATUSES_MASSIVE_REQUEST_JSON, UPDATE_ORDER_REQUEST_JSON, \
+from tests.test_utils.mock_entities import MOCK_ORDER
+from tests.test_utils.test_json import UPDATE_ORDER_STATUSES_MASSIVE_REQUEST_JSON, UPDATE_ORDER_REQUEST_JSON, \
     UPDATE_ORDER_RESPONSE_JSON
 
 app = create_app()
