@@ -35,16 +35,12 @@ class User:
 
     def to_json(self):
         return {
-            "id": self.id,
             "first_name": self.first_name,
             "last_name": self.last_name,
             "user_name": self.user_name,
             "date_of_birth": self.date_of_birth,
             "email": self.email,
             "user_type": self.user_type.value,
-            "created_at": self.created_at,
-            "updated_at": self.updated_at,
-            "deleted_at": self.deleted_at
         }
 
     def identity_data(self):

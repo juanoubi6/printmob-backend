@@ -23,15 +23,11 @@ UPDATE_ORDER_RESPONSE_JSON = {
             'province': 'CABA',
             'zip_code': 'C1425'
         },
-        'created_at': 'Sun, 17 May 2020 00:00:00 GMT',
         'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
-        'deleted_at': None,
         'email': 'email@email.com',
         'first_name': 'John',
         "user_type": "Buyer",
-        'id': 1,
         'last_name': 'Doe',
-        'updated_at': 'Sun, 17 May 2020 00:00:00 GMT',
         'user_name': 'johnDoe5'
     },
     'comments': 'comments',
@@ -74,13 +70,9 @@ CAMPAIGN_GET_RESPONSE_JSON = {
         "date_of_birth": "Sun, 17 May 2020 00:00:00 GMT",
         "email": "email@email.com",
         "first_name": "John",
-        "id": 1,
         "last_name": "Doe",
         "user_name": "johnDoe5",
-        "user_type": "Printer",
-        "created_at": "Sun, 17 May 2020 00:00:00 GMT",
-        "updated_at": "Sun, 17 May 2020 00:00:00 GMT",
-        "deleted_at": None
+        "user_type": "Printer"
     },
     "tech_details": {
         "campaign_id": 1,
@@ -136,15 +128,11 @@ CAMPAIGN_POST_RESPONSE_JSON = {
     "name": "Campaign name",
     "pledge_price": 10.50,
     "printer": {
-        "created_at": "Sun, 17 May 2020 00:00:00 GMT",
         "date_of_birth": "Sun, 17 May 2020 00:00:00 GMT",
-        "deleted_at": None,
         "email": "email@email.com",
         "first_name": "John",
         "user_type": "Printer",
-        "id": 1,
         "last_name": "Doe",
-        "updated_at": "Sun, 17 May 2020 00:00:00 GMT",
         "user_name": "johnDoe5"
     },
     "tech_details": {
@@ -205,14 +193,10 @@ LOGIN_RESPONSE_JSON = {
             'province': 'CABA',
             'zip_code': 'C1425'
         },
-        'created_at': 'Sun, 17 May 2020 00:00:00 GMT',
         'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
-        'deleted_at': None,
         'email': 'email@email.com',
         'first_name': 'John',
-        'id': 1,
         'last_name': 'Doe',
-        'updated_at': 'Sun, 17 May 2020 00:00:00 GMT',
         'user_name': 'johnDoe5',
         'user_type': 'Buyer'
     }
