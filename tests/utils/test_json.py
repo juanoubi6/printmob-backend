@@ -191,3 +191,29 @@ CAMPAIGN_BUYERS_JSON_RESPONSE = [
         'user_name': 'johnDoe5'
     }
 ]
+
+LOGIN_RESPONSE_JSON = {
+    'token': 'JWT',
+    'type': 'Buyer',
+    'user_data': {
+        'address': {
+            'address': 'Calle falsa 123',
+            'apartment': 'A',
+            'city': 'CABA',
+            'floor': '7',
+            'id': 1,
+            'province': 'CABA',
+            'zip_code': 'C1425'
+        },
+        'created_at': 'Sun, 17 May 2020 00:00:00 GMT',
+        'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
+        'deleted_at': None,
+        'email': 'email@email.com',
+        'first_name': 'John',
+        'id': 1,
+        'last_name': 'Doe',
+        'updated_at': 'Sun, 17 May 2020 00:00:00 GMT',
+        'user_name': 'johnDoe5',
+        'user_type': 'Buyer'
+    }
+}

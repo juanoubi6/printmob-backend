@@ -106,8 +106,8 @@ class UserModel(Base):
     deleted_at = Column(DateTime)
     user_type = Column(String)
 
-    printer = relationship("PrinterModel", back_populates="user")
-    buyer = relationship("BuyerModel", back_populates="user")
+    printer = relationship("PrinterModel", uselist=False, back_populates="user")
+    buyer = relationship("BuyerModel", uselist=False, back_populates="user")
 
     def __repr__(self):
         return "<User(id='{id}}',username='{user_name}')>".format(id=self.id, user_name=self.user_name)

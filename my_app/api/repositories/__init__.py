@@ -5,3 +5,4 @@ from .email_repository import EmailRepository
 from .order_repository import OrderRepository
 from .google_repository import GoogleRepository
 from .printer_repository import PrinterRepository
+from .user_repository import UserRepository

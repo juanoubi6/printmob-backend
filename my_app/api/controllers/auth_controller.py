@@ -17,6 +17,10 @@ class AuthController:
         if auth_token is None:
             raise AuthException("Authorization token was not provided")
 
-        login_data = self.auth_service.get_user_login_data(auth_token)
+        user_data, token = self.auth_service.get_user_login_data(auth_token)
 
-        return login_data, 201
+        return {
+                   "user_data": user_data.to_json(),
+                   "type": user_data.user_type.value,
+                   "token": token
+               }, 200

@@ -23,7 +23,7 @@ class CampaignRepository:
                                        last_name='Costas',
                                        user_name='Chikinkun',
                                        date_of_birth=datetime.now(),
-                                       email='lcostas@gmail.com',
+                                       email='juan.manuel.oubina@gmail.com',
                                        user_type=UserType.PRINTER.value)
         self.db.session.add(printer_user_model)
         self.db.session.commit()
@@ -32,7 +32,7 @@ class CampaignRepository:
                                      last_name='Oubina',
                                      user_name='Oubi',
                                      date_of_birth=datetime.now(),
-                                     email='oubi@gmail.com',
+                                     email='joubina@frba.utn.edu.ar',
                                      user_type=UserType.BUYER.value)
         self.db.session.add(buyer_user_model)
         self.db.session.commit()

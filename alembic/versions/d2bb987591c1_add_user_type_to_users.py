@@ -18,7 +18,14 @@ depends_on = None
 
 def upgrade():
     op.add_column('users', sa.Column('user_type', sa.String(30), nullable=False))
+    op.create_index(
+        index_name='unique_email_idx',
+        table_name='users',
+        columns=['email'],
+        unique=True
+    )
 
 
 def downgrade():
     op.drop_column('users', 'user_type')
+    op.drop_index("unique_email_idx")

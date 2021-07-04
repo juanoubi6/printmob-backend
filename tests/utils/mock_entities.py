@@ -2,7 +2,7 @@ import datetime
 
 from my_app.api.domain import Campaign, Printer, User, TechDetail, Pledge, CampaignModelImage, \
     CampaignModelImagePrototype, File, CampaignStatus, Buyer, Address, Order, OrderStatus, CampaignPrototype, \
-    TechDetailPrototype, UserType
+    TechDetailPrototype, UserType, GoogleUserData
 
 MOCK_CAMPAIGN = Campaign(
     id=1,
@@ -76,7 +76,7 @@ MOCK_BUYER_USER = User(
     user_name="johnDoe5",
     date_of_birth=datetime.datetime(2020, 5, 17),
     email="email@email.com",
-    user_type=UserType.BUYER.value,
+    user_type=UserType.BUYER,
     created_at=datetime.datetime(2020, 5, 17),
     updated_at=datetime.datetime(2020, 5, 17)
 )
@@ -88,7 +88,7 @@ MOCK_PRINTER_USER = User(
     user_name="johnDoe5",
     date_of_birth=datetime.datetime(2020, 5, 17),
     email="email@email.com",
-    user_type=UserType.PRINTER.value,
+    user_type=UserType.PRINTER,
     created_at=datetime.datetime(2020, 5, 17),
     updated_at=datetime.datetime(2020, 5, 17)
 )
@@ -104,6 +104,7 @@ MOCK_ADDRESS = Address(
 )
 
 MOCK_BUYER = Buyer(MOCK_BUYER_USER, MOCK_ADDRESS)
+MOCK_PRINTER = Printer(MOCK_PRINTER_USER)
 
 MOCK_ORDER = Order(
     id=1,
@@ -134,4 +135,11 @@ MOCK_CAMPAIGN_PROTOTYPE = CampaignPrototype(
         depth=15
     ),
     status=CampaignStatus.IN_PROGRESS
+)
+
+MOCK_GOOGLE_USER_DATA = GoogleUserData(
+    first_name="First name",
+    last_name="Last name",
+    email="email",
+    picture="picture"
 )

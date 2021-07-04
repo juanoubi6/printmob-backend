@@ -4,18 +4,19 @@ import time
 import cachecontrol
 import google.auth.transport.requests
 import requests
-from google.auth.transport.requests import Request
+from google.auth.transport.requests import Request, TimeoutGuard
 from google.oauth2 import id_token
 
 from my_app.api.domain import GoogleUserData
-from my_app.api.exceptions import GoogleValidationException, AuthException
+from my_app.api.exceptions import GoogleValidationException, AuthException, GoogleTimeoutException
 
 GOOGLE_ISSUER = "accounts.google.com"
 
 
 class GoogleRepository:
-    def __init__(self, client_id: str):
+    def __init__(self, client_id: str, fallback_url: str):
         self.client_id = client_id
+        self.google_fallback_url = fallback_url
         self._cached_session = cachecontrol.CacheControl(requests.sessions.Session())
 
     def warm_up(self):
@@ -32,7 +33,10 @@ class GoogleRepository:
         request = google.auth.transport.requests.Request(session=self._cached_session)
 
         try:
-            token_data = id_token.verify_oauth2_token(token, request, self.client_id)
+            with TimeoutGuard(2, timeout_error_type=GoogleTimeoutException):
+                token_data = id_token.verify_oauth2_token(token, request, self.client_id)
+        except GoogleTimeoutException:
+            token_data = self._fallback_token_validation(token)
         except Exception as exc:
             raise GoogleValidationException(
                 "Unexpected error while retrieving token data from Google: {}".format(str(exc)))
@@ -55,3 +59,11 @@ class GoogleRepository:
 
         if int(token_data["exp"]) < time.time():
             raise AuthException("Invalid token. Token already expired")
+
+    def _fallback_token_validation(self, token) -> dict:
+        response = requests.get(self.google_fallback_url + "?id_token={}".format(token))
+
+        if response.status_code != 200:
+            raise AuthException("Invalid token. Error: {}".format(response.json()["error_description"]))
+
+        return response.json()
