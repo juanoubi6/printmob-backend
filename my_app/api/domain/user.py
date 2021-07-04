@@ -51,5 +51,5 @@ class User:
         return {
             "id": self.id,
             "email": self.email,
-            "user_type": self.user_type
+            "user_type": self.user_type.value
         }
