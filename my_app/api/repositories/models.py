@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship
 
 from my_app.api.domain import Pledge, TechDetail, User, Campaign, CampaignModelImage, Printer, CampaignStatus, Buyer, \
-    Address, Order, OrderStatus
+    Address, Order, OrderStatus, UserType
 
 Base = declarative_base()
 
@@ -69,14 +69,7 @@ class PrinterModel(Base):
 
     def to_printer_entity(self):
         return Printer(
-            user=User(
-                id=self.id,
-                first_name=self.user.first_name,
-                last_name=self.user.last_name,
-                user_name=self.user.user_name,
-                date_of_birth=self.user.date_of_birth,
-                email=self.user.email
-            )
+            user=self.user.to_user_entity()
         )
 
 
@@ -91,17 +84,7 @@ class BuyerModel(Base):
 
     def to_buyer_entity(self):
         return Buyer(
-            user=User(
-                id=self.id,
-                first_name=self.user.first_name,
-                last_name=self.user.last_name,
-                user_name=self.user.user_name,
-                date_of_birth=self.user.date_of_birth,
-                email=self.user.email,
-                created_at=self.user.created_at,
-                updated_at=self.user.updated_at,
-                deleted_at=self.user.deleted_at
-            ),
+            user=self.user.to_user_entity(),
             address=self.address.to_address_entity()
         )
 
@@ -121,7 +104,7 @@ class UserModel(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow)
     deleted_at = Column(DateTime)
-    type = Column(String)
+    user_type = Column(String)
 
     printer = relationship("PrinterModel", back_populates="user")
     buyer = relationship("BuyerModel", back_populates="user")
@@ -137,6 +120,7 @@ class UserModel(Base):
             user_name=self.user_name,
             date_of_birth=self.date_of_birth,
             email=self.email,
+            user_type=UserType(self.user_type),
             created_at=self.created_at,
             updated_at=self.updated_at,
             deleted_at=self.deleted_at

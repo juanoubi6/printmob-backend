@@ -17,8 +17,8 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('users', sa.Column('type', sa.String(30), nullable=False))
+    op.add_column('users', sa.Column('user_type', sa.String(30), nullable=False))
 
 
 def downgrade():
-    op.drop_column('users', 'type')
+    op.drop_column('users', 'user_type')

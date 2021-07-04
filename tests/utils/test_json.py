@@ -28,6 +28,7 @@ UPDATE_ORDER_RESPONSE_JSON = {
         'deleted_at': None,
         'email': 'email@email.com',
         'first_name': 'John',
+        "user_type": "Buyer",
         'id': 1,
         'last_name': 'Doe',
         'updated_at': 'Sun, 17 May 2020 00:00:00 GMT',
@@ -76,6 +77,7 @@ CAMPAIGN_GET_RESPONSE_JSON = {
         "id": 1,
         "last_name": "Doe",
         "user_name": "johnDoe5",
+        "user_type": "Printer",
         "created_at": "Sun, 17 May 2020 00:00:00 GMT",
         "updated_at": "Sun, 17 May 2020 00:00:00 GMT",
         "deleted_at": None
@@ -139,6 +141,7 @@ CAMPAIGN_POST_RESPONSE_JSON = {
         "deleted_at": None,
         "email": "email@email.com",
         "first_name": "John",
+        "user_type": "Printer",
         "id": 1,
         "last_name": "Doe",
         "updated_at": "Sun, 17 May 2020 00:00:00 GMT",
@@ -183,6 +186,7 @@ CAMPAIGN_BUYERS_JSON_RESPONSE = [
         'first_name': 'John',
         'id': 1,
         'last_name': 'Doe',
+        "user_type": "Buyer",
         'updated_at': 'Sun, 17 May 2020 00:00:00 GMT',
         'user_name': 'johnDoe5'
     }

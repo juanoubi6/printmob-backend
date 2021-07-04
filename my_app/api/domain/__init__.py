@@ -9,4 +9,4 @@ from .page import Page
 from .pledge import Pledge, PledgePrototype
 from .printer import Printer
 from .tech_detail import TechDetail, TechDetailPrototype
-from .user import User
+from .user import User, UserType

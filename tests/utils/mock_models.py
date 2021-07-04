@@ -1,6 +1,6 @@
 import datetime
 
-from my_app.api.domain import OrderStatus
+from my_app.api.domain import OrderStatus, UserType
 from my_app.api.repositories.models import CampaignModel, TechDetailsModel, PrinterModel, UserModel, PledgeModel, \
     CampaignModelImageModel, BuyerModel, AddressModel, OrderModel
 
@@ -14,20 +14,33 @@ MOCK_TECH_DETAIL_MODEL = TechDetailsModel(
     depth=100
 )
 
-MOCK_USER_MODEL = UserModel(
+MOCK_USER_PRINTER_MODEL = UserModel(
     id=1,
     first_name="John",
     last_name="Doe",
     user_name="johnDoe5",
     date_of_birth=datetime.datetime(2020, 5, 17),
     email="email@email.com",
+    user_type=UserType.PRINTER.value,
+    created_at=datetime.datetime(2020, 5, 17),
+    updated_at=datetime.datetime(2020, 5, 17)
+)
+
+MOCK_USER_BUYER_MODEL = UserModel(
+    id=1,
+    first_name="John",
+    last_name="Doe",
+    user_name="johnDoe5",
+    date_of_birth=datetime.datetime(2020, 5, 17),
+    email="email@email.com",
+    user_type=UserType.BUYER.value,
     created_at=datetime.datetime(2020, 5, 17),
     updated_at=datetime.datetime(2020, 5, 17)
 )
 
 MOCK_PRINTER_MODEL = PrinterModel(
     id=1,
-    user=MOCK_USER_MODEL
+    user=MOCK_USER_PRINTER_MODEL
 )
 MOCK_ADDRESS_MODEL = AddressModel(
     id=1,
@@ -42,7 +55,7 @@ MOCK_ADDRESS_MODEL = AddressModel(
 MOCK_BUYER_MODEL = BuyerModel(
     id=2,
     address_id=1,
-    user=MOCK_USER_MODEL,
+    user=MOCK_USER_BUYER_MODEL,
     address=MOCK_ADDRESS_MODEL
 )
 

@@ -17,6 +17,7 @@ class User:
             user_name: str,
             date_of_birth: datetime.datetime,
             email: str,
+            user_type: UserType,
             created_at: datetime.datetime = datetime.datetime.utcnow(),
             updated_at: datetime.datetime = datetime.datetime.utcnow(),
             deleted_at: datetime.datetime = None
@@ -27,6 +28,7 @@ class User:
         self.user_name = user_name
         self.date_of_birth = date_of_birth
         self.email = email
+        self.user_type = user_type
         self.created_at = created_at
         self.updated_at = updated_at
         self.deleted_at = deleted_at
@@ -39,6 +41,7 @@ class User:
             "user_name": self.user_name,
             "date_of_birth": self.date_of_birth,
             "email": self.email,
+            "user_type": self.user_type.value,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
             "deleted_at": self.deleted_at

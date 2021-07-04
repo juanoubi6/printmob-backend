@@ -4,7 +4,7 @@ from sqlalchemy import asc
 from sqlalchemy.orm import noload
 
 from my_app.api.domain import Page, Campaign, CampaignModelImagePrototype, CampaignModelImage, CampaignPrototype, \
-    CampaignStatus, Order
+    CampaignStatus, Order, UserType, OrderStatus
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, TechDetailsModel, \
     PrinterModel, BuyerModel, PledgeModel, AddressModel, OrderModel
@@ -23,7 +23,8 @@ class CampaignRepository:
                                        last_name='Costas',
                                        user_name='Chikinkun',
                                        date_of_birth=datetime.now(),
-                                       email='lcostas@gmail.com')
+                                       email='lcostas@gmail.com',
+                                       user_type=UserType.PRINTER.value)
         self.db.session.add(printer_user_model)
         self.db.session.commit()
 
@@ -31,7 +32,8 @@ class CampaignRepository:
                                      last_name='Oubina',
                                      user_name='Oubi',
                                      date_of_birth=datetime.now(),
-                                     email='oubi@gmail.com')
+                                     email='oubi@gmail.com',
+                                     user_type=UserType.BUYER.value)
         self.db.session.add(buyer_user_model)
         self.db.session.commit()
 
@@ -89,6 +91,16 @@ class CampaignRepository:
                                              depth=13)
         self.db.session.add(tech_detail_model)
         self.db.session.commit()
+
+        order_model = OrderModel(
+            campaign_id=campaign_model.id,
+            pledge_id=pledge_model.id,
+            buyer_id=buyer_model.id,
+            status=OrderStatus.IN_PROGRESS.value
+        )
+        self.db.session.add(order_model)
+        self.db.session.commit()
+
 
     def create_campaign(self, prototype: CampaignPrototype) -> Campaign:
         campaign_model = CampaignModel(name=prototype.name,

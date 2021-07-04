@@ -2,7 +2,7 @@ import datetime
 
 from my_app.api.domain import Campaign, Printer, User, TechDetail, Pledge, CampaignModelImage, \
     CampaignModelImagePrototype, File, CampaignStatus, Buyer, Address, Order, OrderStatus, CampaignPrototype, \
-    TechDetailPrototype
+    TechDetailPrototype, UserType
 
 MOCK_CAMPAIGN = Campaign(
     id=1,
@@ -17,6 +17,7 @@ MOCK_CAMPAIGN = Campaign(
         user_name="johnDoe5",
         date_of_birth=datetime.datetime(2020, 5, 17),
         email="email@email.com",
+        user_type=UserType.PRINTER.value,
         created_at=datetime.datetime(2020, 5, 17),
         updated_at=datetime.datetime(2020, 5, 17)
     )),
@@ -68,13 +69,26 @@ MOCK_FILE = File(
     mimetype="image/jpeg"
 )
 
-MOCK_USER = User(
+MOCK_BUYER_USER = User(
     id=1,
     first_name="John",
     last_name="Doe",
     user_name="johnDoe5",
     date_of_birth=datetime.datetime(2020, 5, 17),
     email="email@email.com",
+    user_type=UserType.BUYER.value,
+    created_at=datetime.datetime(2020, 5, 17),
+    updated_at=datetime.datetime(2020, 5, 17)
+)
+
+MOCK_PRINTER_USER = User(
+    id=1,
+    first_name="John",
+    last_name="Doe",
+    user_name="johnDoe5",
+    date_of_birth=datetime.datetime(2020, 5, 17),
+    email="email@email.com",
+    user_type=UserType.PRINTER.value,
     created_at=datetime.datetime(2020, 5, 17),
     updated_at=datetime.datetime(2020, 5, 17)
 )
@@ -89,7 +103,7 @@ MOCK_ADDRESS = Address(
     apartment="A"
 )
 
-MOCK_BUYER = Buyer(MOCK_USER, MOCK_ADDRESS)
+MOCK_BUYER = Buyer(MOCK_BUYER_USER, MOCK_ADDRESS)
 
 MOCK_ORDER = Order(
     id=1,
