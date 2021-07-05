@@ -2,6 +2,7 @@ import json
 
 from flask import request
 
+from my_app.api.domain import Printer
 from my_app.api.exceptions import AuthException
 from my_app.api.services import AuthService
 
@@ -24,3 +25,6 @@ class AuthController:
                    "type": user_data.user_type.value,
                    "token": token
                }, 200
+
+    def create_printer(self, req: request) -> (Printer, int):
+        pass

@@ -86,3 +86,13 @@ def update_order(order_id):
 @route(authBlueprint, '/login', methods=['POST'])
 def login():
     return current_app.auth_controller.login(request)
+
+
+@route(authBlueprint, '/signup/printer', methods=['POST'])
+def create_printer():
+    return current_app.auth_controller.create_printer(request)
+
+
+@route(authBlueprint, '/signup/buyer', methods=['POST'])
+def create_buyer():
+    return current_app.auth_controller.create_buyer(request)

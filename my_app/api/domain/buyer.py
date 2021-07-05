@@ -1,5 +1,6 @@
 from my_app.api.domain import Address
-from my_app.api.domain.user import User, UserType
+from my_app.api.domain.address import AddressPrototype
+from my_app.api.domain.user import User, UserType, UserPrototype
 
 
 class Buyer(User):
@@ -23,3 +24,9 @@ class Buyer(User):
         json_dict["address"] = self.address.to_json()
 
         return json_dict
+
+
+class BuyerPrototype:
+    def __init__(self, user_prototype: UserPrototype, address_prototype: AddressPrototype):
+        self.user_prototype = user_prototype
+        self.address_prototype = address_prototype

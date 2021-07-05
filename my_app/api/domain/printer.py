@@ -1,4 +1,4 @@
-from my_app.api.domain.user import User, UserType
+from my_app.api.domain.user import User, UserType, UserPrototype
 
 
 class Printer(User):
@@ -18,3 +18,8 @@ class Printer(User):
 
     def to_json(self):
         return User.to_json(self)
+
+
+class PrinterPrototype:
+    def __init__(self, user_prototype: UserPrototype):
+        self.user_prototype = user_prototype
