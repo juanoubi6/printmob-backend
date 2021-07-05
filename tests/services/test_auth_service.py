@@ -1,6 +1,9 @@
 import unittest
 from unittest.mock import Mock
 
+import pytest
+
+from my_app.api.exceptions import AuthException
 from my_app.api.services import AuthService
 from tests.test_utils.mock_entities import MOCK_GOOGLE_USER_DATA, MOCK_PRINTER_USER, MOCK_PRINTER, \
     MOCK_BUYER_USER, MOCK_BUYER
@@ -47,3 +50,10 @@ class TestAuthService(unittest.TestCase):
         mock_user_repository.get_user_by_email.assert_called_once_with(MOCK_GOOGLE_USER_DATA.email)
         mock_user_repository.get_buyer_by_email.assert_called_once_with(MOCK_BUYER_USER.email)
         mock_token_manager.get_token_from_payload.assert_called_once_with(MOCK_BUYER.identity_data())
+
+    def test_get_user_login_data_raises_exception_if_user_does_not_exist(self):
+        mock_google_repository.retrieve_token_data.return_value = MOCK_GOOGLE_USER_DATA
+        mock_user_repository.get_user_by_email.return_value = None
+
+        with pytest.raises(AuthException):
+            auth_service.get_user_login_data("auth_token")

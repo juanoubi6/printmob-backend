@@ -19,6 +19,9 @@ class AuthService:
         google_user_data = self.google_repository.retrieve_token_data(auth_token)
         user_data = self.user_repository.get_user_by_email(google_user_data.email)
 
+        if user_data is None:
+            raise AuthException("User is not registered")
+
         if user_data.user_type is UserType.PRINTER:
             printer = self.user_repository.get_printer_by_email(user_data.email)
             return printer, self.token_manager.get_token_from_payload(printer.identity_data())
