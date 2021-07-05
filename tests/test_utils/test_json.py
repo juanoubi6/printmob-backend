@@ -201,3 +201,27 @@ LOGIN_RESPONSE_JSON = {
         'user_type': 'Buyer'
     }
 }
+
+CREATE_PRINTER_JSON_REQUEST = {
+    "first_name": "Juan",
+    "last_name": "Perez",
+    "user_name": "juanperez1211",
+    "date_of_birth": "21-05-2023",
+    "email": "juanperez11@gmail.com"
+}
+
+CREATE_BUYER_JSON_REQUEST = {
+    "first_name": "Juan",
+    "last_name": "Perez",
+    "user_name": "juanperez122",
+    "date_of_birth": "21-05-2023",
+    "email": "juanperez1@gmail.com",
+    "address": {
+        "address": "Calle falsa 123",
+        "zip_code": "1425",
+        "province": "CABA",
+        "city": "CABA",
+        "floor": "7",
+        "apartment": None
+    }
+}

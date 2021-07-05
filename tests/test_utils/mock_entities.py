@@ -2,7 +2,7 @@ import datetime
 
 from my_app.api.domain import Campaign, Printer, User, TechDetail, Pledge, CampaignModelImage, \
     CampaignModelImagePrototype, File, CampaignStatus, Buyer, Address, Order, OrderStatus, CampaignPrototype, \
-    TechDetailPrototype, UserType, GoogleUserData
+    TechDetailPrototype, UserType, GoogleUserData, BuyerPrototype, UserPrototype, AddressPrototype, PrinterPrototype
 
 MOCK_CAMPAIGN = Campaign(
     id=1,
@@ -142,4 +142,40 @@ MOCK_GOOGLE_USER_DATA = GoogleUserData(
     last_name="Last name",
     email="email",
     picture="picture"
+)
+
+MOCK_PRINTER_USER_PROTOTYPE = UserPrototype(
+    first_name="John",
+    last_name="Doe",
+    user_name="johnDoe5",
+    date_of_birth=datetime.datetime(2020, 5, 17),
+    email="email@email.com",
+    user_type=UserType.PRINTER,
+)
+
+MOCK_BUYER_USER_PROTOTYPE = UserPrototype(
+    first_name="John",
+    last_name="Doe",
+    user_name="johnDoe5",
+    date_of_birth=datetime.datetime(2020, 5, 17),
+    email="email@email.com",
+    user_type=UserType.BUYER,
+)
+
+MOCK_ADDRESS_PROTOTYPE = AddressPrototype(
+    address="Calle falsa 123",
+    zip_code="C1425",
+    province="CABA",
+    city="CABA",
+    floor="7",
+    apartment="A"
+)
+
+MOCK_BUYER_PROTOTYPE = BuyerPrototype(
+    user_prototype=MOCK_BUYER_USER_PROTOTYPE,
+    address_prototype=MOCK_ADDRESS_PROTOTYPE
+)
+
+MOCK_PRINTER_PROTOTYPE = PrinterPrototype(
+    user_prototype=MOCK_PRINTER_USER_PROTOTYPE
 )
