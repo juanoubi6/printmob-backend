@@ -27,4 +27,4 @@ class UserService:
             raise BusinessException("Email already in use")
 
     def _validate_user_address(self, prototype: AddressPrototype):
-        pass
+        pass #TODO: Validate address somehow
