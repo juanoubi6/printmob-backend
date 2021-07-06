@@ -1,6 +1,7 @@
 import os
 import unittest
 from unittest.mock import patch, Mock
+from concurrent.futures import TimeoutError
 
 import pytest
 import requests
@@ -10,14 +11,17 @@ from my_app.api.repositories import GoogleRepository
 
 client_id = os.environ["GOOGLE_CLIENT_ID"]
 google_fallback_url = os.environ["GOOGLE_AUTH_FALLBACK_URL"]
-google_repository = GoogleRepository(client_id, google_fallback_url)
+mock_executor = Mock()
+google_repository = GoogleRepository(client_id, google_fallback_url, mock_executor)
 
 
 class TestUserRepository(unittest.TestCase):
 
-    @patch('my_app.api.repositories.google_repository.id_token')
-    def test_retrieve_token_data_returns_google_user_data_on_default_flow_success(self, id_token_mock):
-        id_token_mock.verify_oauth2_token.return_value = GOOGLE_RESPONSE_MOCK
+    def test_retrieve_token_data_returns_google_user_data_on_default_flow_success(self):
+        # Mock default method ok
+        mock_future = Mock()
+        mock_executor.submit.return_value = mock_future
+        mock_future.result.return_value = GOOGLE_RESPONSE_MOCK
 
         google_user_data = google_repository.retrieve_token_data("token")
 
@@ -26,31 +30,34 @@ class TestUserRepository(unittest.TestCase):
         assert google_user_data.picture == GOOGLE_RESPONSE_MOCK["picture"]
         assert google_user_data.email == GOOGLE_RESPONSE_MOCK["email"]
 
-    @patch('my_app.api.repositories.google_repository.id_token')
     @patch('my_app.api.repositories.google_repository.requests')
-    def test_retrieve_token_data_returns_data_using_fallback_flow_when_default_method_timeouts(self, requests_mock,
-                                                                                               id_token_mock):
+    def test_retrieve_token_data_returns_data_using_fallback_flow_when_default_method_timeouts(self, requests_mock):
         ok_response = Mock()
         ok_response.status_code = 200
         ok_response.json.return_value = GOOGLE_RESPONSE_MOCK
 
-        id_token_mock.verify_oauth2_token.side_effect = GoogleTimeoutException()
+        # Mock default method timeout
+        mock_future = Mock()
+        mock_executor.submit.return_value = mock_future
+        mock_future.result.side_effect = TimeoutError()
+
+        # Fallback works ok
         requests_mock.get.return_value = ok_response
 
         google_user_data = google_repository.retrieve_token_data("token")
 
         assert google_user_data.email == GOOGLE_RESPONSE_MOCK["email"]
 
-    @patch('my_app.api.repositories.google_repository.id_token')
-    def test_retrieve_token_data_raises_exception_if_default_flow_fails(self, id_token_mock):
-        id_token_mock.verify_oauth2_token.side_effect = Exception("Unexpected error from Google")
+    def test_retrieve_token_data_raises_exception_if_default_flow_fails(self):
+        mock_future = Mock()
+        mock_executor.submit.return_value = mock_future
+        mock_future.result.side_effect = Exception("Something happened")
 
         with pytest.raises(GoogleValidationException):
             google_repository.retrieve_token_data("token")
 
-    @patch('my_app.api.repositories.google_repository.id_token')
     @patch('my_app.api.repositories.google_repository.requests')
-    def test_retrieve_token_data_raises_exception_if_fallback_flow_fails(self, requests_mock, id_token_mock):
+    def test_retrieve_token_data_raises_exception_if_fallback_flow_fails(self, requests_mock):
         bad_response = Mock()
         bad_response.status_code = 400
         bad_response.json.return_value = {
@@ -58,7 +65,12 @@ class TestUserRepository(unittest.TestCase):
             "error_description": "error_desc"
         }
 
-        id_token_mock.verify_oauth2_token.side_effect = GoogleTimeoutException()
+        # Default method fails because of timeout
+        mock_future = Mock()
+        mock_executor.submit.return_value = mock_future
+        mock_future.result.side_effect = TimeoutError()
+
+        # Fallback method fails
         requests_mock.get.return_value = bad_response
 
         with pytest.raises(GoogleValidationException):
