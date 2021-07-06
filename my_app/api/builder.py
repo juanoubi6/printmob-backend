@@ -53,7 +53,7 @@ def build_order_controller(db, executor, ses_client):
 
 
 def build_auth_controller(db, executor):
-    google_repository = GoogleRepository(GOOGLE_CLIENT_ID, GOOGLE_AUTH_FALLBACK_URL)
+    google_repository = GoogleRepository(GOOGLE_CLIENT_ID, GOOGLE_AUTH_FALLBACK_URL, executor)
     user_repository = UserRepository(db)
     token_manager = TokenManager(JWT_SECRET_KEY)
     auth_service = AuthService(google_repository, user_repository, token_manager)
