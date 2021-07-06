@@ -129,3 +129,16 @@ class TestPledgeRepository(unittest.TestCase):
 
         assert len(response) == 1
         assert isinstance(response[0], Pledge)
+
+    def test_has_pledge_in_campaign_returns_true_when_pledge_exists(self):
+        test_db.session\
+            .query.return_value\
+            .filter.return_value\
+            .filter.return_value\
+            .filter.return_value\
+            .options.return_value\
+            .first.return_value = MOCK_PLEDGE_MODEL
+
+        response = pledge_repository.has_pledge_in_campaign(buyer_id=1, campaign_id=1)
+
+        assert response is True
