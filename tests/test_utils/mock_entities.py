@@ -2,7 +2,23 @@ import datetime
 
 from my_app.api.domain import Campaign, Printer, User, TechDetail, Pledge, CampaignModelImage, \
     CampaignModelImagePrototype, File, CampaignStatus, Buyer, Address, Order, OrderStatus, CampaignPrototype, \
-    TechDetailPrototype, UserType, GoogleUserData, BuyerPrototype, UserPrototype, AddressPrototype, PrinterPrototype
+    TechDetailPrototype, UserType, GoogleUserData, BuyerPrototype, UserPrototype, AddressPrototype, PrinterPrototype, \
+    BankInformation, BankInformationPrototype
+
+MOCK_BANK_INFORMATION = BankInformation(
+    id=1,
+    cbu="2222222222",
+    alias=None,
+    account_number="324324",
+    bank="Galicia"
+)
+
+MOCK_BANK_INFORMATION_PROTOTYPE = BankInformationPrototype(
+    cbu="2222222222",
+    alias=None,
+    account_number="324324",
+    bank="Galicia"
+)
 
 MOCK_CAMPAIGN = Campaign(
     id=1,
@@ -10,17 +26,20 @@ MOCK_CAMPAIGN = Campaign(
     description="Description",
     campaign_picture_url=None,
     campaign_model_images=[],
-    printer=Printer(User(
-        id=1,
-        first_name="John",
-        last_name="Doe",
-        user_name="johnDoe5",
-        date_of_birth=datetime.datetime(2020, 5, 17),
-        email="email@email.com",
-        user_type=UserType.PRINTER.value,
-        created_at=datetime.datetime(2020, 5, 17),
-        updated_at=datetime.datetime(2020, 5, 17)
-    )),
+    printer=Printer(
+        user=User(
+            id=1,
+            first_name="John",
+            last_name="Doe",
+            user_name="johnDoe5",
+            date_of_birth=datetime.datetime(2020, 5, 17),
+            email="email@email.com",
+            user_type=UserType.PRINTER.value,
+            created_at=datetime.datetime(2020, 5, 17),
+            updated_at=datetime.datetime(2020, 5, 17),
+        ),
+        bank_information=MOCK_BANK_INFORMATION
+    ),
     pledge_price=10.50,
     end_date=datetime.datetime(2020, 5, 17),
     min_pledgers=5,
@@ -104,7 +123,7 @@ MOCK_ADDRESS = Address(
 )
 
 MOCK_BUYER = Buyer(MOCK_BUYER_USER, MOCK_ADDRESS)
-MOCK_PRINTER = Printer(MOCK_PRINTER_USER)
+MOCK_PRINTER = Printer(MOCK_PRINTER_USER, MOCK_BANK_INFORMATION)
 
 MOCK_ORDER = Order(
     id=1,
@@ -177,5 +196,6 @@ MOCK_BUYER_PROTOTYPE = BuyerPrototype(
 )
 
 MOCK_PRINTER_PROTOTYPE = PrinterPrototype(
-    user_prototype=MOCK_PRINTER_USER_PROTOTYPE
+    user_prototype=MOCK_PRINTER_USER_PROTOTYPE,
+    bank_information_prototype=MOCK_BANK_INFORMATION_PROTOTYPE
 )

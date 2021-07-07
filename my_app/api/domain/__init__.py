@@ -1,4 +1,5 @@
 from .address import Address, AddressPrototype
+from .bank_information import BankInformation, BankInformationPrototype
 from .buyer import Buyer, BuyerPrototype
 from .campaign import Campaign, CampaignPrototype, CampaignStatus
 from .campaign_model_image import CampaignModelImage, CampaignModelImagePrototype

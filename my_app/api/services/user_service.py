@@ -1,5 +1,5 @@
 from my_app.api.domain import PrinterPrototype, Printer, BuyerPrototype, Buyer, \
-    UserPrototype, AddressPrototype
+    UserPrototype, AddressPrototype, BankInformationPrototype
 from my_app.api.exceptions import BusinessException
 from my_app.api.repositories import UserRepository
 
@@ -10,6 +10,7 @@ class UserService:
 
     def create_printer(self, prototype: PrinterPrototype) -> Printer:
         self._validate_user_data(prototype.user_prototype)
+        self._validate_bank_information(prototype.bank_information_prototype)
 
         return self.user_repository.create_printer(prototype)
 
@@ -27,4 +28,7 @@ class UserService:
             raise BusinessException("Email already in use")
 
     def _validate_user_address(self, prototype: AddressPrototype):
-        pass #TODO: Validate address somehow
+        pass  # TODO: Validate address somehow
+
+    def _validate_bank_information(self, prototype: BankInformationPrototype):
+        pass  # TODO: Validate bank information somehow

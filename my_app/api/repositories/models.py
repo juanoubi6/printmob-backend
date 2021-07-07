@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship
 
 from my_app.api.domain import Pledge, TechDetail, User, Campaign, CampaignModelImage, Printer, CampaignStatus, Buyer, \
-    Address, Order, OrderStatus, UserType
+    Address, Order, OrderStatus, UserType, BankInformation
 
 Base = declarative_base()
 
@@ -62,14 +62,18 @@ class PrinterModel(Base):
     __tablename__ = 'printers'
 
     id = Column(Integer, ForeignKey('users.id'), primary_key=True)
+    bank_information_id = Column(Integer, ForeignKey('bank_information.id'))
+
     user = relationship("UserModel")
+    bank_information = relationship("BankInformationModel")
 
     def __repr__(self):
         return "<Printer(id='{id}}')>".format(id=self.id)
 
     def to_printer_entity(self):
         return Printer(
-            user=self.user.to_user_entity()
+            user=self.user.to_user_entity(),
+            bank_information=self.bank_information.to_bank_information_entity()
         )
 
 
@@ -273,4 +277,27 @@ class OrderModel(Base):
             mail_company=self.mail_company,
             tracking_code=self.tracking_code,
             comments=self.comments,
+        )
+
+
+class BankInformationModel(Base):
+    __tablename__ = 'bank_information'
+
+    id = Column(Integer, primary_key=True)
+    cbu = Column(String)
+    alias = Column(String, nullable=True)
+    bank = Column(String)
+    account_number = Column(String)
+
+    def __repr__(self):
+        return "<BankInformation(id='{id}}',cbu='{cbu}',bank='{bank}')>" \
+            .format(id=self.id, cbu=self.cbu, bank=self.bank)
+
+    def to_bank_information_entity(self):
+        return BankInformation(
+            id=self.id,
+            cbu=self.cbu,
+            alias=self.alias,
+            bank=self.bank,
+            account_number=self.account_number
         )

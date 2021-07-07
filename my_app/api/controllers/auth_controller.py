@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import request
 
 from my_app.api.domain import Printer, PrinterPrototype, UserPrototype, UserType, Buyer, BuyerPrototype, \
-    AddressPrototype
+    AddressPrototype, BankInformationPrototype
 from my_app.api.exceptions import AuthException
 from my_app.api.services import AuthService, UserService
 
@@ -40,6 +40,12 @@ class AuthController:
                 date_of_birth=datetime.strptime(body["date_of_birth"], '%d-%m-%Y'),
                 email=body["email"],
                 user_type=UserType.PRINTER
+            ),
+            bank_information_prototype=BankInformationPrototype(
+                cbu=body["bank_information"]["cbu"],
+                bank=body["bank_information"]["bank"],
+                account_number=body["bank_information"]["account_number"],
+                alias=body["bank_information"]["alias"]
             )
         )
 

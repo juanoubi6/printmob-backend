@@ -1,5 +1,5 @@
 from my_app.api.domain import Printer, Buyer, User, BuyerPrototype, PrinterPrototype, UserPrototype
-from my_app.api.repositories.models import PrinterModel, UserModel, BuyerModel, AddressModel
+from my_app.api.repositories.models import PrinterModel, UserModel, BuyerModel, AddressModel, BankInformationModel
 
 
 class UserRepository:
@@ -49,9 +49,17 @@ class UserRepository:
     def create_printer(self, prototype: PrinterPrototype) -> Printer:
         user_model = self._create_user_model(prototype.user_prototype)
         self.db.session.add(user_model)
+
+        bank_information_model = BankInformationModel(
+            cbu=prototype.bank_information_prototype.cbu,
+            alias=prototype.bank_information_prototype.alias,
+            bank=prototype.bank_information_prototype.bank,
+            account_number=prototype.bank_information_prototype.account_number,
+        )
+        self.db.session.add(bank_information_model)
         self.db.session.flush()
 
-        printer_model = PrinterModel(id=user_model.id)
+        printer_model = PrinterModel(id=user_model.id, bank_information_id=bank_information_model.id)
         self.db.session.add(printer_model)
         self.db.session.commit()
 

@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 from my_app.api.domain import Printer, Buyer, User
 from my_app.api.repositories import UserRepository
-from tests.test_utils.mock_entities import MOCK_BUYER_PROTOTYPE
+from tests.test_utils.mock_entities import MOCK_BUYER_PROTOTYPE, MOCK_PRINTER_PROTOTYPE
 from tests.test_utils.mock_models import MOCK_USER_PRINTER_MODEL, MOCK_PRINTER_MODEL, \
     MOCK_USER_BUYER_MODEL, MOCK_BUYER_MODEL
 
@@ -68,12 +68,12 @@ class TestUserRepository(unittest.TestCase):
         test_db.session.commit.assert_called_once()
 
     @patch('my_app.api.repositories.user_repository.PrinterModel')
-    def test_create_printer_creates_buyer(self, mock_printer_model_instance):
+    def test_create_printer_creates_printer(self, mock_printer_model_instance):
         mock_printer_model_instance.return_value = MOCK_PRINTER_MODEL
 
-        response = user_repository.create_printer(MOCK_BUYER_PROTOTYPE)
+        response = user_repository.create_printer(MOCK_PRINTER_PROTOTYPE)
 
         assert isinstance(response, Printer)
-        assert test_db.session.add.call_count == 2
+        assert test_db.session.add.call_count == 3
         test_db.session.flush.assert_called_once()
         test_db.session.commit.assert_called_once()
