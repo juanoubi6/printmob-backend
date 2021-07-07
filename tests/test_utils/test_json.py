@@ -1,4 +1,4 @@
-from tests.utils.mock_entities import MOCK_CAMPAIGN_MODEL_IMAGE
+from tests.test_utils.mock_entities import MOCK_CAMPAIGN_MODEL_IMAGE
 
 GET_PLEDGES_RESPONSE_JSON = [
     {
@@ -23,14 +23,11 @@ UPDATE_ORDER_RESPONSE_JSON = {
             'province': 'CABA',
             'zip_code': 'C1425'
         },
-        'created_at': 'Sun, 17 May 2020 00:00:00 GMT',
         'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
-        'deleted_at': None,
         'email': 'email@email.com',
         'first_name': 'John',
-        'id': 1,
+        "user_type": "Buyer",
         'last_name': 'Doe',
-        'updated_at': 'Sun, 17 May 2020 00:00:00 GMT',
         'user_name': 'johnDoe5'
     },
     'comments': 'comments',
@@ -73,12 +70,9 @@ CAMPAIGN_GET_RESPONSE_JSON = {
         "date_of_birth": "Sun, 17 May 2020 00:00:00 GMT",
         "email": "email@email.com",
         "first_name": "John",
-        "id": 1,
         "last_name": "Doe",
         "user_name": "johnDoe5",
-        "created_at": "Sun, 17 May 2020 00:00:00 GMT",
-        "updated_at": "Sun, 17 May 2020 00:00:00 GMT",
-        "deleted_at": None
+        "user_type": "Printer"
     },
     "tech_details": {
         "campaign_id": 1,
@@ -134,14 +128,11 @@ CAMPAIGN_POST_RESPONSE_JSON = {
     "name": "Campaign name",
     "pledge_price": 10.50,
     "printer": {
-        "created_at": "Sun, 17 May 2020 00:00:00 GMT",
         "date_of_birth": "Sun, 17 May 2020 00:00:00 GMT",
-        "deleted_at": None,
         "email": "email@email.com",
         "first_name": "John",
-        "id": 1,
+        "user_type": "Printer",
         "last_name": "Doe",
-        "updated_at": "Sun, 17 May 2020 00:00:00 GMT",
         "user_name": "johnDoe5"
     },
     "tech_details": {
@@ -183,7 +174,30 @@ CAMPAIGN_BUYERS_JSON_RESPONSE = [
         'first_name': 'John',
         'id': 1,
         'last_name': 'Doe',
+        "user_type": "Buyer",
         'updated_at': 'Sun, 17 May 2020 00:00:00 GMT',
         'user_name': 'johnDoe5'
     }
 ]
+
+LOGIN_RESPONSE_JSON = {
+    'token': 'JWT',
+    'type': 'Buyer',
+    'user_data': {
+        'address': {
+            'address': 'Calle falsa 123',
+            'apartment': 'A',
+            'city': 'CABA',
+            'floor': '7',
+            'id': 1,
+            'province': 'CABA',
+            'zip_code': 'C1425'
+        },
+        'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
+        'email': 'email@email.com',
+        'first_name': 'John',
+        'last_name': 'Doe',
+        'user_name': 'johnDoe5',
+        'user_type': 'Buyer'
+    }
+}

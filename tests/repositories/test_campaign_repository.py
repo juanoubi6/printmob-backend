@@ -6,8 +6,8 @@ import pytest
 from my_app.api.domain import Campaign, Page, CampaignModelImage
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories import CampaignRepository
-from tests.utils.mock_entities import MOCK_FILTERS, MOCK_CAMPAIGN_MODEL_IMAGE_PROTOTYPE, MOCK_CAMPAIGN_PROTOTYPE
-from tests.utils.mock_models import MOCK_CAMPAIGN_MODEL, MOCK_CAMPAIGN_MODEL_IMAGE_MODEL, MOCK_ORDER_MODEL
+from tests.test_utils.mock_entities import MOCK_FILTERS, MOCK_CAMPAIGN_MODEL_IMAGE_PROTOTYPE, MOCK_CAMPAIGN_PROTOTYPE
+from tests.test_utils.mock_models import MOCK_CAMPAIGN_MODEL, MOCK_CAMPAIGN_MODEL_IMAGE_MODEL, MOCK_ORDER_MODEL
 
 test_db = MagicMock()
 campaign_repository = CampaignRepository(test_db)

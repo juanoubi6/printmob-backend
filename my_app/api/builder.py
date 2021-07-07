@@ -3,13 +3,13 @@ from concurrent.futures import ThreadPoolExecutor
 
 import boto3
 
-from my_app.api.controllers import CampaignController, PledgeController
-from my_app.api.controllers.order_controller import OrderController
-from my_app.api.repositories import CampaignRepository, PledgeRepository, S3Repository, EmailRepository
-from my_app.api.repositories.order_repository import OrderRepository
-from my_app.api.repositories.printer_repository import PrinterRepository
-from my_app.api.services import CampaignService, PledgeService, OrderService
-from my_app.settings import AWS_BUCKET_NAME, SENDER_EMAIL
+from my_app.api.controllers import CampaignController, PledgeController, OrderController, AuthController
+from my_app.api.repositories import CampaignRepository, PledgeRepository, S3Repository, EmailRepository, \
+    GoogleRepository, PrinterRepository, OrderRepository, UserRepository
+from my_app.api.services import CampaignService, PledgeService, OrderService, AuthService
+from my_app.api.utils.token_manager import TokenManager
+from my_app.settings import AWS_BUCKET_NAME, SENDER_EMAIL, GOOGLE_CLIENT_ID, GOOGLE_AUTH_FALLBACK_URL, JWT_SECRET_KEY, \
+    ENV
 
 
 def inject_controllers(app, db):
@@ -20,6 +20,7 @@ def inject_controllers(app, db):
     app.campaign_controller = build_campaign_controller(db, s3_client)
     app.pledge_controller = build_pledge_controller(db)
     app.order_controller = build_order_controller(db, executor, ses_client)
+    app.auth_controller = build_auth_controller(db, executor)
 
 
 def build_campaign_controller(db, s3_client):
@@ -48,6 +49,18 @@ def build_order_controller(db, executor, ses_client):
     order_service = OrderService(order_repository, email_repository, executor)
 
     return OrderController(order_service)
+
+
+def build_auth_controller(db, executor):
+    google_repository = GoogleRepository(GOOGLE_CLIENT_ID, GOOGLE_AUTH_FALLBACK_URL, executor)
+    user_repository = UserRepository(db)
+    token_manager = TokenManager(JWT_SECRET_KEY)
+    auth_service = AuthService(google_repository, user_repository, token_manager)
+
+    if ENV != "testing":
+        executor.submit(google_repository.warm_up)
+
+    return AuthController(auth_service)
 
 
 def build_s3_client():

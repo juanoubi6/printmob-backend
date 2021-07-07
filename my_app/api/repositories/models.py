@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship
 
 from my_app.api.domain import Pledge, TechDetail, User, Campaign, CampaignModelImage, Printer, CampaignStatus, Buyer, \
-    Address, Order, OrderStatus
+    Address, Order, OrderStatus, UserType
 
 Base = declarative_base()
 
@@ -44,7 +44,7 @@ class CampaignModel(Base):
             description=self.description,
             campaign_picture_url=self.campaign_picture_url,
             campaign_model_images=[ci.to_campaign_model_image_entity() for ci in self.images],
-            printer=Printer(self.printer.user.to_user_entity()) if self.printer is not None else None,
+            printer=self.printer.to_printer_entity() if self.printer is not None else None,
             pledge_price=float(self.pledge_price),
             end_date=self.end_date,
             min_pledgers=self.min_pledgers,
@@ -68,14 +68,9 @@ class PrinterModel(Base):
         return "<Printer(id='{id}}')>".format(id=self.id)
 
     def to_printer_entity(self):
-        return Printer(User(
-            id=self.id,
-            first_name=self.user.first_name,
-            last_name=self.user.last_name,
-            user_name=self.user.user_name,
-            date_of_birth=self.user.date_of_birth,
-            email=self.user.email
-        ))
+        return Printer(
+            user=self.user.to_user_entity()
+        )
 
 
 class BuyerModel(Base):
@@ -89,14 +84,7 @@ class BuyerModel(Base):
 
     def to_buyer_entity(self):
         return Buyer(
-            user=User(
-                id=self.id,
-                first_name=self.user.first_name,
-                last_name=self.user.last_name,
-                user_name=self.user.user_name,
-                date_of_birth=self.user.date_of_birth,
-                email=self.user.email
-            ),
+            user=self.user.to_user_entity(),
             address=self.address.to_address_entity()
         )
 
@@ -116,9 +104,10 @@ class UserModel(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow)
     deleted_at = Column(DateTime)
+    user_type = Column(String)
 
-    printer = relationship("PrinterModel", back_populates="user")
-    buyer = relationship("BuyerModel", back_populates="user")
+    printer = relationship("PrinterModel", uselist=False, back_populates="user")
+    buyer = relationship("BuyerModel", uselist=False, back_populates="user")
 
     def __repr__(self):
         return "<User(id='{id}}',username='{user_name}')>".format(id=self.id, user_name=self.user_name)
@@ -131,6 +120,7 @@ class UserModel(Base):
             user_name=self.user_name,
             date_of_birth=self.date_of_birth,
             email=self.email,
+            user_type=UserType(self.user_type),
             created_at=self.created_at,
             updated_at=self.updated_at,
             deleted_at=self.deleted_at

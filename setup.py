@@ -21,6 +21,10 @@ setup(
         "pytest==6.2.4",
         "flask-cors==3.0.10",
         "boto3==1.17.93",
-        "schedule==1.1.0"
+        "schedule==1.1.0",
+        "google-auth==1.32.1",
+        "requests==2.25.1",
+        "cachecontrol==0.12.6",
+        "PyJWT==2.1.0"
     ],
 )

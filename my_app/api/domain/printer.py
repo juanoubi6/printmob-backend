@@ -1,4 +1,4 @@
-from my_app.api.domain.user import User
+from my_app.api.domain.user import User, UserType
 
 
 class Printer(User):
@@ -10,6 +10,7 @@ class Printer(User):
             user_name=user.user_name,
             date_of_birth=user.date_of_birth,
             email=user.email,
+            user_type=UserType.PRINTER,
             created_at=user.created_at,
             updated_at=user.updated_at,
             deleted_at=user.deleted_at
