@@ -78,6 +78,14 @@ class PledgeRepository:
 
         return pledge_model.to_pledge_entity()
 
+    def has_pledge_in_campaign(self, buyer_id: int, campaign_id: int) -> bool:
+        return self.db.session.query(PledgeModel) \
+                   .filter(PledgeModel.campaign_id == campaign_id) \
+                   .filter(PledgeModel.buyer_id == buyer_id) \
+                   .filter(PledgeModel.deleted_at == None) \
+                   .options(noload(PledgeModel.buyer)) \
+                   .first() is not None
+
     def delete_pledge(self, pledge_id: int) -> Pledge:
         # TODO for mercadopago: we will need to add MercadopagoRepository here
         # 1- Retrieve pledge
