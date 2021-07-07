@@ -16,9 +16,14 @@ def healthy():
 
 
 # Campaigns
-@route(campaignBlueprint, '/test-data', methods=['POST'])
+@route(campaignBlueprint, '/test-data', methods=['POST'])  # Testing-use
 def create_data():
     return current_app.campaign_controller.create_data(request)
+
+
+@route(campaignBlueprint, '/end-campaigns', methods=['POST'])  # Testing-use
+def end_campaigns():
+    return current_app.cron_controller.end_campaigns()
 
 
 @route(campaignBlueprint, '/', methods=['POST'])

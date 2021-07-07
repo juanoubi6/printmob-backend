@@ -3,13 +3,14 @@ from concurrent.futures import ThreadPoolExecutor
 
 import boto3
 
-from my_app.api.controllers import CampaignController, PledgeController, OrderController, AuthController
+from my_app.api.controllers import CampaignController, PledgeController, OrderController, AuthController, CronController
+from my_app.api.db_builder import create_db_session_factory
 from my_app.api.repositories import CampaignRepository, PledgeRepository, S3Repository, EmailRepository, \
     GoogleRepository, PrinterRepository, OrderRepository, UserRepository
 from my_app.api.services import CampaignService, PledgeService, OrderService, AuthService, UserService
 from my_app.api.utils.token_manager import TokenManager
 from my_app.settings import AWS_BUCKET_NAME, SENDER_EMAIL, GOOGLE_CLIENT_ID, GOOGLE_AUTH_FALLBACK_URL, JWT_SECRET_KEY, \
-    ENV
+    ENV, DB_CONFIG
 
 
 def inject_controllers(app, db):
@@ -22,6 +23,11 @@ def inject_controllers(app, db):
     app.order_controller = build_order_controller(db, executor, ses_client)
     app.auth_controller = build_auth_controller(db, executor)
     app.token_manager = TokenManager(JWT_SECRET_KEY)
+
+    # Test-controller
+    db_session_factory = create_db_session_factory(DB_CONFIG["SQLALCHEMY_DATABASE_URI"])
+    email_repository = EmailRepository(build_ses_client(), SENDER_EMAIL)
+    app.cron_controller = CronController(db_session_factory, email_repository, executor, "mercadopago_repo")
 
 
 def build_campaign_controller(db, s3_client):
