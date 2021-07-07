@@ -21,6 +21,7 @@ def inject_controllers(app, db):
     app.pledge_controller = build_pledge_controller(db)
     app.order_controller = build_order_controller(db, executor, ses_client)
     app.auth_controller = build_auth_controller(db, executor)
+    app.token_manager = TokenManager(JWT_SECRET_KEY)
 
 
 def build_campaign_controller(db, s3_client):
