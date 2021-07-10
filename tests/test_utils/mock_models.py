@@ -2,7 +2,15 @@ import datetime
 
 from my_app.api.domain import OrderStatus, UserType
 from my_app.api.repositories.models import CampaignModel, TechDetailsModel, PrinterModel, UserModel, PledgeModel, \
-    CampaignModelImageModel, BuyerModel, AddressModel, OrderModel
+    CampaignModelImageModel, BuyerModel, AddressModel, OrderModel, BankInformationModel
+
+MOCK_BANK_INFORMATION_MODEL = BankInformationModel(
+    id=1,
+    cbu="2222222222",
+    alias=None,
+    account_number="324324",
+    bank="Galicia"
+)
 
 MOCK_TECH_DETAIL_MODEL = TechDetailsModel(
     id=1,
@@ -40,7 +48,8 @@ MOCK_USER_BUYER_MODEL = UserModel(
 
 MOCK_PRINTER_MODEL = PrinterModel(
     id=1,
-    user=MOCK_USER_PRINTER_MODEL
+    user=MOCK_USER_PRINTER_MODEL,
+    bank_information=MOCK_BANK_INFORMATION_MODEL
 )
 MOCK_ADDRESS_MODEL = AddressModel(
     id=1,
@@ -141,3 +150,5 @@ MOCK_ORDER_MODEL = OrderModel(
     comments="comments",
     buyer=MOCK_BUYER_MODEL
 )
+
+

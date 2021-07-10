@@ -72,7 +72,14 @@ CAMPAIGN_GET_RESPONSE_JSON = {
         "first_name": "John",
         "last_name": "Doe",
         "user_name": "johnDoe5",
-        "user_type": "Printer"
+        "user_type": "Printer",
+        'bank_information': {
+            'account_number': '324324',
+            'alias': None,
+            'bank': 'Galicia',
+            'cbu': '2222222222',
+            'id': 1
+        }
     },
     "tech_details": {
         "campaign_id": 1,
@@ -133,7 +140,14 @@ CAMPAIGN_POST_RESPONSE_JSON = {
         "first_name": "John",
         "user_type": "Printer",
         "last_name": "Doe",
-        "user_name": "johnDoe5"
+        "user_name": "johnDoe5",
+        'bank_information': {
+            'account_number': '324324',
+            'alias': None,
+            'bank': 'Galicia',
+            'cbu': '2222222222',
+            'id': 1
+        }
     },
     "tech_details": {
         "campaign_id": 1,
@@ -199,5 +213,35 @@ LOGIN_RESPONSE_JSON = {
         'last_name': 'Doe',
         'user_name': 'johnDoe5',
         'user_type': 'Buyer'
+    }
+}
+
+CREATE_PRINTER_JSON_REQUEST = {
+    "first_name": "Juan",
+    "last_name": "Perez",
+    "user_name": "juanperez1211",
+    "date_of_birth": "21-05-2023",
+    "email": "juanperez11@gmail.com",
+    "bank_information": {
+        "cbu": "222222222333333333344",
+        "alias": None,
+        "bank": "Galicia",
+        "account_number": "26163-44"
+    }
+}
+
+CREATE_BUYER_JSON_REQUEST = {
+    "first_name": "Juan",
+    "last_name": "Perez",
+    "user_name": "juanperez122",
+    "date_of_birth": "21-05-2023",
+    "email": "juanperez1@gmail.com",
+    "address": {
+        "address": "Calle falsa 123",
+        "zip_code": "1425",
+        "province": "CABA",
+        "city": "CABA",
+        "floor": "7",
+        "apartment": None
     }
 }

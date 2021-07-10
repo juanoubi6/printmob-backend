@@ -7,7 +7,7 @@ from my_app.api.controllers import CampaignController, PledgeController, OrderCo
 from my_app.api.db_builder import create_db_session_factory
 from my_app.api.repositories import CampaignRepository, PledgeRepository, S3Repository, EmailRepository, \
     GoogleRepository, PrinterRepository, OrderRepository, UserRepository
-from my_app.api.services import CampaignService, PledgeService, OrderService, AuthService
+from my_app.api.services import CampaignService, PledgeService, OrderService, AuthService, UserService
 from my_app.api.utils.token_manager import TokenManager
 from my_app.settings import AWS_BUCKET_NAME, SENDER_EMAIL, GOOGLE_CLIENT_ID, GOOGLE_AUTH_FALLBACK_URL, JWT_SECRET_KEY, \
     ENV, DB_CONFIG
@@ -63,11 +63,12 @@ def build_auth_controller(db, executor):
     user_repository = UserRepository(db)
     token_manager = TokenManager(JWT_SECRET_KEY)
     auth_service = AuthService(google_repository, user_repository, token_manager)
+    user_service = UserService(user_repository)
 
     if ENV != "testing":
         executor.submit(google_repository.warm_up)
 
-    return AuthController(auth_service)
+    return AuthController(auth_service, user_service)
 
 
 def build_s3_client():
