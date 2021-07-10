@@ -14,11 +14,17 @@ class UserService:
 
         return self.user_repository.create_printer(prototype)
 
+    def get_printer_by_email(self, email: str) -> Printer:
+        return self.user_repository.get_printer_by_email(email)
+
     def create_buyer(self, prototype: BuyerPrototype) -> Buyer:
         self._validate_user_data(prototype.user_prototype)
         self._validate_user_address(prototype.address_prototype)
 
         return self.user_repository.create_buyer(prototype)
+
+    def get_buyer_by_email(self, email: str) -> Buyer:
+        return self.user_repository.get_buyer_by_email(email)
 
     def _validate_user_data(self, prototype: UserPrototype):
         if self.user_repository.is_user_name_in_use(prototype.user_name):

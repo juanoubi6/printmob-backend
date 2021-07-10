@@ -1,10 +1,12 @@
 from flask import Blueprint, current_app, request
 
 from my_app.api import route
+from my_app.api.controllers import validate_bearer_token
 
 campaignBlueprint = Blueprint('campaignController', __name__, url_prefix='/campaigns')
 pledgeBlueprint = Blueprint('pledgeController', __name__, url_prefix='/pledges')
 orderBlueprint = Blueprint('orderController', __name__, url_prefix='/orders')
+userBlueprint = Blueprint('userController', __name__, url_prefix='/users')
 authBlueprint = Blueprint('authController', __name__, url_prefix='/auth')
 healthBlueprint = Blueprint('healthController', __name__, url_prefix='/health')
 
@@ -101,3 +103,16 @@ def create_printer():
 @route(authBlueprint, '/signup/buyer', methods=['POST'])
 def create_buyer():
     return current_app.auth_controller.create_buyer(request)
+
+
+# Users
+@route(userBlueprint, '/<user_id>/profile', methods=['GET'])
+@validate_bearer_token
+def get_user_profile(user_id, user_data):
+    return current_app.user_controller.get_user_profile(request, int(user_id), user_data)
+
+
+@route(userBlueprint, '/<user_id>/profile', methods=['PUT'])
+@validate_bearer_token
+def update_user_profile(user_id, user_data):
+    return current_app.user_controller.update_user_profile(request, int(user_id), user_data)

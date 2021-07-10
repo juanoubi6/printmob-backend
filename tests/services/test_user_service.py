@@ -66,3 +66,19 @@ class TestUserService(unittest.TestCase):
 
         with pytest.raises(BusinessException):
             user_service.create_buyer(MOCK_BUYER_PROTOTYPE)
+
+    def test_get_printer_by_email_returns_printer(self):
+        mock_user_repository.get_printer_by_email.return_value = MOCK_PRINTER
+
+        response = user_service.get_printer_by_email(MOCK_PRINTER.email)
+
+        assert isinstance(response, Printer)
+        mock_user_repository.get_printer_by_email.assert_called_once_with(MOCK_PRINTER.email)
+
+    def test_get_buyer_by_email_returns_printer(self):
+        mock_user_repository.get_buyer_by_email.return_value = MOCK_BUYER
+
+        response = user_service.get_buyer_by_email(MOCK_BUYER.email)
+
+        assert isinstance(response, Buyer)
+        mock_user_repository.get_buyer_by_email.assert_called_once_with(MOCK_BUYER.email)
