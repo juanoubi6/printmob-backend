@@ -82,3 +82,19 @@ class TestUserService(unittest.TestCase):
 
         assert isinstance(response, Buyer)
         mock_user_repository.get_buyer_by_email.assert_called_once_with(MOCK_BUYER.email)
+
+    def test_update_printer_returns_printer(self):
+        mock_user_repository.update_printer.return_value = MOCK_PRINTER
+
+        response = user_service.update_printer(1, MOCK_PRINTER_PROTOTYPE)
+
+        assert isinstance(response, Printer)
+        mock_user_repository.update_printer.assert_called_once_with(1, MOCK_PRINTER_PROTOTYPE)
+
+    def test_update_buyer_returns_printer(self):
+        mock_user_repository.update_buyer.return_value = MOCK_BUYER
+
+        response = user_service.update_buyer(1, MOCK_BUYER_PROTOTYPE)
+
+        assert isinstance(response, Buyer)
+        mock_user_repository.update_buyer.assert_called_once_with(1, MOCK_BUYER_PROTOTYPE)
