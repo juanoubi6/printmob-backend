@@ -10,7 +10,7 @@ class UserController:
         self.user_service = user_service
 
     def get_user_profile(self, req: request, user_id: int, user_data: dict) -> (User, int):
-        if user_id != user_data["id"]:
+        if user_id != int(user_data["id"]):
             raise AuthException("Identified user and user_id do not match")
 
         if user_data["user_type"] == UserType.PRINTER.value:

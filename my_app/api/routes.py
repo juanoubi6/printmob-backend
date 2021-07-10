@@ -17,7 +17,7 @@ def healthy():
     return ''
 
 
-# Campaigns
+########################### Testing endpoint ###########################
 @route(campaignBlueprint, '/test-data', methods=['POST'])  # Testing-use
 def create_data():
     return current_app.campaign_controller.create_data(request)
@@ -28,6 +28,20 @@ def end_campaigns():
     return current_app.cron_controller.end_campaigns()
 
 
+@route(userBlueprint, '/token', methods=['GET'])  # Testing-use
+def get_token():
+    payload = {
+        "id": request.args["id"],
+        "email": request.args["email"],
+        "user_type": request.args["user_type"],
+    }
+
+    return current_app.token_manager.get_token_from_payload(payload)
+
+
+########################### Testing endpoint ###########################
+
+# Campaigns
 @route(campaignBlueprint, '/', methods=['POST'])
 def post_campaigns():
     return current_app.campaign_controller.post_campaign(request)
