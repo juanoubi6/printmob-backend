@@ -53,5 +53,8 @@ class CampaignService:
     def get_campaign_orders(self, campaign_id: int, filters: dict) -> Page[Order]:
         return self.campaign_repository.get_campaign_orders(campaign_id, filters)
 
+    def get_buyer_campaigns(self, buyer_id: int, filters: dict) -> Page[Campaign]:
+        return self.campaign_repository.get_buyer_campaigns(buyer_id, filters)
+
     def _generate_campaign_model_image_name(self) -> str:
         return "campaign_model_images/{}".format(uuid.uuid4())

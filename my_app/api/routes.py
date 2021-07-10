@@ -4,6 +4,7 @@ from my_app.api import route
 from my_app.api.controllers import validate_bearer_token
 
 campaignBlueprint = Blueprint('campaignController', __name__, url_prefix='/campaigns')
+buyerBlueprint = Blueprint('buyerBlueprint', __name__, url_prefix='/buyers')
 pledgeBlueprint = Blueprint('pledgeController', __name__, url_prefix='/pledges')
 orderBlueprint = Blueprint('orderController', __name__, url_prefix='/orders')
 userBlueprint = Blueprint('userController', __name__, url_prefix='/users')
@@ -130,3 +131,9 @@ def get_user_profile(user_id, user_data):
 @validate_bearer_token
 def update_user_profile(user_id, user_data):
     return current_app.user_controller.update_user_profile(request, int(user_id), user_data)
+
+
+# Buyers
+@route(buyerBlueprint, '/<buyer_id>/campaigns', methods=['GET'])
+def get_buyer_campaigns(buyer_id):
+    return current_app.campaign_controller.get_buyer_campaigns(request, int(buyer_id))

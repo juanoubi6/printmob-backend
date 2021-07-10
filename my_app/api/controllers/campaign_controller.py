@@ -78,3 +78,10 @@ class CampaignController:
         orders_page = self.campaign_service.get_campaign_orders(campaign_id, filters)
 
         return orders_page.to_json(), 200
+
+    def get_buyer_campaigns(self, req: request, buyer_id: int) -> (Page[Campaign], int):
+        filters = req.args
+        validate_pagination_filters(filters)
+        campaigns_page = self.campaign_service.get_buyer_campaigns(buyer_id, filters)
+
+        return campaigns_page.to_json(), 200

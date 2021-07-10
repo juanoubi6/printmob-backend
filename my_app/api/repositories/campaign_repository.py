@@ -218,6 +218,35 @@ class CampaignRepository:
             data=[om.to_order_entity() for om in order_models]
         )
 
+    def get_buyer_campaigns(self, buyer_id: int, filters: dict) -> Page[Campaign]:
+        """
+        Returns paginated buyer campaigns using filters
+
+        Parameters
+        ----------
+        filters: dict[str,str]
+            Dict with filters to apply.
+        buyer_id: int
+            Buyer id.
+        """
+        query = self.db.session.query(CampaignModel).join(PledgeModel)\
+            .filter(CampaignModel.id == PledgeModel.campaign_id)\
+            .filter(PledgeModel.buyer_id == buyer_id)\
+            .filter(PledgeModel.deleted_at == None)\
+            .options(noload(CampaignModel.tech_detail)) \
+            .order_by(asc(CampaignModel.id))
+
+        campaign_models = paginate(query, filters).all()
+
+        total_records = query.count()
+
+        return Page(
+            page=filters.get("page", DEFAULT_PAGE),
+            page_size=filters.get("page_size", DEFAULT_PAGE_SIZE),
+            total_records=total_records,
+            data=[cm.to_campaign_entity() for cm in campaign_models]
+        )
+
     def _get_campaign_model_by_id(self, campaign_id: int) -> CampaignModel:
         campaign_model = self.db.session.query(CampaignModel) \
             .filter_by(id=campaign_id) \
