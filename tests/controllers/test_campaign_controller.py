@@ -105,3 +105,19 @@ class TestCampaignController(unittest.TestCase):
         assert res.json["page_size"] == 10
         assert res.json["total_records"] == 100
         assert res.json["data"][0]["id"] == MOCK_ORDER.id
+
+    @patch.object(app.campaign_controller, "campaign_service")
+    def test_get_buyer_campaigns_returns_campaign_page(self, mock_campaign_service):
+        mock_campaign_service.get_buyer_campaigns.return_value = Page(
+            page=1,
+            page_size=10,
+            total_records=100,
+            data=[MOCK_CAMPAIGN]
+        )
+
+        res = client.get("/buyers/1/campaigns?page=1&page_size=10")
+        assert res.status_code == 200
+        assert res.json["page"] == 1
+        assert res.json["page_size"] == 10
+        assert res.json["total_records"] == 100
+        assert res.json["data"][0]["id"] == MOCK_CAMPAIGN.id

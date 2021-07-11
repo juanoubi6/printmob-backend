@@ -91,3 +91,12 @@ class TestCampaignService(unittest.TestCase):
 
         assert orders_page.page == 1
         mock_campaign_repository.get_campaign_orders.assert_called_once_with(1,filters)
+
+    def test_get_buyer_campaigns_returns_campaigns_page(self):
+        mock_campaign_repository.get_buyer_campaigns.return_value = Page(1, 2, 3, [MOCK_CAMPAIGN])
+
+        filters = {"filter": "filter"}
+        created_page = campaign_service.get_buyer_campaigns(1, filters)
+
+        assert created_page.page == 1
+        mock_campaign_repository.get_buyer_campaigns.assert_called_once_with(1, filters)
