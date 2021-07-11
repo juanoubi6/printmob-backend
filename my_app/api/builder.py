@@ -15,7 +15,7 @@ from my_app.settings import AWS_BUCKET_NAME, SENDER_EMAIL
 def inject_controllers(app, db):
     executor = create_thread_pool_executor()
     s3_client = build_s3_client()
-    ses_client = build_ses_client()
+    ses_client = None #build_ses_client()
 
     app.campaign_controller = build_campaign_controller(db, s3_client)
     app.pledge_controller = build_pledge_controller(db)
