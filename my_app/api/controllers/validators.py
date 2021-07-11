@@ -76,10 +76,11 @@ def validate_campaign_pledgers_interval(min_pledgers: int, max_pledgers: int):
     if (min_pledgers is None or
             min_pledgers <= 0):
         raise InvalidParamException("The minimum value of campaign pledgers is invalid")
-    if max_pledgers <= 0:
-        raise InvalidParamException("The maximum value of campaign pledgers is invalid")
-    if min_pledgers > max_pledgers:
-        raise InvalidParamException("The campaign pledges interval is invalid")
+    if max_pledgers is not None:
+        if max_pledgers <= 0:
+            raise InvalidParamException("The maximum value of campaign pledgers is invalid")
+        if min_pledgers > max_pledgers:
+            raise InvalidParamException("The campaign pledges interval is invalid")
 
 
 def validate_tech_detail_prototype(tech_details_prototype: TechDetailPrototype):

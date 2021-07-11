@@ -31,7 +31,7 @@ class CampaignController:
             pledge_price=body["pledge_price"],
             end_date=datetime.strptime(body["end_date"], '%d-%m-%Y %H:%M:%S'),
             min_pledgers=body["min_pledgers"],
-            max_pledgers=body["max_pledgers"],
+            max_pledgers=body.get("max_pledgers", None),
             tech_details=TechDetailPrototype(
                 material=body["tech_details"]["material"],
                 weight=body["tech_details"]["weight"],
