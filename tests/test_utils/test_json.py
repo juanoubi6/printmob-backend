@@ -1,5 +1,39 @@
 from tests.test_utils.mock_entities import MOCK_CAMPAIGN_MODEL_IMAGE
 
+GET_BUYER_PROFILE_RESPONSE_JSON = {
+    'address': {
+        'address': 'Calle falsa 123',
+        'apartment': 'A',
+        'city': 'CABA',
+        'floor': '7',
+        'id': 1,
+        'province': 'CABA',
+        'zip_code': 'C1425'
+    },
+    'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
+    'email': 'email@email.com',
+    'first_name': 'John',
+    'last_name': 'Doe',
+    'user_name': 'johnDoe5',
+    'user_type': 'Buyer'
+}
+
+GET_PRINTER_PROFILE_RESPONSE_JSON = {
+    'bank_information': {
+        'account_number': '324324',
+        'alias': None,
+        'bank': 'Galicia',
+        'cbu': '2222222222',
+        'id': 1
+    },
+    'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
+    'email': 'email@email.com',
+    'first_name': 'John',
+    'last_name': 'Doe',
+    'user_name': 'johnDoe5',
+    'user_type': 'Printer'
+}
+
 GET_PLEDGES_RESPONSE_JSON = [
     {
         'buyer_id': 1,

@@ -1,8 +1,10 @@
 import copy
 import unittest
+from datetime import datetime
 from unittest.mock import MagicMock, patch
 
-from my_app.api.domain import Printer, Buyer, User
+from my_app.api.domain import Printer, Buyer, User, PrinterPrototype, UserPrototype, BankInformationPrototype, UserType, \
+    AddressPrototype, BuyerPrototype
 from my_app.api.repositories import UserRepository
 from tests.test_utils.mock_entities import MOCK_BUYER_PROTOTYPE, MOCK_PRINTER_PROTOTYPE
 from tests.test_utils.mock_models import MOCK_USER_PRINTER_MODEL, MOCK_PRINTER_MODEL, \
@@ -77,3 +79,77 @@ class TestUserRepository(unittest.TestCase):
         assert test_db.session.add.call_count == 3
         test_db.session.flush.assert_called_once()
         test_db.session.commit.assert_called_once()
+
+    def test_update_printer_only_updates_certain_fields_and_returns_printer(self):
+        test_db.session.query.return_value.filter_by.return_value.first.return_value = copy.deepcopy(MOCK_PRINTER_MODEL)
+
+        proto = PrinterPrototype(
+            user_prototype=UserPrototype(
+                first_name="upd first name",
+                last_name="upd last name",
+                user_name="upd user name",
+                date_of_birth=datetime.strptime("20-07-1995", '%d-%m-%Y'),
+                email="upd email",
+                user_type=UserType.PRINTER
+            ),
+            bank_information_prototype=BankInformationPrototype(
+                cbu="upd cbu",
+                bank="upd bank",
+                account_number="upd acc number",
+                alias="upd alias"
+            )
+        )
+
+        response = user_repository.update_printer(1, proto)
+
+        assert isinstance(response, Printer)
+        assert response.first_name != MOCK_PRINTER_MODEL.user.first_name
+        assert response.last_name != MOCK_PRINTER_MODEL.user.last_name
+        assert response.user_name == MOCK_PRINTER_MODEL.user.user_name
+        assert response.date_of_birth != MOCK_PRINTER_MODEL.user.date_of_birth
+        assert response.email == MOCK_PRINTER_MODEL.user.email
+        assert response.user_type.value == MOCK_PRINTER_MODEL.user.user_type
+
+        assert response.bank_information.cbu != MOCK_PRINTER_MODEL.bank_information.cbu
+        assert response.bank_information.alias != MOCK_PRINTER_MODEL.bank_information.alias
+        assert response.bank_information.bank != MOCK_PRINTER_MODEL.bank_information.bank
+        assert response.bank_information.account_number != MOCK_PRINTER_MODEL.bank_information.account_number
+
+    def test_update_buyer_only_updates_certain_fields_and_returns_buyer(self):
+        test_db.session.query.return_value.filter_by.return_value.first.return_value = copy.deepcopy(MOCK_BUYER_MODEL)
+
+        proto = BuyerPrototype(
+            user_prototype=UserPrototype(
+                first_name="upd first name",
+                last_name="upd last name",
+                user_name="upd user name",
+                date_of_birth=datetime.strptime("20-07-1995", '%d-%m-%Y'),
+                email="upd email",
+                user_type=UserType.PRINTER
+            ),
+            address_prototype=AddressPrototype(
+                address="upd address",
+                zip_code="updz",
+                province="upd province",
+                city="upd city",
+                floor="updf",
+                apartment="upda",
+            )
+        )
+
+        response = user_repository.update_buyer(1, proto)
+
+        assert isinstance(response, Buyer)
+        assert response.first_name != MOCK_BUYER_MODEL.user.first_name
+        assert response.last_name != MOCK_BUYER_MODEL.user.last_name
+        assert response.user_name == MOCK_BUYER_MODEL.user.user_name
+        assert response.date_of_birth != MOCK_BUYER_MODEL.user.date_of_birth
+        assert response.email == MOCK_BUYER_MODEL.user.email
+        assert response.user_type.value == MOCK_BUYER_MODEL.user.user_type
+
+        assert response.address.address != MOCK_BUYER_MODEL.address.address
+        assert response.address.zip_code != MOCK_BUYER_MODEL.address.zip_code
+        assert response.address.province != MOCK_BUYER_MODEL.address.province
+        assert response.address.city != MOCK_BUYER_MODEL.address.city
+        assert response.address.floor != MOCK_BUYER_MODEL.address.floor
+        assert response.address.apartment != MOCK_BUYER_MODEL.address.apartment

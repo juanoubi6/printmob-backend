@@ -3,7 +3,8 @@ from concurrent.futures import ThreadPoolExecutor
 
 import boto3
 
-from my_app.api.controllers import CampaignController, PledgeController, OrderController, AuthController, CronController
+from my_app.api.controllers import CampaignController, PledgeController, OrderController, AuthController, \
+    CronController, UserController
 from my_app.api.db_builder import create_db_session_factory
 from my_app.api.repositories import CampaignRepository, PledgeRepository, S3Repository, EmailRepository, \
     GoogleRepository, PrinterRepository, OrderRepository, UserRepository
@@ -22,6 +23,7 @@ def inject_controllers(app, db):
     app.pledge_controller = build_pledge_controller(db)
     app.order_controller = build_order_controller(db, executor, ses_client)
     app.auth_controller = build_auth_controller(db, executor)
+    app.user_controller = build_user_controller(db)
     app.token_manager = TokenManager(JWT_SECRET_KEY)
 
     # Test-controller
@@ -69,6 +71,13 @@ def build_auth_controller(db, executor):
         executor.submit(google_repository.warm_up)
 
     return AuthController(auth_service, user_service)
+
+
+def build_user_controller(db):
+    user_repository = UserRepository(db)
+    user_service = UserService(user_repository)
+
+    return UserController(user_service)
 
 
 def build_s3_client():
