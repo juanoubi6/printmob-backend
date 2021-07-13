@@ -1,4 +1,5 @@
 import copy
+import datetime
 import unittest
 from unittest.mock import Mock
 
@@ -27,7 +28,7 @@ class TestPledgeService(unittest.TestCase):
         uncompleted_campaign.max_pledgers = 150
         uncompleted_campaign.current_pledgers = 50
 
-        mock_pledge_repository.get_pledge_campaign.return_value = uncompleted_campaign
+        mock_campaign_repository.get_campaign_detail.return_value = uncompleted_campaign
         mock_pledge_repository.has_pledge_in_campaign.return_value = False
         mock_pledge_repository.create_pledge.return_value = MOCK_PLEDGE
 
@@ -89,6 +90,21 @@ class TestPledgeService(unittest.TestCase):
         completed_campaign.current_pledgers = 120
 
         mock_campaign_repository.get_campaign_detail.return_value = completed_campaign
+
+        with pytest.raises(PledgeCreationException):
+            pledge_service.create_pledge(
+                PledgePrototype(
+                    buyer_id=1,
+                    campaign_id=1,
+                    pledge_price=34
+                )
+            )
+
+    def test_create_pledge_raises_error_when_campaign_end_date_was_already_reached(self):
+        finished_campaign = copy.deepcopy(MOCK_CAMPAIGN)
+        finished_campaign.end_date = datetime.datetime(2019, 5, 17)
+
+        mock_campaign_repository.get_campaign_detail.return_value = finished_campaign
 
         with pytest.raises(PledgeCreationException):
             pledge_service.create_pledge(

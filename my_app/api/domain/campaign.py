@@ -55,6 +55,9 @@ class Campaign:
     def has_reached_confirmation_goal(self) -> bool:
         return self.current_pledgers >= self.min_pledgers
 
+    def has_reached_end_date(self) -> bool:
+        return datetime.datetime.now() > self.end_date
+
     def has_reached_maximum_pledgers(self) -> bool:
         if self.max_pledgers is None:
             return False

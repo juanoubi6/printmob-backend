@@ -41,7 +41,7 @@ MOCK_CAMPAIGN = Campaign(
         bank_information=MOCK_BANK_INFORMATION
     ),
     pledge_price=10.50,
-    end_date=datetime.datetime(2020, 5, 17),
+    end_date=datetime.datetime(2023, 5, 17),
     min_pledgers=5,
     max_pledgers=10,
     current_pledgers=2,
