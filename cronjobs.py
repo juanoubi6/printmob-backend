@@ -8,6 +8,7 @@ import schedule
 from my_app.api.builder import create_thread_pool_executor, build_ses_client
 from my_app.api.db_builder import create_db_session_factory
 from my_app.api.repositories import EmailRepository
+from my_app.crons.cancel_campaigns import cancel_campaigns
 from my_app.crons.finalize_campaigns import finalize_campaign
 
 db_session_factory = create_db_session_factory(os.environ["DATABASE_URL"])
@@ -25,6 +26,11 @@ if __name__ == '__main__':
     schedule.every().day.at("00:00").do(
         run_threaded,
         cron_func=finalize_campaign,
+        params=(db_session_factory, email_repository, executor, "mercadopagoRepository")
+    )
+    schedule.every().day.at("00:00").do(
+        run_threaded,
+        cron_func=cancel_campaigns,
         params=(db_session_factory, email_repository, executor, "mercadopagoRepository")
     )
 
