@@ -121,3 +121,10 @@ class TestCampaignController(unittest.TestCase):
         assert res.json["page_size"] == 10
         assert res.json["total_records"] == 100
         assert res.json["data"][0]["id"] == MOCK_CAMPAIGN.id
+
+    @patch.object(app.campaign_controller, "campaign_service")
+    def test_cancel_campaign_returns_200_on_success(self, mock_campaign_service):
+        res = client.delete("/campaigns/1")
+
+        assert res.status_code == 200
+        mock_campaign_service.cancel_campaign.assert_called_once_with(1)

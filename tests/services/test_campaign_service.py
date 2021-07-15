@@ -1,9 +1,11 @@
+import copy
 import unittest
 from unittest.mock import Mock, patch
 
 import pytest
 
-from my_app.api.domain import Page
+from my_app.api.domain import Page, CampaignStatus
+from my_app.api.exceptions import CancellationException
 from my_app.api.exceptions.unprocessable_entity_exception import UnprocessableEntityException
 from my_app.api.services import CampaignService
 from tests.test_utils.mock_entities import MOCK_CAMPAIGN, MOCK_CAMPAIGN_MODEL_IMAGE, MOCK_FILE, MOCK_ORDER, \
@@ -100,3 +102,24 @@ class TestCampaignService(unittest.TestCase):
 
         assert created_page.page == 1
         mock_campaign_repository.get_buyer_campaigns.assert_called_once_with(1, filters)
+
+    def test_cancel_campaigns_does_not_fail_on_success(self):
+        in_progress_campaign = copy.deepcopy(MOCK_CAMPAIGN)
+        in_progress_campaign.status = CampaignStatus.IN_PROGRESS
+        mock_campaign_repository.get_campaign_detail.return_value = in_progress_campaign
+
+        campaign_service.cancel_campaign(1)
+
+        mock_campaign_repository.get_campaign_detail.assert_called_once_with(1)
+        mock_campaign_repository.change_campaign_status.assert_called_once_with(1, CampaignStatus.TO_BE_CANCELLED)
+
+    def test_cancel_campaigns_raises_cancellation_exception_when_campaign_cannot_be_cancelled(self):
+        uncancellable_campaign = copy.deepcopy(MOCK_CAMPAIGN)
+        uncancellable_campaign.status = CampaignStatus.COMPLETED
+        mock_campaign_repository.get_campaign_detail.return_value = uncancellable_campaign
+
+        with pytest.raises(CancellationException):
+            campaign_service.cancel_campaign(1)
+
+        mock_campaign_repository.get_campaign_detail.assert_called_once_with(1)
+        mock_campaign_repository.change_campaign_status.assert_not_called()
