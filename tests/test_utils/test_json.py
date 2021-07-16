@@ -1,4 +1,38 @@
-from tests.utils.mock_entities import MOCK_CAMPAIGN_MODEL_IMAGE
+from tests.test_utils.mock_entities import MOCK_CAMPAIGN_MODEL_IMAGE
+
+GET_BUYER_PROFILE_RESPONSE_JSON = {
+    'address': {
+        'address': 'Calle falsa 123',
+        'apartment': 'A',
+        'city': 'CABA',
+        'floor': '7',
+        'id': 1,
+        'province': 'CABA',
+        'zip_code': 'C1425'
+    },
+    'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
+    'email': 'email@email.com',
+    'first_name': 'John',
+    'last_name': 'Doe',
+    'user_name': 'johnDoe5',
+    'user_type': 'Buyer'
+}
+
+GET_PRINTER_PROFILE_RESPONSE_JSON = {
+    'bank_information': {
+        'account_number': '324324',
+        'alias': None,
+        'bank': 'Galicia',
+        'cbu': '2222222222',
+        'id': 1
+    },
+    'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
+    'email': 'email@email.com',
+    'first_name': 'John',
+    'last_name': 'Doe',
+    'user_name': 'johnDoe5',
+    'user_type': 'Printer'
+}
 
 GET_PLEDGES_RESPONSE_JSON = [
     {
@@ -23,14 +57,11 @@ UPDATE_ORDER_RESPONSE_JSON = {
             'province': 'CABA',
             'zip_code': 'C1425'
         },
-        'created_at': 'Sun, 17 May 2020 00:00:00 GMT',
         'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
-        'deleted_at': None,
         'email': 'email@email.com',
         'first_name': 'John',
-        'id': 1,
+        "user_type": "Buyer",
         'last_name': 'Doe',
-        'updated_at': 'Sun, 17 May 2020 00:00:00 GMT',
         'user_name': 'johnDoe5'
     },
     'comments': 'comments',
@@ -63,7 +94,7 @@ CAMPAIGN_GET_RESPONSE_JSON = {
     "campaign_picture_url": None,
     "current_pledgers": 2,
     "description": "Description",
-    "end_date": "Sun, 17 May 2020 00:00:00 GMT",
+    "end_date": "Wed, 17 May 2023 00:00:00 GMT",
     "id": 1,
     "max_pledgers": 10,
     "min_pledgers": 5,
@@ -73,12 +104,16 @@ CAMPAIGN_GET_RESPONSE_JSON = {
         "date_of_birth": "Sun, 17 May 2020 00:00:00 GMT",
         "email": "email@email.com",
         "first_name": "John",
-        "id": 1,
         "last_name": "Doe",
         "user_name": "johnDoe5",
-        "created_at": "Sun, 17 May 2020 00:00:00 GMT",
-        "updated_at": "Sun, 17 May 2020 00:00:00 GMT",
-        "deleted_at": None
+        "user_type": "Printer",
+        'bank_information': {
+            'account_number': '324324',
+            'alias': None,
+            'bank': 'Galicia',
+            'cbu': '2222222222',
+            'id': 1
+        }
     },
     "tech_details": {
         "campaign_id": 1,
@@ -127,22 +162,26 @@ CAMPAIGN_POST_RESPONSE_JSON = {
     "current_pledgers": 2,
     "deleted_at": None,
     "description": "Description",
-    "end_date": "Sun, 17 May 2020 00:00:00 GMT",
+    "end_date": "Wed, 17 May 2023 00:00:00 GMT",
     "id": 1,
     "max_pledgers": 10,
     "min_pledgers": 5,
     "name": "Campaign name",
     "pledge_price": 10.50,
     "printer": {
-        "created_at": "Sun, 17 May 2020 00:00:00 GMT",
         "date_of_birth": "Sun, 17 May 2020 00:00:00 GMT",
-        "deleted_at": None,
         "email": "email@email.com",
         "first_name": "John",
-        "id": 1,
+        "user_type": "Printer",
         "last_name": "Doe",
-        "updated_at": "Sun, 17 May 2020 00:00:00 GMT",
-        "user_name": "johnDoe5"
+        "user_name": "johnDoe5",
+        'bank_information': {
+            'account_number': '324324',
+            'alias': None,
+            'bank': 'Galicia',
+            'cbu': '2222222222',
+            'id': 1
+        }
     },
     "tech_details": {
         "campaign_id": 1,
@@ -183,7 +222,60 @@ CAMPAIGN_BUYERS_JSON_RESPONSE = [
         'first_name': 'John',
         'id': 1,
         'last_name': 'Doe',
+        "user_type": "Buyer",
         'updated_at': 'Sun, 17 May 2020 00:00:00 GMT',
         'user_name': 'johnDoe5'
     }
 ]
+
+LOGIN_RESPONSE_JSON = {
+    'token': 'JWT',
+    'type': 'Buyer',
+    'user_data': {
+        'address': {
+            'address': 'Calle falsa 123',
+            'apartment': 'A',
+            'city': 'CABA',
+            'floor': '7',
+            'id': 1,
+            'province': 'CABA',
+            'zip_code': 'C1425'
+        },
+        'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
+        'email': 'email@email.com',
+        'first_name': 'John',
+        'last_name': 'Doe',
+        'user_name': 'johnDoe5',
+        'user_type': 'Buyer'
+    }
+}
+
+CREATE_PRINTER_JSON_REQUEST = {
+    "first_name": "Juan",
+    "last_name": "Perez",
+    "user_name": "juanperez1211",
+    "date_of_birth": "21-05-2023",
+    "email": "juanperez11@gmail.com",
+    "bank_information": {
+        "cbu": "222222222333333333344",
+        "alias": None,
+        "bank": "Galicia",
+        "account_number": "26163-44"
+    }
+}
+
+CREATE_BUYER_JSON_REQUEST = {
+    "first_name": "Juan",
+    "last_name": "Perez",
+    "user_name": "juanperez122",
+    "date_of_birth": "21-05-2023",
+    "email": "juanperez1@gmail.com",
+    "address": {
+        "address": "Calle falsa 123",
+        "zip_code": "1425",
+        "province": "CABA",
+        "city": "CABA",
+        "floor": "7",
+        "apartment": None
+    }
+}

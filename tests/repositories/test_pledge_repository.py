@@ -6,7 +6,7 @@ import pytest
 from my_app.api.domain import PledgePrototype, Pledge, Campaign, CampaignStatus
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories import PledgeRepository
-from tests.utils.mock_models import MOCK_CAMPAIGN_MODEL, MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED, \
+from tests.test_utils.mock_models import MOCK_CAMPAIGN_MODEL, MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED, \
     MOCK_PLEDGE_MODEL
 
 test_db = MagicMock()
@@ -129,3 +129,16 @@ class TestPledgeRepository(unittest.TestCase):
 
         assert len(response) == 1
         assert isinstance(response[0], Pledge)
+
+    def test_has_pledge_in_campaign_returns_true_when_pledge_exists(self):
+        test_db.session\
+            .query.return_value\
+            .filter.return_value\
+            .filter.return_value\
+            .filter.return_value\
+            .options.return_value\
+            .first.return_value = MOCK_PLEDGE_MODEL
+
+        response = pledge_repository.has_pledge_in_campaign(buyer_id=1, campaign_id=1)
+
+        assert response is True

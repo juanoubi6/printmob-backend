@@ -4,10 +4,10 @@ from sqlalchemy import asc
 from sqlalchemy.orm import noload
 
 from my_app.api.domain import Page, Campaign, CampaignModelImagePrototype, CampaignModelImage, CampaignPrototype, \
-    CampaignStatus, Order
+    CampaignStatus, Order, UserType, OrderStatus
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, TechDetailsModel, \
-    PrinterModel, BuyerModel, PledgeModel, AddressModel, OrderModel
+    PrinterModel, BuyerModel, PledgeModel, AddressModel, OrderModel, BankInformationModel
 from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, apply_campaign_filters
 
 CAMPAIGN_NOT_FOUND = 'Non-existent campaign'
@@ -23,21 +23,32 @@ class CampaignRepository:
                                        last_name='Costas',
                                        user_name='Chikinkun',
                                        date_of_birth=datetime.now(),
-                                       email='lcostas@gmail.com')
+                                       email='juan.manuel.oubina@gmail.com',
+                                       user_type=UserType.PRINTER.value)
         self.db.session.add(printer_user_model)
-        self.db.session.commit()
+        self.db.session.flush()
 
         buyer_user_model = UserModel(first_name='Juan',
                                      last_name='Oubina',
                                      user_name='Oubi',
                                      date_of_birth=datetime.now(),
-                                     email='oubi@gmail.com')
+                                     email='joubina@frba.utn.edu.ar',
+                                     user_type=UserType.BUYER.value)
         self.db.session.add(buyer_user_model)
-        self.db.session.commit()
+        self.db.session.flush()
 
-        printer_model = PrinterModel(id=printer_user_model.id)
+        bank_information_model = BankInformationModel(
+            cbu="2222222222333333333344",
+            alias="Alias",
+            bank="Banco galicia",
+            account_number="123456-78"
+        )
+        self.db.session.add(bank_information_model)
+        self.db.session.flush()
+
+        printer_model = PrinterModel(id=printer_user_model.id, bank_information_id=bank_information_model.id)
         self.db.session.add(printer_model)
-        self.db.session.commit()
+        self.db.session.flush()
 
         address_model = AddressModel(
             address="Calle falsa 123",
@@ -48,11 +59,11 @@ class CampaignRepository:
             apartment="A"
         )
         self.db.session.add(address_model)
-        self.db.session.commit()
+        self.db.session.flush()
 
         buyer_model = BuyerModel(id=buyer_user_model.id, address_id=address_model.id)
         self.db.session.add(buyer_model)
-        self.db.session.commit()
+        self.db.session.flush()
 
         campaign_model = CampaignModel(name='Vaso calavera',
                                        description='Un vaso con forma de calavera',
@@ -64,7 +75,7 @@ class CampaignRepository:
                                        max_pledgers=10,
                                        status=CampaignStatus.IN_PROGRESS.value)
         self.db.session.add(campaign_model)
-        self.db.session.commit()
+        self.db.session.flush()
 
         campaign_model_image = CampaignModelImageModel(
             campaign_id=campaign_model.id,
@@ -73,13 +84,13 @@ class CampaignRepository:
         )
 
         self.db.session.add(campaign_model_image)
-        self.db.session.commit()
+        self.db.session.flush()
 
         pledge_model = PledgeModel(campaign_id=campaign_model.id,
                                    pledge_price=campaign_model.pledge_price,
                                    buyer_id=buyer_model.id)
         self.db.session.add(pledge_model)
-        self.db.session.commit()
+        self.db.session.flush()
 
         tech_detail_model = TechDetailsModel(material="Material",
                                              weight=10,
@@ -88,6 +99,15 @@ class CampaignRepository:
                                              length=12,
                                              depth=13)
         self.db.session.add(tech_detail_model)
+        self.db.session.flush()
+
+        order_model = OrderModel(
+            campaign_id=campaign_model.id,
+            pledge_id=pledge_model.id,
+            buyer_id=buyer_model.id,
+            status=OrderStatus.IN_PROGRESS.value
+        )
+        self.db.session.add(order_model)
         self.db.session.commit()
 
     def create_campaign(self, prototype: CampaignPrototype) -> Campaign:
@@ -196,6 +216,35 @@ class CampaignRepository:
             page_size=filters.get("page_size", DEFAULT_PAGE_SIZE),
             total_records=total_records,
             data=[om.to_order_entity() for om in order_models]
+        )
+
+    def get_buyer_campaigns(self, buyer_id: int, filters: dict) -> Page[Campaign]:
+        """
+        Returns paginated buyer campaigns using filters
+
+        Parameters
+        ----------
+        filters: dict[str,str]
+            Dict with filters to apply.
+        buyer_id: int
+            Buyer id.
+        """
+        query = self.db.session.query(CampaignModel).join(PledgeModel)\
+            .filter(CampaignModel.id == PledgeModel.campaign_id)\
+            .filter(PledgeModel.buyer_id == buyer_id)\
+            .filter(PledgeModel.deleted_at == None)\
+            .options(noload(CampaignModel.tech_detail)) \
+            .order_by(asc(CampaignModel.id))
+
+        campaign_models = paginate(query, filters).all()
+
+        total_records = query.count()
+
+        return Page(
+            page=filters.get("page", DEFAULT_PAGE),
+            page_size=filters.get("page_size", DEFAULT_PAGE_SIZE),
+            total_records=total_records,
+            data=[cm.to_campaign_entity() for cm in campaign_models]
         )
 
     def _get_campaign_model_by_id(self, campaign_id: int) -> CampaignModel:

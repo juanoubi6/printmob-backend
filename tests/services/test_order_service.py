@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 from my_app.api.domain import OrderStatus, OrderPrototype
 from my_app.api.services import OrderService
-from tests.utils.mock_entities import MOCK_ORDER
+from tests.test_utils.mock_entities import MOCK_ORDER
 
 mock_order_repository = Mock()
 mock_email_repository = Mock()

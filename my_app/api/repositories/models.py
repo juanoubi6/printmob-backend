@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship
 
 from my_app.api.domain import Pledge, TechDetail, User, Campaign, CampaignModelImage, Printer, CampaignStatus, Buyer, \
-    Address, Order, OrderStatus
+    Address, Order, OrderStatus, UserType, BankInformation
 
 Base = declarative_base()
 
@@ -44,7 +44,7 @@ class CampaignModel(Base):
             description=self.description,
             campaign_picture_url=self.campaign_picture_url,
             campaign_model_images=[ci.to_campaign_model_image_entity() for ci in self.images],
-            printer=Printer(self.printer.user.to_user_entity()) if self.printer is not None else None,
+            printer=self.printer.to_printer_entity() if self.printer is not None else None,
             pledge_price=float(self.pledge_price),
             end_date=self.end_date,
             min_pledgers=self.min_pledgers,
@@ -62,20 +62,19 @@ class PrinterModel(Base):
     __tablename__ = 'printers'
 
     id = Column(Integer, ForeignKey('users.id'), primary_key=True)
+    bank_information_id = Column(Integer, ForeignKey('bank_information.id'))
+
     user = relationship("UserModel")
+    bank_information = relationship("BankInformationModel")
 
     def __repr__(self):
         return "<Printer(id='{id}}')>".format(id=self.id)
 
     def to_printer_entity(self):
-        return Printer(User(
-            id=self.id,
-            first_name=self.user.first_name,
-            last_name=self.user.last_name,
-            user_name=self.user.user_name,
-            date_of_birth=self.user.date_of_birth,
-            email=self.user.email
-        ))
+        return Printer(
+            user=self.user.to_user_entity(),
+            bank_information=self.bank_information.to_bank_information_entity()
+        )
 
 
 class BuyerModel(Base):
@@ -89,14 +88,7 @@ class BuyerModel(Base):
 
     def to_buyer_entity(self):
         return Buyer(
-            user=User(
-                id=self.id,
-                first_name=self.user.first_name,
-                last_name=self.user.last_name,
-                user_name=self.user.user_name,
-                date_of_birth=self.user.date_of_birth,
-                email=self.user.email
-            ),
+            user=self.user.to_user_entity(),
             address=self.address.to_address_entity()
         )
 
@@ -116,9 +108,10 @@ class UserModel(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow)
     deleted_at = Column(DateTime)
+    user_type = Column(String)
 
-    printer = relationship("PrinterModel", back_populates="user")
-    buyer = relationship("BuyerModel", back_populates="user")
+    printer = relationship("PrinterModel", uselist=False, back_populates="user")
+    buyer = relationship("BuyerModel", uselist=False, back_populates="user")
 
     def __repr__(self):
         return "<User(id='{id}}',username='{user_name}')>".format(id=self.id, user_name=self.user_name)
@@ -131,6 +124,7 @@ class UserModel(Base):
             user_name=self.user_name,
             date_of_birth=self.date_of_birth,
             email=self.email,
+            user_type=UserType(self.user_type),
             created_at=self.created_at,
             updated_at=self.updated_at,
             deleted_at=self.deleted_at
@@ -283,4 +277,27 @@ class OrderModel(Base):
             mail_company=self.mail_company,
             tracking_code=self.tracking_code,
             comments=self.comments,
+        )
+
+
+class BankInformationModel(Base):
+    __tablename__ = 'bank_information'
+
+    id = Column(Integer, primary_key=True)
+    cbu = Column(String)
+    alias = Column(String, nullable=True)
+    bank = Column(String)
+    account_number = Column(String)
+
+    def __repr__(self):
+        return "<BankInformation(id='{id}}',cbu='{cbu}',bank='{bank}')>" \
+            .format(id=self.id, cbu=self.cbu, bank=self.bank)
+
+    def to_bank_information_entity(self):
+        return BankInformation(
+            id=self.id,
+            cbu=self.cbu,
+            alias=self.alias,
+            bank=self.bank,
+            account_number=self.account_number
         )

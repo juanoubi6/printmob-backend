@@ -1,8 +1,9 @@
-from my_app.api.domain.user import User
+from my_app.api.domain import BankInformationPrototype, BankInformation
+from my_app.api.domain.user import User, UserType, UserPrototype
 
 
 class Printer(User):
-    def __init__(self, user: User):
+    def __init__(self, user: User, bank_information: BankInformation):
         super().__init__(
             id=user.id,
             first_name=user.first_name,
@@ -10,10 +11,21 @@ class Printer(User):
             user_name=user.user_name,
             date_of_birth=user.date_of_birth,
             email=user.email,
+            user_type=UserType.PRINTER,
             created_at=user.created_at,
             updated_at=user.updated_at,
             deleted_at=user.deleted_at
         )
+        self.bank_information = bank_information
 
     def to_json(self):
-        return User.to_json(self)
+        json_dict = User.to_json(self)
+        json_dict["bank_information"] = self.bank_information.to_json()
+
+        return json_dict
+
+
+class PrinterPrototype:
+    def __init__(self, user_prototype: UserPrototype, bank_information_prototype: BankInformationPrototype):
+        self.user_prototype = user_prototype
+        self.bank_information_prototype = bank_information_prototype

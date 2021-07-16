@@ -27,3 +27,21 @@ class Address:
             "floor": self.floor,
             "apartment": self.apartment
         }
+
+
+class AddressPrototype:
+    def __init__(
+            self,
+            address: str,
+            zip_code: str,
+            province: str,
+            city: str,
+            floor: str = None,
+            apartment: str = None
+    ):
+        self.address = address
+        self.zip_code = zip_code
+        self.province = province
+        self.city = city
+        self.floor = floor
+        self.apartment = apartment
