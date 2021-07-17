@@ -1,11 +1,13 @@
+import datetime
 import unittest
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from my_app.api.domain import Campaign, Page, CampaignModelImage
+from my_app.api.domain import Campaign, Page, CampaignModelImage, CampaignStatus
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories import CampaignRepository
+from my_app.api.repositories.models import CampaignModel
 from tests.test_utils.mock_entities import MOCK_FILTERS, MOCK_CAMPAIGN_MODEL_IMAGE_PROTOTYPE, MOCK_CAMPAIGN_PROTOTYPE
 from tests.test_utils.mock_models import MOCK_CAMPAIGN_MODEL, MOCK_CAMPAIGN_MODEL_IMAGE_MODEL, MOCK_ORDER_MODEL
 
@@ -87,9 +89,9 @@ class TestCampaignRepository(unittest.TestCase):
         assert response.page_size == MOCK_FILTERS["page_size"]
         paginate_mock.return_value.all.assert_called_once()
 
-        test_db.session\
-            .query.return_value\
-            .filter.return_value\
+        test_db.session \
+            .query.return_value \
+            .filter.return_value \
             .order_by.assert_called_once()
 
     @patch('my_app.api.repositories.campaign_repository.paginate')
@@ -103,11 +105,37 @@ class TestCampaignRepository(unittest.TestCase):
         assert response.page_size == MOCK_FILTERS["page_size"]
         paginate_mock.return_value.all.assert_called_once()
 
-        test_db.session\
-            .query.return_value\
-            .join.return_value\
-            .filter.return_value\
-            .filter.return_value\
-            .filter.return_value\
-            .options.return_value\
+        test_db.session \
+            .query.return_value \
+            .join.return_value \
+            .filter.return_value \
+            .filter.return_value \
+            .filter.return_value \
+            .options.return_value \
             .order_by.assert_called_once()
+
+    def test_change_campaign_status_changes_campaign(self):
+        campaign_to_change = CampaignModel(
+            id=1,
+            name="Campaign name",
+            description="Description",
+            campaign_picture_url="campaign picture url",
+            pledge_price=10.50,
+            end_date=datetime.datetime(2020, 5, 17),
+            min_pledgers=5,
+            max_pledgers=10,
+            tech_detail=None,
+            images=[],
+            printer=None,
+            pledges=[],
+            created_at=datetime.datetime(2020, 5, 17),
+            updated_at=datetime.datetime(2020, 5, 17),
+            status="In progress"
+        )
+
+        test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.return_value = campaign_to_change
+
+        campaign_repository.change_campaign_status(1, CampaignStatus.TO_BE_CANCELLED)
+
+        test_db.session.commit.assert_called_once()
+        assert campaign_to_change.status == CampaignStatus.TO_BE_CANCELLED.value

@@ -85,3 +85,8 @@ class CampaignController:
         campaigns_page = self.campaign_service.get_buyer_campaigns(buyer_id, filters)
 
         return campaigns_page.to_json(), 200
+
+    def cancel_campaign(self, req: request, campaign_id: int) -> (dict, int):
+        self.campaign_service.cancel_campaign(campaign_id)
+
+        return {"status": "ok"}, 200

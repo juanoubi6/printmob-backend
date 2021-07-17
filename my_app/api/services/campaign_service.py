@@ -1,10 +1,12 @@
 import uuid
 
 from my_app.api.domain import Page, Campaign, CampaignModelImage, CampaignModelImagePrototype, File, Order
-from my_app.api.domain.campaign import CampaignPrototype
+from my_app.api.domain.campaign import CampaignPrototype, CampaignStatus
+from my_app.api.exceptions import CancellationException
 from my_app.api.exceptions.unprocessable_entity_exception import UnprocessableEntityException
 
 PRINTER_NOT_FOUND = 'Non-existent printer for campaign'
+CAMPAIGN_CANNOT_BE_CANCELLED = 'The campaign cannot be cancelled'
 
 
 class CampaignService:
@@ -58,3 +60,11 @@ class CampaignService:
 
     def _generate_campaign_model_image_name(self) -> str:
         return "campaign_model_images/{}".format(uuid.uuid4())
+
+    def cancel_campaign(self, campaign_id: int):
+        campaign = self.campaign_repository.get_campaign_detail(campaign_id)
+
+        if not campaign.can_be_cancelled():
+            raise CancellationException(CAMPAIGN_CANNOT_BE_CANCELLED)
+
+        self.campaign_repository.change_campaign_status(campaign_id, CampaignStatus.TO_BE_CANCELLED)
