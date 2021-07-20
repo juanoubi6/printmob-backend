@@ -114,3 +114,21 @@ def create_updated_order_email_for_buyer(receiver: str, order_id: int) -> Email:
         subject="Una de tus órdenes fue actualizada",
         body=email_body
     )
+
+
+def create_cancelled_campaign_email_for_client(receiver: str, campaign: CampaignModel) -> Email:
+    email_body = """
+        La campaña '{name}', en la que participaste con ${price}, lamentablemente fue cancelada. 
+        En los próximos días recuperarás el monto de tu reserva en el mismo medio de pago que utilizaste.
+
+        Saludos!
+    """.format(
+        name=campaign.name,
+        price=campaign.pledge_price,
+    )
+
+    return Email(
+        to=receiver,
+        subject="Una campaña en la que participastes fue cancelada",
+        body=email_body
+    )

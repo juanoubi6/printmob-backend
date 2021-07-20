@@ -1,29 +1,31 @@
 import os
 import unittest
-from unittest.mock import patch, Mock
 from concurrent.futures import TimeoutError
+from unittest.mock import patch, Mock
 
 import pytest
 import requests
 
-from my_app.api.exceptions import GoogleTimeoutException, GoogleValidationException
+from my_app.api.exceptions import GoogleValidationException
 from my_app.api.repositories import GoogleRepository
 
 client_id = os.environ["GOOGLE_CLIENT_ID"]
 google_fallback_url = os.environ["GOOGLE_AUTH_FALLBACK_URL"]
-mock_executor = Mock()
-google_repository = GoogleRepository(client_id, google_fallback_url, mock_executor)
 
 
 class TestUserRepository(unittest.TestCase):
 
+    def setUp(self):
+        self.mock_executor = Mock()
+        self.google_repository = GoogleRepository(client_id, google_fallback_url, self.mock_executor)
+
     def test_retrieve_token_data_returns_google_user_data_on_default_flow_success(self):
         # Mock default method ok
         mock_future = Mock()
-        mock_executor.submit.return_value = mock_future
+        self.mock_executor.submit.return_value = mock_future
         mock_future.result.return_value = GOOGLE_RESPONSE_MOCK
 
-        google_user_data = google_repository.retrieve_token_data("token")
+        google_user_data = self.google_repository.retrieve_token_data("token")
 
         assert google_user_data.first_name == GOOGLE_RESPONSE_MOCK["given_name"]
         assert google_user_data.last_name == GOOGLE_RESPONSE_MOCK["family_name"]
@@ -38,23 +40,23 @@ class TestUserRepository(unittest.TestCase):
 
         # Mock default method timeout
         mock_future = Mock()
-        mock_executor.submit.return_value = mock_future
+        self.mock_executor.submit.return_value = mock_future
         mock_future.result.side_effect = TimeoutError()
 
         # Fallback works ok
         requests_mock.get.return_value = ok_response
 
-        google_user_data = google_repository.retrieve_token_data("token")
+        google_user_data = self.google_repository.retrieve_token_data("token")
 
         assert google_user_data.email == GOOGLE_RESPONSE_MOCK["email"]
 
     def test_retrieve_token_data_raises_exception_if_default_flow_fails(self):
         mock_future = Mock()
-        mock_executor.submit.return_value = mock_future
+        self.mock_executor.submit.return_value = mock_future
         mock_future.result.side_effect = Exception("Something happened")
 
         with pytest.raises(GoogleValidationException):
-            google_repository.retrieve_token_data("token")
+            self.google_repository.retrieve_token_data("token")
 
     @patch('my_app.api.repositories.google_repository.requests')
     def test_retrieve_token_data_raises_exception_if_fallback_flow_fails(self, requests_mock):
@@ -67,14 +69,14 @@ class TestUserRepository(unittest.TestCase):
 
         # Default method fails because of timeout
         mock_future = Mock()
-        mock_executor.submit.return_value = mock_future
+        self.mock_executor.submit.return_value = mock_future
         mock_future.result.side_effect = TimeoutError()
 
         # Fallback method fails
         requests_mock.get.return_value = bad_response
 
         with pytest.raises(GoogleValidationException):
-            google_repository.retrieve_token_data("token")
+            self.google_repository.retrieve_token_data("token")
 
 
 GOOGLE_RESPONSE_MOCK = {

@@ -13,6 +13,7 @@ class CampaignStatus(enum.Enum):
     CANCELLED = "Cancelled"
     UNSATISFIED = "Unsatisfied"
     TO_BE_FINALIZED = "To be finalized"
+    TO_BE_CANCELLED = "To be cancelled"
 
 
 class Campaign:
@@ -69,6 +70,9 @@ class Campaign:
             return False
         else:
             return self.max_pledgers - self.current_pledgers == 1
+
+    def can_be_cancelled(self) -> bool:
+        return self.status == CampaignStatus.IN_PROGRESS
 
     def to_json(self):
         return {
