@@ -10,51 +10,49 @@ from tests.test_utils.mock_entities import MOCK_BUYER_PROTOTYPE, MOCK_PRINTER_PR
 from tests.test_utils.mock_models import MOCK_USER_PRINTER_MODEL, MOCK_PRINTER_MODEL, \
     MOCK_USER_BUYER_MODEL, MOCK_BUYER_MODEL
 
-test_db = MagicMock()
-user_repository = UserRepository(test_db)
-
 
 class TestUserRepository(unittest.TestCase):
 
     def setUp(self):
-        test_db.reset_mock()
+        self.test_db = MagicMock()
+        self.user_repository = UserRepository(self.test_db)
 
     def test_get_printer_by_email_returns_printer(self):
         user_printer_model = copy.deepcopy(MOCK_USER_PRINTER_MODEL)
         user_printer_model.printer = MOCK_PRINTER_MODEL
-        test_db.session.query.return_value.filter_by.return_value.first.return_value = user_printer_model
+        self.test_db.session.query.return_value.filter_by.return_value.first.return_value = user_printer_model
 
-        response = user_repository.get_printer_by_email("email")
+        response = self.user_repository.get_printer_by_email("email")
 
         assert isinstance(response, Printer)
 
     def test_get_buyer_by_email_returns_buyer(self):
         user_buyer_model = copy.deepcopy(MOCK_USER_BUYER_MODEL)
         user_buyer_model.buyer = MOCK_BUYER_MODEL
-        test_db.session.query.return_value.filter_by.return_value.first.return_value = user_buyer_model
+        self.test_db.session.query.return_value.filter_by.return_value.first.return_value = user_buyer_model
 
-        response = user_repository.get_buyer_by_email("email")
+        response = self.user_repository.get_buyer_by_email("email")
 
         assert isinstance(response, Buyer)
 
     def test_get_user_by_email_returns_user(self):
-        test_db.session.query.return_value.filter_by.return_value.first.return_value = MOCK_USER_BUYER_MODEL
+        self.test_db.session.query.return_value.filter_by.return_value.first.return_value = MOCK_USER_BUYER_MODEL
 
-        response = user_repository.get_user_by_email("email")
+        response = self.user_repository.get_user_by_email("email")
 
         assert isinstance(response, User)
 
     def test_is_user_name_in_use_returns_true_if_user_name_is_being_used(self):
-        test_db.session.query.return_value.filter_by.return_value.first.return_value = MOCK_USER_BUYER_MODEL
+        self.test_db.session.query.return_value.filter_by.return_value.first.return_value = MOCK_USER_BUYER_MODEL
 
-        response = user_repository.is_user_name_in_use("username")
+        response = self.user_repository.is_user_name_in_use("username")
 
         assert response is True
 
     def test_is_email_in_use_returns_true_if_email_is_being_used(self):
-        test_db.session.query.return_value.filter_by.return_value.first.return_value = MOCK_USER_BUYER_MODEL
+        self.test_db.session.query.return_value.filter_by.return_value.first.return_value = MOCK_USER_BUYER_MODEL
 
-        response = user_repository.is_email_in_use("email")
+        response = self.user_repository.is_email_in_use("email")
 
         assert response is True
 
@@ -62,26 +60,26 @@ class TestUserRepository(unittest.TestCase):
     def test_create_buyer_creates_buyer(self, mock_buyer_model_instance):
         mock_buyer_model_instance.return_value = MOCK_BUYER_MODEL
 
-        response = user_repository.create_buyer(MOCK_BUYER_PROTOTYPE)
+        response = self.user_repository.create_buyer(MOCK_BUYER_PROTOTYPE)
 
         assert isinstance(response, Buyer)
-        assert test_db.session.add.call_count == 3
-        test_db.session.flush.assert_called_once()
-        test_db.session.commit.assert_called_once()
+        assert self.test_db.session.add.call_count == 3
+        self.test_db.session.flush.assert_called_once()
+        self.test_db.session.commit.assert_called_once()
 
     @patch('my_app.api.repositories.user_repository.PrinterModel')
     def test_create_printer_creates_printer(self, mock_printer_model_instance):
         mock_printer_model_instance.return_value = MOCK_PRINTER_MODEL
 
-        response = user_repository.create_printer(MOCK_PRINTER_PROTOTYPE)
+        response = self.user_repository.create_printer(MOCK_PRINTER_PROTOTYPE)
 
         assert isinstance(response, Printer)
-        assert test_db.session.add.call_count == 3
-        test_db.session.flush.assert_called_once()
-        test_db.session.commit.assert_called_once()
+        assert self.test_db.session.add.call_count == 3
+        self.test_db.session.flush.assert_called_once()
+        self.test_db.session.commit.assert_called_once()
 
     def test_update_printer_only_updates_certain_fields_and_returns_printer(self):
-        test_db.session.query.return_value.filter_by.return_value.first.return_value = copy.deepcopy(MOCK_PRINTER_MODEL)
+        self.test_db.session.query.return_value.filter_by.return_value.first.return_value = copy.deepcopy(MOCK_PRINTER_MODEL)
 
         proto = PrinterPrototype(
             user_prototype=UserPrototype(
@@ -100,7 +98,7 @@ class TestUserRepository(unittest.TestCase):
             )
         )
 
-        response = user_repository.update_printer(1, proto)
+        response = self.user_repository.update_printer(1, proto)
 
         assert isinstance(response, Printer)
         assert response.first_name != MOCK_PRINTER_MODEL.user.first_name
@@ -116,7 +114,7 @@ class TestUserRepository(unittest.TestCase):
         assert response.bank_information.account_number != MOCK_PRINTER_MODEL.bank_information.account_number
 
     def test_update_buyer_only_updates_certain_fields_and_returns_buyer(self):
-        test_db.session.query.return_value.filter_by.return_value.first.return_value = copy.deepcopy(MOCK_BUYER_MODEL)
+        self.test_db.session.query.return_value.filter_by.return_value.first.return_value = copy.deepcopy(MOCK_BUYER_MODEL)
 
         proto = BuyerPrototype(
             user_prototype=UserPrototype(
@@ -137,7 +135,7 @@ class TestUserRepository(unittest.TestCase):
             )
         )
 
-        response = user_repository.update_buyer(1, proto)
+        response = self.user_repository.update_buyer(1, proto)
 
         assert isinstance(response, Buyer)
         assert response.first_name != MOCK_BUYER_MODEL.user.first_name
