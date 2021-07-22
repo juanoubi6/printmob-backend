@@ -23,7 +23,6 @@ def validate_pagination_filters(filters: dict):
 
 def validate_campaign_prototype(campaign_prototype: CampaignPrototype):
     validate_alphanumeric_field(campaign_prototype.name, "name of the campaign")
-    validate_alphanumeric_field(campaign_prototype.description, "description of the campaign")
     for image_url in campaign_prototype.campaign_model_image_urls:
         validate_url_field(image_url, "url of the campaign image")
     validate_positive_integer_field(campaign_prototype.printer_id, "id of the campaign printer")
