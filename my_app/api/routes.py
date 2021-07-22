@@ -1,4 +1,6 @@
-from flask import Blueprint, current_app, request
+import datetime
+
+from flask import Blueprint, current_app, request, make_response
 
 from my_app.api import route
 from my_app.api.controllers import validate_bearer_token
@@ -113,7 +115,15 @@ def update_order(order_id):
 # Auth
 @route(authBlueprint, '/login', methods=['POST'])
 def login():
-    return current_app.auth_controller.login(request)
+    api_response, status = current_app.auth_controller.login(request)
+    cookie_response = make_response(api_response)
+    cookie_response.status = status
+    cookie_response.set_cookie(
+        key="printmob-backend-cookie",
+        value=api_response["token"]
+    )
+
+    return cookie_response
 
 
 @route(authBlueprint, '/signup/printer', methods=['POST'])

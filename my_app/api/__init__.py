@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask import jsonify
+from flask import jsonify, Response
 from flask_sqlalchemy import SQLAlchemy
 
 from . import builder
@@ -54,9 +54,14 @@ def route(bp, *args, **kwargs):
         def wrapper(*args, **kwargs):
             status_code = 200
             response_value = f(*args, **kwargs)
+
+            if isinstance(response_value, Response):
+                return response_value
+
             if isinstance(response_value, tuple):
                 status_code = response_value[1]
                 response_value = response_value[0]
+
             return jsonify(response_value), status_code
 
         return f
