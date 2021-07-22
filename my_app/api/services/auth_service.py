@@ -1,5 +1,5 @@
 from my_app.api.domain import UserType, User
-from my_app.api.exceptions import AuthException
+from my_app.api.exceptions import AuthException, BusinessException
 from my_app.api.repositories import GoogleRepository, UserRepository
 from my_app.api.utils.token_manager import TokenManager
 
@@ -29,4 +29,4 @@ class AuthService:
             buyer = self.user_repository.get_buyer_by_email(user_data.email)
             return buyer, self.token_manager.get_token_from_payload(buyer.identity_data())
         else:
-            raise AuthException("Invalid user type")
+            raise BusinessException("Invalid user type")

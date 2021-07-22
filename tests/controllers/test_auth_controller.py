@@ -24,9 +24,9 @@ class TestAuthController(unittest.TestCase):
 
         mock_auth_service.get_user_login_data.assert_called_once_with("test_token")
 
-    def test_login_returns_401_if_token_was_not_provided(self):
+    def test_login_returns_400_if_token_was_not_provided(self):
         res = client.post("/auth/login", data=json.dumps({}))
-        assert res.status_code == 401
+        assert res.status_code == 400
 
     @patch.object(app.auth_controller, "user_service")
     def test_create_printer_returns_201_on_success(self, mock_user_service):
