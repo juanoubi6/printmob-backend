@@ -17,10 +17,12 @@ class UserRepository:
     def get_buyer_by_email(self, email: str) -> Buyer:
         user_model = self._get_user_model_by_email(email)
 
-        return user_model.buyer.to_buyer_entity()
+        return user_model.buyer.to_buyer_entity() if user_model is not None else None
 
     def get_user_by_email(self, email: str) -> User:
-        return self._get_user_model_by_email(email).to_user_entity()
+        user_model = self._get_user_model_by_email(email)
+
+        return user_model.to_user_entity() if user_model is not None else None
 
     def is_user_name_in_use(self, user_name: str) -> bool:
         return self.db.session.query(UserModel).filter_by(user_name=user_name).first() is not None
