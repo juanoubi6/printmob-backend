@@ -18,3 +18,6 @@ push:
 	aws ecr get-login-password --region us-east-2 --profile printmob | docker login --username AWS --password-stdin 715052550658.dkr.ecr.us-east-2.amazonaws.com
 	docker tag printmob-backend_backend:latest 715052550658.dkr.ecr.us-east-2.amazonaws.com/printmob-backend:latest
 	docker push 715052550658.dkr.ecr.us-east-2.amazonaws.com/printmob-backend:latest
+
+deploy:
+	aws ecs stop-task --profile printmob --cluster "printmob-cluster" --task $(aws ecs list-tasks --profile printmob --cluster "printmob-cluster" --service "backend-service" --output text --query taskArns)
