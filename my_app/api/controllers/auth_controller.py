@@ -5,7 +5,7 @@ from flask import request
 
 from my_app.api.domain import Printer, PrinterPrototype, UserPrototype, UserType, Buyer, BuyerPrototype, \
     AddressPrototype, BankInformationPrototype
-from my_app.api.exceptions import AuthException
+from my_app.api.exceptions import InvalidFieldException
 from my_app.api.services import AuthService, UserService
 
 
@@ -19,7 +19,7 @@ class AuthController:
         auth_token = body.get("token", None)
 
         if auth_token is None:
-            raise AuthException("Authorization token was not provided")
+            raise InvalidFieldException("Authorization token was not provided")
 
         user_data, token = self.auth_service.get_user_login_data(auth_token)
 

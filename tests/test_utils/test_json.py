@@ -134,7 +134,7 @@ CAMPAIGN_GET_RESPONSE_JSON = {
 
 CAMPAIGN_POST_REQUEST_JSON = {
     "name": "Un vaso de cala",
-    "description": "Un modelo 3D para vender",
+    "description": "Un modelo 3D para vender ::??",
     "campaign_picture_url": "https://free3d.com/imgd/l80/1089781.jpg",
     "campaign_model_image_urls": [
         "https://free3d.com/imgd/l80/1089781.jpg",
