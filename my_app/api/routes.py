@@ -89,12 +89,14 @@ def get_campaign_orders(campaign_id):
 
 # Pledges
 @route(pledgeBlueprint, '/', methods=['POST'])
-def create_pledge():
+@validate_bearer_token
+def create_pledge(user_data):
     return current_app.pledge_controller.create_pledge(request)
 
 
 @route(pledgeBlueprint, '/<pledge_id>', methods=['DELETE'])
-def cancel_pledge(pledge_id):
+@validate_bearer_token
+def cancel_pledge(pledge_id, user_data):
     return current_app.pledge_controller.cancel_pledge(request, int(pledge_id))
 
 
