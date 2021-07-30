@@ -19,18 +19,18 @@ class CampaignRepository:
         self.db = db
 
     def init_campaigns(self):
-        printer_user_model = UserModel(first_name='Lucas',
-                                       last_name='Costas',
-                                       user_name='Chikinkun',
+        printer_user_model = UserModel(first_name='Juanma',
+                                       last_name='Oubina',
+                                       user_name='juanmaprinter',
                                        date_of_birth=datetime.now(),
                                        email='juan.manuel.oubina@gmail.com',
                                        user_type=UserType.PRINTER.value)
         self.db.session.add(printer_user_model)
         self.db.session.flush()
 
-        buyer_user_model = UserModel(first_name='Juan',
+        buyer_user_model = UserModel(first_name='Juanma',
                                      last_name='Oubina',
-                                     user_name='Oubi',
+                                     user_name='juanmabuyer',
                                      date_of_birth=datetime.now(),
                                      email='joubina@frba.utn.edu.ar',
                                      user_type=UserType.BUYER.value)
@@ -70,7 +70,7 @@ class CampaignRepository:
                                        campaign_picture_url='https://s3.us-east-2.amazonaws.com/printmob-dev/campaign_model_images/default_logo',
                                        printer_id=printer_model.id,
                                        pledge_price=350.0,
-                                       end_date=datetime.now(),
+                                       end_date=datetime(2022, 5, 17),
                                        min_pledgers=6,
                                        max_pledgers=10,
                                        status=CampaignStatus.IN_PROGRESS.value)
@@ -108,6 +108,116 @@ class CampaignRepository:
             status=OrderStatus.IN_PROGRESS.value
         )
         self.db.session.add(order_model)
+        self.db.session.commit()
+
+        # More users
+        # Axel
+        axel_printer_user = UserModel(first_name='Axel',
+                                       last_name='Furlan',
+                                       user_name='axelprinter',
+                                       date_of_birth=datetime.now(),
+                                       email='axel.furlan95@gmail.com',
+                                       user_type=UserType.PRINTER.value)
+        self.db.session.add(axel_printer_user)
+        self.db.session.flush()
+
+        axel_printer = PrinterModel(id=axel_printer_user.id, bank_information_id=bank_information_model.id)
+        self.db.session.add(axel_printer)
+        self.db.session.flush()
+
+        axel_buyer_model = UserModel(first_name='Axel',
+                                     last_name='Furlan',
+                                     user_name='axelbuyer',
+                                     date_of_birth=datetime.now(),
+                                     email='afurlanfigueroa@frba.utn.edu.ar',
+                                     user_type=UserType.BUYER.value)
+        self.db.session.add(axel_buyer_model)
+        self.db.session.flush()
+
+        axel_buyer = BuyerModel(id=axel_buyer_model.id, address_id=address_model.id)
+        self.db.session.add(axel_buyer)
+        self.db.session.flush()
+
+        # Joaco
+        joaco_printer_user = UserModel(first_name='Joaquin',
+                                       last_name='Leon',
+                                       user_name='joacoprinter',
+                                       date_of_birth=datetime.now(),
+                                       email='leonjoaquin77@gmail.com',
+                                       user_type=UserType.PRINTER.value)
+        self.db.session.add(joaco_printer_user)
+        self.db.session.flush()
+
+        joaco_printer = PrinterModel(id=joaco_printer_user.id, bank_information_id=bank_information_model.id)
+        self.db.session.add(joaco_printer)
+        self.db.session.flush()
+
+        joaco_buyer_model = UserModel(first_name='Joaquin',
+                                     last_name='Leon',
+                                     user_name='joacobuyer',
+                                     date_of_birth=datetime.now(),
+                                     email='jleon@frba.utn.edu.ar',
+                                     user_type=UserType.BUYER.value)
+        self.db.session.add(joaco_buyer_model)
+        self.db.session.flush()
+
+        joaco_buyer = BuyerModel(id=joaco_buyer_model.id, address_id=address_model.id)
+        self.db.session.add(joaco_buyer)
+        self.db.session.flush()
+
+        # Lucas
+        lucas_printer_user = UserModel(first_name='Lucas',
+                                       last_name='Costas',
+                                       user_name='lucasprinter',
+                                       date_of_birth=datetime.now(),
+                                       email='lucascostasutn@gmail.com',
+                                       user_type=UserType.PRINTER.value)
+        self.db.session.add(lucas_printer_user)
+        self.db.session.flush()
+
+        lucas_printer = PrinterModel(id=lucas_printer_user.id, bank_information_id=bank_information_model.id)
+        self.db.session.add(lucas_printer)
+        self.db.session.flush()
+
+        lucas_buyer_model = UserModel(first_name='Lucas',
+                                     last_name='Costas',
+                                     user_name='lucasbuyer',
+                                     date_of_birth=datetime.now(),
+                                     email='lucas.costas@mercadolibre.com',
+                                     user_type=UserType.BUYER.value)
+        self.db.session.add(lucas_buyer_model)
+        self.db.session.flush()
+
+        lucas_buyer = BuyerModel(id=lucas_buyer_model.id, address_id=address_model.id)
+        self.db.session.add(lucas_buyer)
+        self.db.session.flush()
+
+        # Pedro
+        pedro_printer_user = UserModel(first_name='Pedro',
+                                       last_name='Droven',
+                                       user_name='pedroprinter',
+                                       date_of_birth=datetime.now(),
+                                       email='pdroven@gmail.com',
+                                       user_type=UserType.PRINTER.value)
+        self.db.session.add(pedro_printer_user)
+        self.db.session.flush()
+
+        pedro_printer = PrinterModel(id=pedro_printer_user.id, bank_information_id=bank_information_model.id)
+        self.db.session.add(pedro_printer)
+        self.db.session.flush()
+
+        pedro_buyer_model = UserModel(first_name='Pedro',
+                                     last_name='Droven',
+                                     user_name='pedrobuyer',
+                                     date_of_birth=datetime.now(),
+                                     email='pdroven@frba.utn.edu.ar',
+                                     user_type=UserType.BUYER.value)
+        self.db.session.add(pedro_buyer_model)
+        self.db.session.flush()
+
+        pedro_buyer = BuyerModel(id=pedro_buyer_model.id, address_id=address_model.id)
+        self.db.session.add(pedro_buyer)
+        self.db.session.flush()
         self.db.session.commit()
 
     def create_campaign(self, prototype: CampaignPrototype) -> Campaign:

@@ -13,6 +13,7 @@ GET_BUYER_PROFILE_RESPONSE_JSON = {
     'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
     'email': 'email@email.com',
     'first_name': 'John',
+    'id': 1,
     'last_name': 'Doe',
     'user_name': 'johnDoe5',
     'user_type': 'Buyer'
@@ -29,6 +30,7 @@ GET_PRINTER_PROFILE_RESPONSE_JSON = {
     'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
     'email': 'email@email.com',
     'first_name': 'John',
+    'id': 1,
     'last_name': 'Doe',
     'user_name': 'johnDoe5',
     'user_type': 'Printer'
@@ -62,6 +64,7 @@ UPDATE_ORDER_RESPONSE_JSON = {
         'first_name': 'John',
         "user_type": "Buyer",
         'last_name': 'Doe',
+        'id': 1,
         'user_name': 'johnDoe5'
     },
     'comments': 'comments',
@@ -107,6 +110,7 @@ CAMPAIGN_GET_RESPONSE_JSON = {
         "last_name": "Doe",
         "user_name": "johnDoe5",
         "user_type": "Printer",
+        'id': 1,
         'bank_information': {
             'account_number': '324324',
             'alias': None,
@@ -174,6 +178,7 @@ CAMPAIGN_POST_RESPONSE_JSON = {
         "first_name": "John",
         "user_type": "Printer",
         "last_name": "Doe",
+        'id': 1,
         "user_name": "johnDoe5",
         'bank_information': {
             'account_number': '324324',
@@ -246,7 +251,8 @@ LOGIN_RESPONSE_JSON = {
         'first_name': 'John',
         'last_name': 'Doe',
         'user_name': 'johnDoe5',
-        'user_type': 'Buyer'
+        'user_type': 'Buyer',
+        'id': 1
     }
 }
 

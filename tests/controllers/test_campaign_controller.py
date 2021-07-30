@@ -1,13 +1,16 @@
 import io
 import json
+import os
 import unittest
 from unittest.mock import patch
 
 from my_app.api import create_app
 from my_app.api.domain import Page
 from my_app.api.exceptions.unprocessable_entity_exception import UnprocessableEntityException
-from tests.test_utils.mock_entities import MOCK_CAMPAIGN, MOCK_CAMPAIGN_MODEL_IMAGE, MOCK_ORDER
-from tests.test_utils.test_json import CAMPAIGN_GET_RESPONSE_JSON, CAMPAIGN_POST_REQUEST_JSON, CAMPAIGN_POST_RESPONSE_JSON, \
+from my_app.api.utils.token_manager import TokenManager
+from tests.test_utils.mock_entities import MOCK_CAMPAIGN, MOCK_CAMPAIGN_MODEL_IMAGE, MOCK_ORDER, MOCK_PRINTER
+from tests.test_utils.test_json import CAMPAIGN_GET_RESPONSE_JSON, CAMPAIGN_POST_REQUEST_JSON, \
+    CAMPAIGN_POST_RESPONSE_JSON, \
     CAMPAIGN_MODEL_IMAGE_JSON
 
 app = create_app()
@@ -18,11 +21,16 @@ client = app.test_client()
 
 class TestCampaignController(unittest.TestCase):
 
+    def setUp(self):
+        token_manager = TokenManager(os.environ["JWT_SECRET_KEY"])
+        self.printer_authorization_token = token_manager.get_token_from_payload(MOCK_PRINTER.identity_data())
+
     @patch.object(app.campaign_controller, "campaign_service")
     def test_post_campaign_returns_campaign(self, mock_campaign_service):
         mock_campaign_service.create_campaign.return_value = MOCK_CAMPAIGN
 
-        res = client.post("/campaigns", data=json.dumps(CAMPAIGN_POST_REQUEST_JSON))
+        res = client.post("/campaigns", data=json.dumps(CAMPAIGN_POST_REQUEST_JSON),
+                          headers={"Authorization": self.printer_authorization_token})
         assert res.status_code == 201
         assert json.loads(res.data.decode("utf-8")) == CAMPAIGN_POST_RESPONSE_JSON
 
@@ -30,7 +38,8 @@ class TestCampaignController(unittest.TestCase):
     def test_post_campaign_returns_422_if_unprocessable_entity_error_occurs(self, mock_campaign_service):
         mock_campaign_service.create_campaign.side_effect = UnprocessableEntityException("some error")
 
-        res = client.post("/campaigns", data=json.dumps(CAMPAIGN_POST_REQUEST_JSON))
+        res = client.post("/campaigns", data=json.dumps(CAMPAIGN_POST_REQUEST_JSON),
+                          headers={"Authorization": self.printer_authorization_token})
         assert res.status_code == 422
         assert res.json['error:'] == "Unprocessable entity error"
         assert res.json['message'] == "some error"
@@ -61,7 +70,7 @@ class TestCampaignController(unittest.TestCase):
     def test_get_campaign_detail_returns_campaign_json(self, mock_campaign_service):
         mock_campaign_service.get_campaign_detail.return_value = MOCK_CAMPAIGN
 
-        res = client.get("/campaigns/1")
+        res = client.get("/campaigns/1", headers={"Authorization": self.printer_authorization_token})
         assert res.status_code == 200
         assert json.loads(res.data.decode("utf-8")) == CAMPAIGN_GET_RESPONSE_JSON
 
@@ -72,7 +81,8 @@ class TestCampaignController(unittest.TestCase):
         res = client.post(
             "/campaigns/1/model-images",
             data={'image': (io.BytesIO(b"someImageData"), 'testImageName.jpg')},
-            content_type='multipart/form-data'
+            content_type='multipart/form-data',
+            headers={"Authorization": self.printer_authorization_token}
         )
 
         assert res.status_code == 201

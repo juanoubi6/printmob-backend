@@ -15,12 +15,13 @@ client = app.test_client()
 class TestAuthController(unittest.TestCase):
 
     @patch.object(app.auth_controller, "auth_service")
-    def test_login_returns_user_data_on_success(self, mock_auth_service):
+    def test_login_returns_user_data_on_success_and_cookie(self, mock_auth_service):
         mock_auth_service.get_user_login_data.return_value = (MOCK_BUYER, "JWT")
 
         res = client.post("/auth/login", data=json.dumps({"token": "test_token"}))
         assert res.status_code == 200
         assert res.json == LOGIN_RESPONSE_JSON
+        assert res.headers.get("Set-Cookie") == "printmob-backend-cookie=JWT; Path=/"
 
         mock_auth_service.get_user_login_data.assert_called_once_with("test_token")
 

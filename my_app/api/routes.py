@@ -1,4 +1,6 @@
-from flask import Blueprint, current_app, request
+import datetime
+
+from flask import Blueprint, current_app, request, make_response
 
 from my_app.api import route
 from my_app.api.controllers import validate_bearer_token
@@ -44,7 +46,8 @@ def get_token():
 
 # Campaigns
 @route(campaignBlueprint, '/', methods=['POST'])
-def post_campaigns():
+@validate_bearer_token
+def post_campaigns(user_data):
     return current_app.campaign_controller.post_campaign(request)
 
 
@@ -59,7 +62,8 @@ def get_campaign_detail(campaign_id):
 
 
 @route(campaignBlueprint, '/<campaign_id>/model-images', methods=['POST'])
-def create_campaign_model_image(campaign_id):
+@validate_bearer_token
+def create_campaign_model_image(campaign_id, user_data):
     return current_app.campaign_controller.create_campaign_model_image(request, int(campaign_id))
 
 
@@ -85,12 +89,14 @@ def get_campaign_orders(campaign_id):
 
 # Pledges
 @route(pledgeBlueprint, '/', methods=['POST'])
-def create_pledge():
+@validate_bearer_token
+def create_pledge(user_data):
     return current_app.pledge_controller.create_pledge(request)
 
 
 @route(pledgeBlueprint, '/<pledge_id>', methods=['DELETE'])
-def cancel_pledge(pledge_id):
+@validate_bearer_token
+def cancel_pledge(pledge_id, user_data):
     return current_app.pledge_controller.cancel_pledge(request, int(pledge_id))
 
 
@@ -113,7 +119,15 @@ def update_order(order_id):
 # Auth
 @route(authBlueprint, '/login', methods=['POST'])
 def login():
-    return current_app.auth_controller.login(request)
+    api_response, status = current_app.auth_controller.login(request)
+    cookie_response = make_response(api_response)
+    cookie_response.status = status
+    cookie_response.set_cookie(
+        key="printmob-backend-cookie",
+        value=api_response["token"]
+    )
+
+    return cookie_response
 
 
 @route(authBlueprint, '/signup/printer', methods=['POST'])
