@@ -47,7 +47,7 @@ def get_token():
 # Campaigns
 @route(campaignBlueprint, '/', methods=['POST'])
 @validate_bearer_token
-def post_campaigns():
+def post_campaigns(user_data):
     return current_app.campaign_controller.post_campaign(request)
 
 
@@ -63,7 +63,7 @@ def get_campaign_detail(campaign_id):
 
 @route(campaignBlueprint, '/<campaign_id>/model-images', methods=['POST'])
 @validate_bearer_token
-def create_campaign_model_image(campaign_id):
+def create_campaign_model_image(campaign_id, user_data):
     return current_app.campaign_controller.create_campaign_model_image(request, int(campaign_id))
 
 
