@@ -70,7 +70,7 @@ class CampaignRepository:
                                        campaign_picture_url='https://s3.us-east-2.amazonaws.com/printmob-dev/campaign_model_images/default_logo',
                                        printer_id=printer_model.id,
                                        pledge_price=350.0,
-                                       end_date=datetime.now(),
+                                       end_date=datetime(2022, 5, 17),
                                        min_pledgers=6,
                                        max_pledgers=10,
                                        status=CampaignStatus.IN_PROGRESS.value)
