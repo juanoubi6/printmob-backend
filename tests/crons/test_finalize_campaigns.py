@@ -45,6 +45,9 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
 
         # Assert campaign final statuses
         assert successful_campaign.status == CampaignStatus.COMPLETED.value
+        assert successful_campaign.end_date.day == datetime.datetime.now().day
+        assert successful_campaign.end_date.month == datetime.datetime.now().month
+        assert successful_campaign.end_date.year == datetime.datetime.now().year
         assert unsuccessful_campaign.status == CampaignStatus.UNSATISFIED.value
 
         # Assert order were created

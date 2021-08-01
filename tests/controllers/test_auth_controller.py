@@ -46,3 +46,17 @@ class TestAuthController(unittest.TestCase):
 
         assert res.status_code == 201
         mock_user_service.create_buyer.assert_called_once()
+
+    def test_validate_user_data_returns_400_when_username_or_email_are_missing(self):
+        res = client.post("/auth/signup/validate", data=json.dumps({"email": "pepe@gmail.com"}))
+
+        assert res.status_code == 400
+
+    @patch.object(app.auth_controller, "user_service")
+    def test_validate_user_data_returns_200_with_validation_results(self, mock_user_service):
+        mock_user_service.validate_user_name_and_email_existence.return_value = {"email": True, "user_name": False}
+        res = client.post("/auth/signup/validate", data=json.dumps({"email": "pepe@gmail.com", "user_name": "pepe"}))
+
+        assert res.status_code == 200
+        assert res.json["email"] is True
+        assert res.json["user_name"] is False

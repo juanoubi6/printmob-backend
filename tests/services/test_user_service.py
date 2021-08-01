@@ -96,3 +96,15 @@ class TestUserService(unittest.TestCase):
 
         assert isinstance(response, Buyer)
         self.mock_user_repository.update_buyer.assert_called_once_with(1, MOCK_BUYER_PROTOTYPE)
+
+    def test_validate_user_name_and_email_existence_returns_validation(self):
+        self.mock_user_repository.is_email_in_use.return_value = True
+        self.mock_user_repository.is_user_name_in_use.return_value = False
+
+        response = self.user_service.validate_user_name_and_email_existence("user_name", "email")
+
+        assert response["email"] is True
+        assert response["user_name"] is False
+
+        self.mock_user_repository.is_email_in_use.assert_called_once_with("email")
+        self.mock_user_repository.is_user_name_in_use.assert_called_once_with("user_name")

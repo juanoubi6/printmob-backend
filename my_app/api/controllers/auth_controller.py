@@ -5,7 +5,7 @@ from flask import request
 
 from my_app.api.domain import Printer, PrinterPrototype, UserPrototype, UserType, Buyer, BuyerPrototype, \
     AddressPrototype, BankInformationPrototype
-from my_app.api.exceptions import InvalidFieldException
+from my_app.api.exceptions import InvalidFieldException, InvalidParamException
 from my_app.api.services import AuthService, UserService
 
 
@@ -36,9 +36,9 @@ class AuthController:
             user_prototype=UserPrototype(
                 first_name=body["first_name"],
                 last_name=body["last_name"],
-                user_name=body["user_name"],
+                user_name=str(body["user_name"]).lower(),
                 date_of_birth=datetime.strptime(body["date_of_birth"], '%d-%m-%Y'),
-                email=body["email"],
+                email=str(body["email"]).lower(),
                 user_type=UserType.PRINTER
             ),
             bank_information_prototype=BankInformationPrototype(
@@ -60,9 +60,9 @@ class AuthController:
             user_prototype=UserPrototype(
                 first_name=body["first_name"],
                 last_name=body["last_name"],
-                user_name=body["user_name"],
+                user_name=str(body["user_name"]).lower(),
                 date_of_birth=datetime.strptime(body["date_of_birth"], '%d-%m-%Y'),
-                email=body["email"],
+                email=str(body["email"]).lower(),
                 user_type=UserType.BUYER
             ),
             address_prototype=AddressPrototype(
@@ -78,3 +78,16 @@ class AuthController:
         buyer = self.user_service.create_buyer(prototype)
 
         return buyer.to_json(), 201
+
+    def validate_user_data(self, req: request) -> (dict, int):
+        body = json.loads(req.data)
+
+        user_name = body.get("user_name", None)
+        email = body.get("email", None)
+
+        if user_name is None or email is None:
+            raise InvalidParamException("El nombre de usuario o email no fueron completados")
+
+        exist = self.user_service.validate_user_name_and_email_existence(user_name, email)
+
+        return exist, 200
