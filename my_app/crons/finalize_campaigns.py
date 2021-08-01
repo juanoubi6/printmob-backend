@@ -42,6 +42,7 @@ def finalize_campaign(
                     if len(campaign_to_finish.pledges) >= campaign_to_finish.min_pledgers:
                         # Change campaign status to COMPLETED
                         campaign_to_finish.status = CampaignStatus.COMPLETED.value
+                        campaign_to_finish.end_date = datetime.datetime.now()
 
                         # For each pledge...
                         for successful_pledge in campaign_to_finish.pledges:

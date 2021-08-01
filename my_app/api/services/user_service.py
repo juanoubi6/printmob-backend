@@ -32,6 +32,12 @@ class UserService:
     def update_buyer(self, buyer_id: int, prototype: BuyerPrototype) -> Buyer:
         return self.user_repository.update_buyer(buyer_id, prototype)
 
+    def validate_user_name_and_email_existence(self, user_name: str, email: str) -> dict:
+        return {
+            "email": self.user_repository.is_email_in_use(email),
+            "user_name": self.user_repository.is_user_name_in_use(user_name)
+        }
+
     def _validate_user_data(self, prototype: UserPrototype):
         if self.user_repository.is_user_name_in_use(prototype.user_name):
             raise BusinessException("Username already in use")

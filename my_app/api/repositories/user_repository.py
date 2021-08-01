@@ -25,10 +25,10 @@ class UserRepository:
         return user_model.to_user_entity() if user_model is not None else None
 
     def is_user_name_in_use(self, user_name: str) -> bool:
-        return self.db.session.query(UserModel).filter_by(user_name=user_name).first() is not None
+        return self.db.session.query(UserModel).filter_by(user_name=user_name.lower()).first() is not None
 
     def is_email_in_use(self, email: str) -> bool:
-        return self.db.session.query(UserModel).filter_by(email=email).first() is not None
+        return self.db.session.query(UserModel).filter_by(email=email.lower()).first() is not None
 
     def create_buyer(self, prototype: BuyerPrototype) -> Buyer:
         user_model = self._create_user_model(prototype.user_prototype)

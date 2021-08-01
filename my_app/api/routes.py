@@ -130,6 +130,11 @@ def login():
     return cookie_response
 
 
+@route(authBlueprint, '/signup/validate', methods=['POST'])
+def validate_user_data():
+    return current_app.auth_controller.validate_user_data(request)
+
+
 @route(authBlueprint, '/signup/printer', methods=['POST'])
 def create_printer():
     return current_app.auth_controller.create_printer(request)
