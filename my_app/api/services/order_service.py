@@ -38,3 +38,6 @@ class OrderService:
         )
 
         return updated_order
+
+    def get_campaign_order_from_buyer(self, buyer_id: int, campaign_id: int) -> Order:
+        return self.order_repository.get_campaign_order_from_buyer(buyer_id, campaign_id)

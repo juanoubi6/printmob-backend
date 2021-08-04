@@ -1,5 +1,7 @@
 from typing import List
 
+from sqlalchemy.orm import noload
+
 from my_app.api.domain import OrderStatus, Order, OrderPrototype
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories.models import OrderModel
@@ -37,5 +39,16 @@ class OrderRepository:
         order_model.comments = prototype.comments
 
         self.db.session.commit()
+
+        return order_model.to_order_entity()
+
+    def get_campaign_order_from_buyer(self, buyer_id: int, campaign_id: int) -> Order:
+        order_model = self.db.session.query(OrderModel) \
+            .filter(OrderModel.buyer_id == buyer_id) \
+            .filter(OrderModel.campaign_id == campaign_id) \
+            .first()
+
+        if order_model is None:
+            raise NotFoundException(ORDER_NOT_FOUND)
 
         return order_model.to_order_entity()

@@ -29,3 +29,11 @@ class TestOrderController(unittest.TestCase):
         res = client.patch("/orders/1", data=json.dumps(UPDATE_ORDER_REQUEST_JSON))
         assert res.status_code == 200
         assert res.json == UPDATE_ORDER_RESPONSE_JSON
+
+    @patch.object(app.order_controller, "order_service")
+    def test_get_campaign_order_from_buyer_returns_order(self, mock_order_service):
+        mock_order_service.get_campaign_order_from_buyer.return_value = MOCK_ORDER
+
+        res = client.get("/orders/buyers/2/campaigns/1")
+        assert res.status_code == 200
+        assert res.json == UPDATE_ORDER_RESPONSE_JSON

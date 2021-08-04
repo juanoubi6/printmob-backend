@@ -116,6 +116,11 @@ def update_order(order_id):
     return current_app.order_controller.update_order(request, int(order_id))
 
 
+@route(orderBlueprint, '/buyers/<buyer_id>/campaigns/<campaign_id>', methods=['GET'])
+def get_campaign_order_from_buyer(buyer_id, campaign_id):
+    return current_app.order_controller.get_campaign_order_from_buyer(request, int(buyer_id), int(campaign_id))
+
+
 # Auth
 @route(authBlueprint, '/login', methods=['POST'])
 def login():

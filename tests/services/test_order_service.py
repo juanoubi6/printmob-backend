@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock
 
-from my_app.api.domain import OrderStatus, OrderPrototype
+from my_app.api.domain import OrderStatus, OrderPrototype, Order
 from my_app.api.services import OrderService
 from tests.test_utils.mock_entities import MOCK_ORDER
 
@@ -42,3 +42,11 @@ class TestOrderService(unittest.TestCase):
             prototype
         )
         self.mock_executor.submit.assert_called_once()
+
+    def test_get_campaign_order_from_buyer_returns_order(self):
+        self.mock_order_repository.get_campaign_order_from_buyer.return_value = MOCK_ORDER
+
+        response = self.order_service.get_campaign_order_from_buyer(1, 2)
+
+        assert isinstance(response, Order)
+        self.mock_order_repository.get_campaign_order_from_buyer.assert_called_once_with(1, 2)

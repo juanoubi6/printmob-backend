@@ -61,3 +61,10 @@ class TestOrderRepository(unittest.TestCase):
 
         with pytest.raises(NotFoundException):
             self.order_repository.update_order(1, prototype)
+
+    def test_get_campaign_order_from_buyer_returns_order(self):
+        self.test_db.session.query.return_value.filter.return_value.filter.return_value.first.return_value = MOCK_ORDER_MODEL
+
+        response = self.order_repository.get_campaign_order_from_buyer(1, 2)
+
+        assert isinstance(response, Order)

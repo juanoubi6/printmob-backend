@@ -31,3 +31,8 @@ class OrderController:
         updated_order = self.order_service.update_order(order_id, prototype)
 
         return updated_order.to_json(), 200
+
+    def get_campaign_order_from_buyer(self, req: request, buyer_id: int, campaign_id: int) -> (Order, int):
+        order = self.order_service.get_campaign_order_from_buyer(buyer_id, campaign_id)
+
+        return order.to_json(), 200
