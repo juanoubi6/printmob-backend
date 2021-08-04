@@ -272,10 +272,10 @@ class CampaignRepository:
         )
 
     def get_campaign_detail(self, campaign_id: int) -> Campaign:
-        return self._get_campaign_model_by_id(campaign_id).to_campaign_entity()
+        return self.get_campaign_model_by_id(campaign_id).to_campaign_entity()
 
     def change_campaign_status(self, campaign_id: int, new_status: CampaignStatus):
-        campaign_model = self._get_campaign_model_by_id(campaign_id)
+        campaign_model = self.get_campaign_model_by_id(campaign_id)
         campaign_model.status = new_status.value
         self.db.session.commit()
 
@@ -357,7 +357,7 @@ class CampaignRepository:
             data=[cm.to_campaign_entity() for cm in campaign_models]
         )
 
-    def _get_campaign_model_by_id(self, campaign_id: int) -> CampaignModel:
+    def get_campaign_model_by_id(self, campaign_id: int) -> CampaignModel:
         campaign_model = self.db.session.query(CampaignModel) \
             .filter_by(id=campaign_id) \
             .filter(CampaignModel.deleted_at == None) \
