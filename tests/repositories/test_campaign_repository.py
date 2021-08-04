@@ -87,13 +87,8 @@ class TestCampaignRepository(unittest.TestCase):
         assert response.page_size == MOCK_FILTERS["page_size"]
         paginate_mock.return_value.all.assert_called_once()
 
-        self.test_db.session \
-            .query.return_value \
-            .filter.return_value \
-            .order_by.assert_called_once()
-
     @patch('my_app.api.repositories.campaign_repository.paginate')
-    def test_get_campaigns_returns_campaign_page(self, paginate_mock):
+    def test_get_buyer_campaigns_returns_campaign_page(self, paginate_mock):
         paginate_mock.return_value.all.return_value = [MOCK_CAMPAIGN_MODEL]
 
         response = self.campaign_repository.get_buyer_campaigns(1, MOCK_FILTERS)
@@ -102,15 +97,6 @@ class TestCampaignRepository(unittest.TestCase):
         assert response.page == MOCK_FILTERS["page"]
         assert response.page_size == MOCK_FILTERS["page_size"]
         paginate_mock.return_value.all.assert_called_once()
-
-        self.test_db.session \
-            .query.return_value \
-            .join.return_value \
-            .filter.return_value \
-            .filter.return_value \
-            .filter.return_value \
-            .options.return_value \
-            .order_by.assert_called_once()
 
     def test_change_campaign_status_changes_campaign(self):
         campaign_to_change = CampaignModel(

@@ -68,7 +68,7 @@ MOCK_PLEDGE = Pledge(
     updated_at=datetime.datetime(2020, 5, 17)
 )
 
-MOCK_FILTERS = {"page": 1, "page_size": 1}
+MOCK_FILTERS = {"page": 1, "page_size": 1, "status": "In progress,Unsatisfied"}
 
 MOCK_CAMPAIGN_MODEL_IMAGE = CampaignModelImage(
     id=1,

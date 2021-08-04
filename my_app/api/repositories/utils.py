@@ -1,6 +1,4 @@
-from sqlalchemy import func
-
-from my_app.api.repositories.models import CampaignModel, PledgeModel
+from my_app.api.repositories.models import CampaignModel, PledgeModel, OrderModel
 
 DEFAULT_PAGE = 1
 DEFAULT_PAGE_SIZE = 10
@@ -46,17 +44,43 @@ def apply_campaign_filters(query, filters: dict):
     Returns
     ----------
     query: BaseQuery
-        Query with limit and offset
+        Query with filters
     """
     # Status filter
     status = filters.get("status", None)
     if status is not None:
-        query = query.filter(func.lower(CampaignModel.status) == status.lower())
+        statuses = status.split(",")
+        query = query.filter(CampaignModel.status.in_(statuses))
 
     # Printer ID filter
     printer_id = filters.get("printer_id", None)
     if printer_id is not None:
         query = query.filter(CampaignModel.printer_id == printer_id)
+
+    return query
+
+
+def apply_campaign_order_filters(query, filters: dict):
+    """
+    Applies filters to query
+
+    Parameters
+    ----------
+    query: BaseQuery
+        Query to paginate
+    filters: dict[str,str]
+        Dict with filters to apply.
+
+    Returns
+    ----------
+    query: BaseQuery
+        Query with filters
+    """
+    # Status filter
+    status = filters.get("status", None)
+    if status is not None:
+        statuses = status.split(",")
+        query = query.filter(OrderModel.status.in_(statuses))
 
     return query
 
@@ -75,7 +99,7 @@ def apply_pledge_filters(query, filters: dict):
     Returns
     ----------
     query: BaseQuery
-        Query with limit and offset
+        Query with filters
     """
     # Buyer filter
     buyer_id = filters.get("buyer_id", None)
