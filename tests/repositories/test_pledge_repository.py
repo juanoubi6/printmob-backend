@@ -36,7 +36,7 @@ class TestPledgeRepository(unittest.TestCase):
 
     def test_create_pledge_change_campaign_status_and_returns_created_pledge(self):
         campaign_model = MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED
-        self.test_mock_campaign_repository.get_campaign_detail.return_value = campaign_model
+        self.test_mock_campaign_repository.get_campaign_model_by_id.return_value = campaign_model
 
         test_proto = PledgePrototype(
             buyer_id=1,
