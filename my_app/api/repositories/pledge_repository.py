@@ -53,7 +53,7 @@ class PledgeRepository:
         self.db.session.add(pledge_model)
 
         if finalize_campaign:
-            campaign_model = self._campaign_repository.get_campaign_detail(prototype.campaign_id)
+            campaign_model = self._campaign_repository.get_campaign_model_by_id(prototype.campaign_id)
             campaign_model.status = CampaignStatus.TO_BE_FINALIZED.value
 
         self.db.session.commit()
