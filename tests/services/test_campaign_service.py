@@ -110,9 +110,20 @@ class TestCampaignService(unittest.TestCase):
         self.mock_campaign_repository.get_campaign_detail.assert_called_once_with(1)
         self.mock_campaign_repository.change_campaign_status.assert_called_once_with(1, CampaignStatus.TO_BE_CANCELLED)
 
-    def test_cancel_campaigns_raises_cancellation_exception_when_campaign_cannot_be_cancelled(self):
+    def test_cancel_campaigns_raises_cancellation_exception_when_campaign_is_not_in_progress(self):
         uncancellable_campaign = copy.deepcopy(MOCK_CAMPAIGN)
         uncancellable_campaign.status = CampaignStatus.COMPLETED
+        self.mock_campaign_repository.get_campaign_detail.return_value = uncancellable_campaign
+
+        with pytest.raises(CancellationException):
+            self.campaign_service.cancel_campaign(1)
+
+        self.mock_campaign_repository.get_campaign_detail.assert_called_once_with(1)
+        self.mock_campaign_repository.change_campaign_status.assert_not_called()
+
+    def test_cancel_campaigns_raises_cancellation_exception_when_campaign_current_pledgers_is_equal_or_bigger_than_min_pledgers(self):
+        uncancellable_campaign = copy.deepcopy(MOCK_CAMPAIGN)
+        uncancellable_campaign.current_pledgers = uncancellable_campaign.min_pledgers
         self.mock_campaign_repository.get_campaign_detail.return_value = uncancellable_campaign
 
         with pytest.raises(CancellationException):

@@ -72,7 +72,7 @@ class Campaign:
             return self.max_pledgers - self.current_pledgers == 1
 
     def can_be_cancelled(self) -> bool:
-        return self.status == CampaignStatus.IN_PROGRESS
+        return self.status == CampaignStatus.IN_PROGRESS and self.current_pledgers < self.min_pledgers
 
     def to_json(self):
         return {
