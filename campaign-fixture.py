@@ -255,6 +255,14 @@ def campaña_que_sera_cancelada(session):
 if __name__ == '__main__':
     with db_session_factory() as session:
         try:
+            #session.execute("""
+            #    truncate table tech_details cascade;
+            #    truncate table orders cascade;
+            #    truncate table failed_to_refund_pledges cascade;
+            #    truncate table pledges cascade;
+            #    truncate table campaign cascade;
+            #""")
+
             campaña_en_progreso(session)
             campaña_en_progreso_con_objetivo_alcanzado_pero_no_finalizada_y_sin_max_pledgers(session)
             campaña_en_progreso_con_objetivo_alcanzado_pero_no_finalizada_y_con_max_pledgers(session)
@@ -266,11 +274,3 @@ if __name__ == '__main__':
             session.commit()
         except Exception as ex:
             print(str(ex))
-
-""" Query para borrar todos los datos de campañas
-truncate table tech_details cascade;
-truncate table orders cascade;
-truncate table failed_to_refund_pledges cascade;
-truncate table pledges cascade;
-truncate table campaign cascade;
-"""
