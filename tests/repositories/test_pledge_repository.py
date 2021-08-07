@@ -1,3 +1,4 @@
+import datetime
 import unittest
 from unittest.mock import MagicMock
 
@@ -34,8 +35,9 @@ class TestPledgeRepository(unittest.TestCase):
         self.test_db.session.add.assert_called_once()
         self.test_db.session.commit.assert_called_once()
 
-    def test_create_pledge_change_campaign_status_and_returns_created_pledge(self):
+    def test_create_pledge_change_campaign_status_and_end_date_and_returns_created_pledge(self):
         campaign_model = MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED
+        campaign_original_end_date = campaign_model.end_date
         self.test_mock_campaign_repository.get_campaign_model_by_id.return_value = campaign_model
 
         test_proto = PledgePrototype(
@@ -47,6 +49,9 @@ class TestPledgeRepository(unittest.TestCase):
         response = self.pledge_repository.create_pledge(test_proto, True)
 
         assert campaign_model.status == CampaignStatus.TO_BE_FINALIZED.value
+        assert campaign_model.end_date <= campaign_original_end_date
+        assert campaign_model.end_date.day <= (
+                    datetime.datetime.now() + datetime.timedelta(days=1)).day  # Assert the end date is tomorrow date
         assert isinstance(response, Pledge)
         self.test_db.session.add.assert_called_once()
         self.test_db.session.commit.assert_called_once()

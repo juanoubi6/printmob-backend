@@ -55,6 +55,7 @@ class PledgeRepository:
         if finalize_campaign:
             campaign_model = self._campaign_repository.get_campaign_model_by_id(prototype.campaign_id)
             campaign_model.status = CampaignStatus.TO_BE_FINALIZED.value
+            campaign_model.end_date = datetime.datetime.now() + datetime.timedelta(days=1)
 
         self.db.session.commit()
 
