@@ -26,7 +26,7 @@ def finalize_campaign(
             campaigns_to_finish = session.query(CampaignModel) \
                 .filter(CampaignModel.deleted_at == None) \
                 .filter(CampaignModel.status.in_([CampaignStatus.IN_PROGRESS.value, CampaignStatus.TO_BE_FINALIZED.value])) \
-                .filter(func.date(CampaignModel.end_date) <= datetime.date.today()) \
+                .filter(func.date(CampaignModel.end_date) <= datetime.datetime.now()) \
                 .options(noload(CampaignModel.tech_detail)) \
                 .options(noload(CampaignModel.images)) \
                 .all()
@@ -150,7 +150,7 @@ def finalize_campaign(
                     session.rollback()
         except Exception as exc:
             logging.error("Unhandled error on finalize campaign process: {}".format(str(exc)))
-            return
+            session.rollback()
 
     # Save failed pledges
     if len(failed_to_refund_pledges) > 0:

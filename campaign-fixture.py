@@ -1,6 +1,6 @@
 import copy
 import os
-from datetime import datetime
+import datetime
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -33,11 +33,11 @@ def campaña_en_progreso(session):
     # Campaña en progreso, le falta 1 pledge para finalizar
     # 2 pledges minimos, 3 maximos. 1 pledge realizado
     campaign_model = CampaignModel(name='Campaña en progreso',
-                                   description='Campaña en progreso',
+                                   description='Campaña en progreso. IN_PROGRESS',
                                    campaign_picture_url=None,
                                    printer_id=PRINTER_ID,
                                    pledge_price=5,
-                                   end_date=datetime(2022, 5, 17),
+                                   end_date=datetime.datetime(2022, 5, 17),
                                    min_pledgers=2,
                                    max_pledgers=3,
                                    status=CampaignStatus.IN_PROGRESS.value)
@@ -61,11 +61,11 @@ def campaña_en_progreso_con_objetivo_alcanzado_pero_no_finalizada_y_con_max_ple
     # 1 pledges minimos, 10 maximos. 1 pledge realizado
     campaign_model = CampaignModel(
         name='Campaña en progreso con el objetivo alcanzado pero que aun no alcanzo la fecha de finalizacion. Hay cupo maximo',
-        description='Campaña en progreso con el objetivo alcanzado pero que aun no alcanzo la fecha de finalizacion. Hay cupo maximo',
+        description='Campaña en progreso con el objetivo alcanzado pero que aun no alcanzo la fecha de finalizacion. Hay cupo maximo. IN_PROGRESS',
         campaign_picture_url=None,
         printer_id=PRINTER_ID,
         pledge_price=5,
-        end_date=datetime(2022, 5, 17),
+        end_date=datetime.datetime(2022, 5, 17),
         min_pledgers=1,
         max_pledgers=10,
         status=CampaignStatus.IN_PROGRESS.value)
@@ -89,11 +89,11 @@ def campaña_en_progreso_con_objetivo_alcanzado_pero_no_finalizada_y_sin_max_ple
     # 1 pledges minimos, sin maximo. 1 pledge realizado.
     campaign_model = CampaignModel(
         name='Campaña en progreso con el objetivo alcanzado pero que aun no alcanzo la fecha de finalizacion. No hay cupo maximo',
-        description='Campaña en progreso con el objetivo alcanzado pero que aun no alcanzo la fecha de finalizacion. No hay cupo maximo',
+        description='Campaña en progreso con el objetivo alcanzado pero que aun no alcanzo la fecha de finalizacion. No hay cupo maximo. IN_PROGRESS',
         campaign_picture_url=None,
         printer_id=PRINTER_ID,
         pledge_price=5,
-        end_date=datetime(2022, 5, 17),
+        end_date=datetime.datetime(2022, 5, 17),
         min_pledgers=1,
         max_pledgers=None,
         status=CampaignStatus.IN_PROGRESS.value)
@@ -117,11 +117,11 @@ def campaña_completada(session):
     # Campaña completada.
     # 1 pledges minimos, 2 maximos. 2 pledges realizado
     campaign_model = CampaignModel(name='Campaña completada',
-                                   description='Campaña completada',
+                                   description='Campaña completada. COMPLETED',
                                    campaign_picture_url=None,
                                    printer_id=PRINTER_ID,
                                    pledge_price=5,
-                                   end_date=datetime(2021, 4, 4),
+                                   end_date=datetime.datetime(2021, 4, 4),
                                    min_pledgers=1,
                                    max_pledgers=2,
                                    status=CampaignStatus.COMPLETED.value)
@@ -168,11 +168,11 @@ def campaña_insatisfecha(session):
     # Campaña insatisfecha que no alcanzo el objetivo por tiempo
     # 6 pledges minimos, 10 maximos. 1 pledges realizado
     campaign_model = CampaignModel(name='Campaña insatisfecha',
-                                   description='Campaña insatisfecha',
+                                   description='Campaña insatisfecha. UNSATISFIED',
                                    campaign_picture_url=None,
                                    printer_id=PRINTER_ID,
                                    pledge_price=5,
-                                   end_date=datetime(2021, 4, 4),
+                                   end_date=datetime.datetime(2021, 4, 4),
                                    min_pledgers=6,
                                    max_pledgers=10,
                                    status=CampaignStatus.UNSATISFIED.value)
@@ -182,7 +182,7 @@ def campaña_insatisfecha(session):
     pledge_model_1 = PledgeModel(campaign_id=campaign_model.id,
                                  pledge_price=campaign_model.pledge_price,
                                  buyer_id=BUYER_ID,
-                                 deleted_at=datetime(2021, 4, 4))
+                                 deleted_at=datetime.datetime(2021, 4, 4))
     session.add(pledge_model_1)
     session.flush()
 
@@ -195,12 +195,14 @@ def campaña_insatisfecha(session):
 def campaña_que_sera_finalizada(session):
     # Campaña que sera finalizada la proxima vez que corra el cron
     # 1 pledges minimos, 2 maximos. 2 pledges realizado
-    campaign_model = CampaignModel(name='Campaña a ser finalizada cuando corra el cron',
-                                   description='Campaña a ser finalizada cuando corra el cron',
+    tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
+
+    campaign_model = CampaignModel(name='Campaña a ser finalizada en la fecha {}'.format(tomorrow),
+                                   description='Campaña a ser finalizada en la fecha {}. TO_BE_FINALIZED'.format(tomorrow),
                                    campaign_picture_url=None,
                                    printer_id=PRINTER_ID,
                                    pledge_price=5,
-                                   end_date=datetime(2022, 4, 4),
+                                   end_date=tomorrow,
                                    min_pledgers=1,
                                    max_pledgers=2,
                                    status=CampaignStatus.TO_BE_FINALIZED.value)
@@ -224,16 +226,43 @@ def campaña_que_sera_finalizada(session):
     session.add(tech_detail_model)
     session.flush()
 
+def campaña_cancelada(session):
+    # Campaña cancelada
+    # 3 pledges minimos, 5 maximos. 1 pledges realizado (que fue borrado)
+    campaign_model = CampaignModel(name='Campaña cancelada',
+                                   description='Campaña cancelada. CANCELLED',
+                                   campaign_picture_url=None,
+                                   printer_id=PRINTER_ID,
+                                   pledge_price=5,
+                                   end_date=datetime.datetime(2021, 4, 4),
+                                   min_pledgers=3,
+                                   max_pledgers=5,
+                                   status=CampaignStatus.CANCELLED.value)
+    session.add(campaign_model)
+    session.flush()
+
+    pledge_model_1 = PledgeModel(campaign_id=campaign_model.id,
+                                 pledge_price=campaign_model.pledge_price,
+                                 buyer_id=BUYER_ID,
+                                 deleted_at=datetime.datetime(2021, 4, 3))
+    session.add(pledge_model_1)
+    session.flush()
+
+    tech_detail_model = copy.deepcopy(common_tech_detail_model)
+    tech_detail_model.campaign_id = campaign_model.id
+    session.add(tech_detail_model)
+    session.flush()
+
 
 def campaña_que_sera_cancelada(session):
     # Campaña que sera cancelada la proxima vez que corra el cron
     # 3 pledges minimos, 5 maximos. 1 pledges realizado
     campaign_model = CampaignModel(name='Campaña a ser cancelada cuando corra el cron',
-                                   description='Campaña a ser cancelada cuando corra el cron',
+                                   description='Campaña a ser cancelada cuando corra el cron. TO_BE_CANCELLED',
                                    campaign_picture_url=None,
                                    printer_id=PRINTER_ID,
                                    pledge_price=5,
-                                   end_date=datetime(2022, 4, 4),
+                                   end_date=datetime.datetime(2022, 4, 4),
                                    min_pledgers=3,
                                    max_pledgers=5,
                                    status=CampaignStatus.TO_BE_CANCELLED.value)
@@ -270,6 +299,7 @@ if __name__ == '__main__':
             campaña_insatisfecha(session)
             campaña_que_sera_finalizada(session)
             campaña_que_sera_cancelada(session)
+            campaña_cancelada(session)
 
             session.commit()
         except Exception as ex:

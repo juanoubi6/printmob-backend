@@ -14,7 +14,6 @@ setup(
         "Flask-Migrate==3.0.0",
         "sqlalchemy==1.4.15",
         "psycopg2-binary==2.8.6",
-        "psycopg2==2.7.5",
         "pytest==6.2.4",
         "alembic==1.6.3",
         "jsonpickle==2.0.0",
