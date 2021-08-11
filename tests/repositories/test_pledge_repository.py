@@ -29,13 +29,17 @@ class TestPledgeRepository(unittest.TestCase):
             pledge_price=34
         )
 
-        response = self.pledge_repository.create_pledge(test_proto, False)
+        response = self.pledge_repository.create_pledge(
+            test_proto,
+            confirm_campaign=False,
+            finalize_campaign=False
+        )
 
         assert isinstance(response, Pledge)
         self.test_db.session.add.assert_called_once()
         self.test_db.session.commit.assert_called_once()
 
-    def test_create_pledge_change_campaign_status_and_end_date_and_returns_created_pledge(self):
+    def test_create_pledge_change_campaign_status_and_end_date_when_finalize_campaign_flag_is_true_and_returns_created_pledge(self):
         campaign_model = MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED
         campaign_original_end_date = campaign_model.end_date
         self.test_mock_campaign_repository.get_campaign_model_by_id.return_value = campaign_model
@@ -46,12 +50,39 @@ class TestPledgeRepository(unittest.TestCase):
             pledge_price=34
         )
 
-        response = self.pledge_repository.create_pledge(test_proto, True)
+        response = self.pledge_repository.create_pledge(
+            test_proto,
+            confirm_campaign=False,
+            finalize_campaign=True
+        )
 
         assert campaign_model.status == CampaignStatus.TO_BE_FINALIZED.value
         assert campaign_model.end_date <= campaign_original_end_date
         assert campaign_model.end_date.day <= (
                     datetime.datetime.now() + datetime.timedelta(days=1)).day  # Assert the end date is tomorrow date
+        assert isinstance(response, Pledge)
+        self.test_db.session.add.assert_called_once()
+        self.test_db.session.commit.assert_called_once()
+
+    def test_create_pledge_change_campaign_status_when_confirm_campaign_flag_is_true_and_returns_created_pledge(self):
+        campaign_model = MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED
+        campaign_original_end_date = campaign_model.end_date
+        self.test_mock_campaign_repository.get_campaign_model_by_id.return_value = campaign_model
+
+        test_proto = PledgePrototype(
+            buyer_id=1,
+            campaign_id=1,
+            pledge_price=34
+        )
+
+        response = self.pledge_repository.create_pledge(
+            test_proto,
+            confirm_campaign=True,
+            finalize_campaign=False
+        )
+
+        assert campaign_model.status == CampaignStatus.CONFIRMED.value
+        assert campaign_model.end_date == campaign_original_end_date
         assert isinstance(response, Pledge)
         self.test_db.session.add.assert_called_once()
         self.test_db.session.commit.assert_called_once()

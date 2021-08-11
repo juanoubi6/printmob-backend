@@ -37,7 +37,7 @@ class PledgeRepository:
 
         return [pledge_model.to_pledge_entity() for pledge_model in pledge_models]
 
-    def create_pledge(self, prototype: PledgePrototype, finalize_campaign: bool = False) -> Pledge:
+    def create_pledge(self, prototype: PledgePrototype, confirm_campaign: bool, finalize_campaign: bool) -> Pledge:
         # TODO for mercadopago: we will need to add MercadopagoRepository here
         # 1- Call MercadopagoRepository and create the payment
         # 2- With the payment object, search the net transaction amount (without commissions) and calculate both the
@@ -56,6 +56,9 @@ class PledgeRepository:
             campaign_model = self._campaign_repository.get_campaign_model_by_id(prototype.campaign_id)
             campaign_model.status = CampaignStatus.TO_BE_FINALIZED.value
             campaign_model.end_date = datetime.datetime.now() + datetime.timedelta(days=1)
+        elif confirm_campaign:
+            campaign_model = self._campaign_repository.get_campaign_model_by_id(prototype.campaign_id)
+            campaign_model.status = CampaignStatus.CONFIRMED.value
 
         self.db.session.commit()
 

@@ -30,7 +30,7 @@ common_tech_detail_model = TechDetailsModel(
 
 
 def campaña_en_progreso(session):
-    # Campaña en progreso, le falta 1 pledge para finalizar
+    # Campaña en progreso, le falta 1 pledge para estar confirmada
     # 2 pledges minimos, 3 maximos. 1 pledge realizado
     campaign_model = CampaignModel(name='Campaña en progreso',
                                    description='Campaña en progreso. IN_PROGRESS',
@@ -56,19 +56,19 @@ def campaña_en_progreso(session):
     session.flush()
 
 
-def campaña_en_progreso_con_objetivo_alcanzado_pero_no_finalizada_y_con_max_pledgers(session):
-    # Campaña en progreso con el objetivo alcanzado pero que aun no alcanzo la fecha de finalizacion. Hay cupo maximo
+def campaña_confirmada_pero_no_finalizada_y_con_max_pledgers(session):
+    # Campaña confirmada pero que aun no alcanzo la fecha de finalizacion. Hay cupo maximo
     # 1 pledges minimos, 10 maximos. 1 pledge realizado
     campaign_model = CampaignModel(
-        name='Campaña en progreso con el objetivo alcanzado pero que aun no alcanzo la fecha de finalizacion. Hay cupo maximo',
-        description='Campaña en progreso con el objetivo alcanzado pero que aun no alcanzo la fecha de finalizacion. Hay cupo maximo. IN_PROGRESS',
+        name='Campaña confirmada pero que aun no alcanzo la fecha de finalizacion. Hay cupo maximo',
+        description='Campaña confirmada pero que aun no alcanzo la fecha de finalizacion. Hay cupo maximo. IN_PROGRESS',
         campaign_picture_url=None,
         printer_id=PRINTER_ID,
         pledge_price=5,
         end_date=datetime.datetime(2022, 5, 17),
         min_pledgers=1,
         max_pledgers=10,
-        status=CampaignStatus.IN_PROGRESS.value)
+        status=CampaignStatus.CONFIRMED.value)
     session.add(campaign_model)
     session.flush()
 
@@ -84,19 +84,19 @@ def campaña_en_progreso_con_objetivo_alcanzado_pero_no_finalizada_y_con_max_ple
     session.flush()
 
 
-def campaña_en_progreso_con_objetivo_alcanzado_pero_no_finalizada_y_sin_max_pledgers(session):
-    # Campaña en progreso con el objetivo alcanzado pero que aun no alcanzo la fecha de finalizacion. No hay cupo maximo
+def campaña_confirmada_pero_no_finalizada_y_sin_max_pledgers(session):
+    # Campaña confirmada pero que aun no alcanzo la fecha de finalizacion. No hay cupo maximo
     # 1 pledges minimos, sin maximo. 1 pledge realizado.
     campaign_model = CampaignModel(
-        name='Campaña en progreso con el objetivo alcanzado pero que aun no alcanzo la fecha de finalizacion. No hay cupo maximo',
-        description='Campaña en progreso con el objetivo alcanzado pero que aun no alcanzo la fecha de finalizacion. No hay cupo maximo. IN_PROGRESS',
+        name='Campaña confirmada pero que aun no alcanzo la fecha de finalizacion. No hay cupo maximo',
+        description='Campaña confirmada pero que aun no alcanzo la fecha de finalizacion. No hay cupo maximo. IN_PROGRESS',
         campaign_picture_url=None,
         printer_id=PRINTER_ID,
         pledge_price=5,
         end_date=datetime.datetime(2022, 5, 17),
         min_pledgers=1,
         max_pledgers=None,
-        status=CampaignStatus.IN_PROGRESS.value)
+        status=CampaignStatus.CONFIRMED.value)
     session.add(campaign_model)
     session.flush()
 
@@ -293,8 +293,8 @@ if __name__ == '__main__':
             #""")
 
             campaña_en_progreso(session)
-            campaña_en_progreso_con_objetivo_alcanzado_pero_no_finalizada_y_sin_max_pledgers(session)
-            campaña_en_progreso_con_objetivo_alcanzado_pero_no_finalizada_y_con_max_pledgers(session)
+            campaña_confirmada_pero_no_finalizada_y_sin_max_pledgers(session)
+            campaña_confirmada_pero_no_finalizada_y_con_max_pledgers(session)
             campaña_completada(session)
             campaña_insatisfecha(session)
             campaña_que_sera_finalizada(session)

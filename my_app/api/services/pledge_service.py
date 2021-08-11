@@ -25,9 +25,10 @@ class PledgeService:
         if self.pledge_repository.has_pledge_in_campaign(prototype.buyer_id, prototype.campaign_id):
             raise PledgeCreationException(MAX_PLEDGES_PER_CAMPAIGN_REACHED)
 
+        confirm_campaign = campaign.has_to_be_confirmed()
         finalize_campaign = campaign.has_one_pledge_left()
 
-        return self.pledge_repository.create_pledge(prototype, finalize_campaign)
+        return self.pledge_repository.create_pledge(prototype, confirm_campaign, finalize_campaign)
 
     def cancel_pledge(self, pledge_id: int):
         campaign = self.pledge_repository.get_pledge_campaign(pledge_id)

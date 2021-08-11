@@ -25,7 +25,7 @@ def finalize_campaign(
         try:
             campaigns_to_finish = session.query(CampaignModel) \
                 .filter(CampaignModel.deleted_at == None) \
-                .filter(CampaignModel.status.in_([CampaignStatus.IN_PROGRESS.value, CampaignStatus.TO_BE_FINALIZED.value])) \
+                .filter(CampaignModel.status.in_([CampaignStatus.IN_PROGRESS.value, CampaignStatus.TO_BE_FINALIZED.value, CampaignStatus.CONFIRMED.value])) \
                 .filter(func.date(CampaignModel.end_date) <= datetime.datetime.now()) \
                 .options(noload(CampaignModel.tech_detail)) \
                 .options(noload(CampaignModel.images)) \

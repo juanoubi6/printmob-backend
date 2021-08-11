@@ -19,7 +19,7 @@ class TestPledgeService(unittest.TestCase):
         self.mock_campaign_repository = Mock()
         self.pledge_service = PledgeService(self.mock_pledge_repository, self.mock_campaign_repository)
 
-    def test_create_pledge_returns_created_pledge_when_campaign_is_not_completed_and_campaign_has_max_pledgers_value(
+    def test_create_pledge_returns_created_pledge_when_campaign_is_not_completed_and_campaign_has_any_max_pledgers_value(
             self):
         uncompleted_campaign = copy.deepcopy(MOCK_CAMPAIGN)
         uncompleted_campaign.min_pledgers = 100
@@ -30,16 +30,16 @@ class TestPledgeService(unittest.TestCase):
         self.mock_pledge_repository.has_pledge_in_campaign.return_value = False
         self.mock_pledge_repository.create_pledge.return_value = MOCK_PLEDGE
 
-        created_pledge = self.pledge_service.create_pledge(
-            PledgePrototype(
+        prototype = PledgePrototype(
                 buyer_id=1,
                 campaign_id=1,
                 pledge_price=34
             )
-        )
+
+        created_pledge = self.pledge_service.create_pledge(prototype)
 
         assert created_pledge.id == MOCK_PLEDGE.id
-        self.mock_pledge_repository.create_pledge.assert_called_once()
+        self.mock_pledge_repository.create_pledge.assert_called_once_with(prototype, False, False)
 
     def test_create_pledge_returns_created_pledge_when_campaign_is_not_completed_and_campaign_has_no_max_pledgers_value(
             self):
@@ -52,16 +52,60 @@ class TestPledgeService(unittest.TestCase):
         self.mock_pledge_repository.has_pledge_in_campaign.return_value = False
         self.mock_pledge_repository.create_pledge.return_value = MOCK_PLEDGE
 
-        created_pledge = self.pledge_service.create_pledge(
-            PledgePrototype(
+        prototype = PledgePrototype(
                 buyer_id=1,
                 campaign_id=1,
                 pledge_price=34
             )
-        )
+
+        created_pledge = self.pledge_service.create_pledge(prototype)
 
         assert created_pledge.id == MOCK_PLEDGE.id
-        self.mock_pledge_repository.create_pledge.assert_called_once()
+        self.mock_pledge_repository.create_pledge.assert_called_once_with(prototype, False, False)
+
+    def test_create_pledge_returns_created_pledge_when_campaign_has_one_pledge_left_to_be_completed(
+            self):
+        almost_completed_campaign = copy.deepcopy(MOCK_CAMPAIGN)
+        almost_completed_campaign.min_pledgers = 1
+        almost_completed_campaign.max_pledgers = 1
+        almost_completed_campaign.current_pledgers = 0
+
+        self.mock_campaign_repository.get_campaign_detail.return_value = almost_completed_campaign
+        self.mock_pledge_repository.has_pledge_in_campaign.return_value = False
+        self.mock_pledge_repository.create_pledge.return_value = MOCK_PLEDGE
+
+        prototype = PledgePrototype(
+                buyer_id=1,
+                campaign_id=1,
+                pledge_price=34
+            )
+
+        created_pledge = self.pledge_service.create_pledge(prototype)
+
+        assert created_pledge.id == MOCK_PLEDGE.id
+        self.mock_pledge_repository.create_pledge.assert_called_once_with(prototype, False, True)
+
+    def test_create_pledge_returns_created_pledge_when_campaign_has_one_pledge_left_to_be_confirmed(
+            self):
+        almost_confirmed_campaign = copy.deepcopy(MOCK_CAMPAIGN)
+        almost_confirmed_campaign.min_pledgers = 3
+        almost_confirmed_campaign.max_pledgers = 5
+        almost_confirmed_campaign.current_pledgers = 2
+
+        self.mock_campaign_repository.get_campaign_detail.return_value = almost_confirmed_campaign
+        self.mock_pledge_repository.has_pledge_in_campaign.return_value = False
+        self.mock_pledge_repository.create_pledge.return_value = MOCK_PLEDGE
+
+        prototype = PledgePrototype(
+                buyer_id=1,
+                campaign_id=1,
+                pledge_price=34
+            )
+
+        created_pledge = self.pledge_service.create_pledge(prototype)
+
+        assert created_pledge.id == MOCK_PLEDGE.id
+        self.mock_pledge_repository.create_pledge.assert_called_once_with(prototype, True, False)
 
     def test_create_pledge_raises_error_when_buyer_has_an_existing_pledge_in_the_campaign(self):
         uncompleted_campaign = copy.deepcopy(MOCK_CAMPAIGN)

@@ -12,6 +12,7 @@ class CampaignStatus(enum.Enum):
     COMPLETED = "Completed"
     CANCELLED = "Cancelled"
     UNSATISFIED = "Unsatisfied"
+    CONFIRMED = "Confirmed"
     TO_BE_FINALIZED = "To be finalized"
     TO_BE_CANCELLED = "To be cancelled"
 
@@ -70,6 +71,9 @@ class Campaign:
             return False
         else:
             return self.max_pledgers - self.current_pledgers == 1
+
+    def has_to_be_confirmed(self) -> bool:
+        return (not self.has_one_pledge_left()) and (self.min_pledgers - self.current_pledgers == 1)
 
     def can_be_cancelled(self) -> bool:
         return self.status == CampaignStatus.IN_PROGRESS and self.current_pledgers < self.min_pledgers
