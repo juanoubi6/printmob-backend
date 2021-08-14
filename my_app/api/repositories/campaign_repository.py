@@ -342,8 +342,7 @@ class CampaignRepository:
         """
         query = self.db.session.query(CampaignModel).join(PledgeModel)\
             .filter(CampaignModel.id == PledgeModel.campaign_id)\
-            .filter(PledgeModel.buyer_id == buyer_id)\
-            .filter(PledgeModel.deleted_at == None)
+            .filter(PledgeModel.buyer_id == buyer_id)
         query = apply_campaign_filters(query, filters)
         query = query.options(noload(CampaignModel.tech_detail)).order_by(asc(CampaignModel.id))
 
