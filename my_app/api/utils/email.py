@@ -1,4 +1,4 @@
-from my_app.api.domain import Order
+from my_app.api.domain import Order, Campaign
 from my_app.api.repositories.models import CampaignModel
 
 
@@ -86,13 +86,13 @@ def create_unsatisfied_campaign_email_for_printer(receiver: str, campaign: Campa
     )
 
 
-def create_updated_order_status_email_for_buyer(receiver: str, order: Order) -> Email:
+def create_updated_order_status_email_for_buyer(receiver: str, campaign: Campaign, order: Order) -> Email:
     email_body = """
-        La órden número #{order_id} que esta a tu nombre fue actualizada. Su estado actual es '{status}'. 
-        Para mayor detalle, ingresa en la seccion 'Tus órdenes'.
+        Tu orden de la campaña '{campaign_name}' fue actualizada. Su estado actual es '{status}'. 
+        Para mayor detalle, ingresá en tu dashboard 'Mis Campañas' y revisa tu órden.
 
         Saludos!
-    """.format(order_id=order.id, status=order.status.value)
+    """.format(campaign_name=campaign.name, status=order.get_translated_order_status())
 
     return Email(
         to=receiver,
@@ -101,13 +101,13 @@ def create_updated_order_status_email_for_buyer(receiver: str, order: Order) -> 
     )
 
 
-def create_updated_order_email_for_buyer(receiver: str, order_id: int) -> Email:
+def create_updated_order_email_for_buyer(receiver: str, campaign: Campaign) -> Email:
     email_body = """
-        La orden número #{order_id} que esta a tu nombre fue actualizada. Si querés saber más datos acerca 
-        del estado de tus órdenes, ingresa en la seccion de 'Tus órdenes'.
+        Tu orden realizada sobre la campaña '{campaign_name}' fue actualizada. Si querés saber más datos acerca 
+        del estado de tus órdenes, ingresá en tu dashboard 'Mis Campañas" y revisa tu órden.
 
         Saludos!
-    """.format(order_id=order_id)
+    """.format(campaign_name=campaign.name)
 
     return Email(
         to=receiver,

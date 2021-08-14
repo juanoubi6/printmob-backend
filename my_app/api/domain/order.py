@@ -29,6 +29,14 @@ class Order:
         self.tracking_code = tracking_code
         self.comments = comments
 
+    def get_translated_order_status(self):
+        if self.status == OrderStatus.DISPATCHED:
+            return "Despachada"
+        elif self.status == OrderStatus.IN_PROGRESS:
+            return "En progreso"
+        else:
+            return "Desconocido"
+
     def to_json(self):
         return {
             "id": self.id,

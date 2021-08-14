@@ -10,9 +10,11 @@ class TestOrderService(unittest.TestCase):
 
     def setUp(self):
         self.mock_order_repository = Mock()
+        self.mock_campaign_repository = Mock()
         self.mock_email_repository = Mock()
         self.mock_executor = Mock()
-        self.order_service = OrderService(self.mock_order_repository, self.mock_email_repository, self.mock_executor)
+        self.order_service = OrderService(self.mock_order_repository, self.mock_campaign_repository,
+                                          self.mock_email_repository, self.mock_executor)
 
     def test_update_order_statuses_massively_executes_successfully(self):
         self.mock_order_repository.update_order_statuses_massively.return_value = [MOCK_ORDER]

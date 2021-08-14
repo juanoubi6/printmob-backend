@@ -54,8 +54,9 @@ def build_pledge_controller(db):
 
 def build_order_controller(db, executor, ses_client):
     order_repository = OrderRepository(db)
+    campaign_repository = CampaignRepository(db)
     email_repository = EmailRepository(ses_client, SENDER_EMAIL)
-    order_service = OrderService(order_repository, email_repository, executor)
+    order_service = OrderService(order_repository, campaign_repository, email_repository, executor)
 
     return OrderController(order_service)
 
