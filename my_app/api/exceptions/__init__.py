@@ -1,7 +1,9 @@
 from .base import BusinessException, ServerException, AuthException
+from .campaign_creation_exception import CampaignCreationException
 from .cancellation_exception import CancellationException
 from .error_handler_registration import register_error_handlers
 from .google_validation_exception import GoogleValidationException, GoogleTimeoutException
 from .invalid_field_exception import InvalidFieldException
 from .invalid_param_exception import InvalidParamException
+from .mercadopago_exception import MercadopagoException
 from .not_found_exception import NotFoundException

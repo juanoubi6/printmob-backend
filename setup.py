@@ -24,6 +24,7 @@ setup(
         "google-auth==1.32.1",
         "requests==2.25.1",
         "cachecontrol==0.12.6",
-        "PyJWT==2.1.0"
+        "PyJWT==2.1.0",
+        "mercadopago==2.0.7"
     ],
 )

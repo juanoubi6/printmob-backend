@@ -2,8 +2,9 @@ import datetime
 import unittest
 from unittest.mock import Mock, MagicMock
 
-from my_app.api.domain import CampaignStatus
-from my_app.api.repositories.models import CampaignModel, UserModel, PledgeModel, BuyerModel, PrinterModel
+from my_app.api.domain import CampaignStatus, TransactionType
+from my_app.api.repositories.models import CampaignModel, UserModel, PledgeModel, BuyerModel, PrinterModel, \
+    TransactionModel
 from my_app.crons import finalize_campaign
 
 session_factory_mock = MagicMock()
@@ -39,6 +40,7 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
         finalize_campaign(session_factory_mock, email_repository_mock, executor_mock, mercadopago_repository_mock)
 
         # Assert calls to repositories
+        assert session_mock.add.call_count == 4
         assert session_mock.commit.call_count == 4
         assert session_mock.rollback.call_count == 0
         assert executor_mock.submit.call_count == 4
@@ -50,8 +52,7 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
         assert successful_campaign.end_date.year == datetime.datetime.now().year
         assert unsuccessful_campaign.status == CampaignStatus.UNSATISFIED.value
 
-        # Assert order were created
-        assert session_mock.add.call_count == 2
+        # Assert orders were created
         assert session_mock.add.mock_calls[0].args[0].campaign_id == successful_campaign.id
         assert session_mock.add.mock_calls[0].args[0].buyer_id == successful_campaign.pledges[0].buyer_id
         assert session_mock.add.mock_calls[1].args[0].campaign_id == successful_campaign.id
@@ -60,6 +61,12 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
         # Assert unsuccessful campaign pledges were deleted
         assert unsuccessful_campaign.pledges[0].deleted_at is not None
         assert unsuccessful_campaign.pledges[1].deleted_at is not None
+
+        # Assert refund transactions were created
+        assert session_mock.add.mock_calls[2].args[0].type == TransactionType.REFUND
+        assert session_mock.add.mock_calls[2].args[0].amount == unsuccessful_campaign.pledges[0].printer_transaction.amount * -1
+        assert session_mock.add.mock_calls[3].args[0].type == TransactionType.REFUND
+        assert session_mock.add.mock_calls[3].args[0].amount == unsuccessful_campaign.pledges[1].printer_transaction.amount * -1
 
     def test_finalize_campaign_rollbacks_pledge_on_exception(self):
         # Mock context manager
@@ -160,7 +167,15 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
                         )
                     ),
                     created_at=datetime.datetime(2020, 5, 17),
-                    updated_at=datetime.datetime(2020, 5, 17)
+                    updated_at=datetime.datetime(2020, 5, 17),
+                    printer_transaction=TransactionModel(
+                        id=1,
+                        mp_payment_id=11111,
+                        user_id=mock_printer.id,
+                        amount=10,
+                        type=TransactionType.PLEDGE.value,
+                        is_future=True,
+                    )
                 ),
                 PledgeModel(
                     id=2,
@@ -181,7 +196,15 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
                         )
                     ),
                     created_at=datetime.datetime(2020, 5, 17),
-                    updated_at=datetime.datetime(2020, 5, 17)
+                    updated_at=datetime.datetime(2020, 5, 17),
+                    printer_transaction=TransactionModel(
+                        id=2,
+                        mp_payment_id=22222,
+                        user_id=mock_printer.id,
+                        amount=10,
+                        type=TransactionType.PLEDGE.value,
+                        is_future=True,
+                    )
                 )
             ],
             created_at=datetime.datetime(2020, 5, 17),
@@ -221,7 +244,15 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
                         )
                     ),
                     created_at=datetime.datetime(2020, 5, 17),
-                    updated_at=datetime.datetime(2020, 5, 17)
+                    updated_at=datetime.datetime(2020, 5, 17),
+                    printer_transaction=TransactionModel(
+                        id=3,
+                        mp_payment_id=33333,
+                        user_id=mock_printer.id,
+                        amount=10,
+                        type=TransactionType.PLEDGE.value,
+                        is_future=True,
+                    )
                 ),
                 PledgeModel(
                     id=4,
@@ -242,7 +273,15 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
                         )
                     ),
                     created_at=datetime.datetime(2020, 5, 17),
-                    updated_at=datetime.datetime(2020, 5, 17)
+                    updated_at=datetime.datetime(2020, 5, 17),
+                    printer_transaction=TransactionModel(
+                        id=4,
+                        mp_payment_id=44444,
+                        user_id=mock_printer.id,
+                        amount=10,
+                        type=TransactionType.PLEDGE.value,
+                        is_future=True,
+                    )
                 )
             ],
             created_at=datetime.datetime(2020, 5, 17),

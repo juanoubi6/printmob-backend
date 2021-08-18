@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from my_app.api.domain import PledgePrototype, Pledge, Campaign, CampaignStatus
-from my_app.api.exceptions import NotFoundException
+from my_app.api.exceptions import NotFoundException, MercadopagoException, BusinessException
 from my_app.api.repositories import PledgeRepository
 from tests.test_utils.mock_models import MOCK_CAMPAIGN_MODEL, MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED, \
     MOCK_PLEDGE_MODEL
@@ -15,8 +15,10 @@ class TestPledgeRepository(unittest.TestCase):
 
     def setUp(self):
         self.test_db = MagicMock()
-        self.test_mock_campaign_repository = MagicMock()
-        self.pledge_repository = PledgeRepository(self.test_db, self.test_mock_campaign_repository)
+        self.mock_campaign_repository = MagicMock()
+        self.mock_mercadopago_repository = MagicMock()
+        self.pledge_repository = PledgeRepository(self.test_db, self.mock_campaign_repository,
+                                                  self.mock_mercadopago_repository)
 
     def test_create_pledge_returns_created_pledge(self):
         self.test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.side_effect = [
@@ -42,7 +44,7 @@ class TestPledgeRepository(unittest.TestCase):
     def test_create_pledge_change_campaign_status_and_end_date_when_finalize_campaign_flag_is_true_and_returns_created_pledge(self):
         campaign_model = MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED
         campaign_original_end_date = campaign_model.end_date
-        self.test_mock_campaign_repository.get_campaign_model_by_id.return_value = campaign_model
+        self.mock_campaign_repository.get_campaign_model_by_id.return_value = campaign_model
 
         test_proto = PledgePrototype(
             buyer_id=1,
@@ -67,7 +69,7 @@ class TestPledgeRepository(unittest.TestCase):
     def test_create_pledge_change_campaign_status_when_confirm_campaign_flag_is_true_and_returns_created_pledge(self):
         campaign_model = MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED
         campaign_original_end_date = campaign_model.end_date
-        self.test_mock_campaign_repository.get_campaign_model_by_id.return_value = campaign_model
+        self.mock_campaign_repository.get_campaign_model_by_id.return_value = campaign_model
 
         test_proto = PledgePrototype(
             buyer_id=1,
@@ -145,6 +147,21 @@ class TestPledgeRepository(unittest.TestCase):
         assert response.deleted_at is not None
         assert self.test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.call_count == 1
         self.test_db.session.commit.assert_called_once()
+        self.mock_mercadopago_repository.refund_payment.assert_called_once_with(
+            MOCK_PLEDGE_MODEL.printer_transaction.mp_payment_id
+        )
+
+    def test_delete_pledge_rollbacks_entity_creations_on_refund_failure(self):
+        self.test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.side_effect = [
+            MOCK_PLEDGE_MODEL
+        ]
+        self.mock_mercadopago_repository.refund_payment.side_effect = MercadopagoException("Some refund error")
+
+        with pytest.raises(BusinessException):
+            self.pledge_repository.delete_pledge(1)
+
+        self.test_db.session.commit.assert_not_called()
+        self.test_db.session.rollback.assert_called_once()
 
     def test_delete_pledge_raises_exception_when_pledge_cannot_be_found(self):
         self.test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.side_effect = [None]

@@ -4,9 +4,9 @@ from concurrent.futures import Executor
 
 from sqlalchemy.orm import sessionmaker, noload
 
-from my_app.api.domain import CampaignStatus
-from my_app.api.repositories import EmailRepository
-from my_app.api.repositories.models import CampaignModel, FailedToRefundPledgeModel
+from my_app.api.domain import CampaignStatus, TransactionType
+from my_app.api.repositories import EmailRepository, MercadopagoRepository
+from my_app.api.repositories.models import CampaignModel, FailedToRefundPledgeModel, TransactionModel
 from my_app.api.utils.email import create_cancelled_campaign_email_for_client
 
 
@@ -14,7 +14,7 @@ def cancel_campaigns(
         session_factory: sessionmaker,
         email_repository: EmailRepository,
         executor: Executor,
-        mercadopago_repository
+        mercadopago_repository: MercadopagoRepository
 ):
     logging.info("Starting cancel campaigns process")
 
@@ -42,22 +42,20 @@ def cancel_campaigns(
                             # Delete pledge
                             pledge_to_cancel.deleted_at = datetime.datetime.now()
 
-                            # TODO Get mercadopago payment id of printer's transaction, refund it and create a refund transaction
-                            """ 
-                            mp_printer_payment_id_to_refund = pledge_to_cancel.printer_transaction.mp_payment_id
-
-                            mercadopagoRepository.refund_transactions(mp_printer_payment_id_to_refund)
+                            # Refund mercadopago printer transaction payment and create a refund transaction
+                            mercadopago_repository.refund_payment(
+                                pledge_to_cancel.printer_transaction.mp_payment_id
+                            )
 
                             session.add(
                                 TransactionModel(
                                     mp_payment_id=pledge_to_cancel.printer_transaction.mp_payment_id,
                                     user_id=pledge_to_cancel.printer_transaction.user_id,
-                                    amount=pledge_to_cancel.printer_transaction.amount,
-                                    type=TransactionStatus.REFUND,
-                                    is_future=False
+                                    amount=pledge_to_cancel.printer_transaction.amount*-1,
+                                    type=TransactionType.REFUND,
+                                    is_future=pledge_to_cancel.printer_transaction.is_future
                                 )
                             )
-                            """
 
                             # TODO Get mercadopago payment id of desginer's transaction, refund it and create a refund transaction
                             #  (may not be necessary)

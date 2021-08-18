@@ -1,4 +1,5 @@
 from my_app.api.domain import Order, Campaign
+from my_app.api.domain import User
 from my_app.api.repositories.models import CampaignModel
 
 
@@ -130,5 +131,20 @@ def create_cancelled_campaign_email_for_client(receiver: str, campaign: Campaign
     return Email(
         to=receiver,
         subject="Una campaña en la que participastes fue cancelada",
+        body=email_body
+    )
+
+
+def create_money_request_email(receiver: str, user: User, amount: float) -> Email:
+    email_body = """
+        El usuario '{id}' ha solicitado la transferencia de ${amount} a su cuenta.
+    """.format(
+        id=user.id,
+        amount=amount,
+    )
+
+    return Email(
+        to=receiver,
+        subject="El usuario {} ha solicitado una transferencia".format(user.id),
         body=email_body
     )

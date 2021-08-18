@@ -1,14 +1,13 @@
 import json
 import os
-import os
 import unittest
 from unittest.mock import patch
 
 from my_app.api import create_app
 from my_app.api.utils.token_manager import TokenManager
-from tests.test_utils.mock_entities import MOCK_BUYER, MOCK_PRINTER
+from tests.test_utils.mock_entities import MOCK_BUYER, MOCK_PRINTER, MOCK_BALANCE
 from tests.test_utils.test_json import GET_PRINTER_PROFILE_RESPONSE_JSON, GET_BUYER_PROFILE_RESPONSE_JSON, \
-    CREATE_PRINTER_JSON_REQUEST, CREATE_BUYER_JSON_REQUEST
+    CREATE_PRINTER_JSON_REQUEST, CREATE_BUYER_JSON_REQUEST, GET_BALANCE_RESPONSE_JSON
 
 app = create_app()
 app.config['TESTING'] = True
@@ -89,3 +88,44 @@ class TestUserController(unittest.TestCase):
         assert res.json == GET_BUYER_PROFILE_RESPONSE_JSON
 
         mock_user_service.update_buyer.assert_called_once()
+
+    @patch.object(app.user_controller, "user_service")
+    def test_ger_user_balance_returns_balance(self, mock_user_service):
+        mock_user_service.get_user_balance.return_value = MOCK_BALANCE
+
+        res = client.get(
+            "/users/{}/balance".format(MOCK_PRINTER.id),
+            headers={"Authorization": self.printer_authorization_token}
+        )
+
+        assert res.status_code == 200
+        assert res.json == GET_BALANCE_RESPONSE_JSON
+
+        mock_user_service.get_user_balance.assert_called_once_with(MOCK_PRINTER.id)
+
+    def test_ger_user_balance_returns_400_if_user_is_a_buyer(self):
+        res = client.get(
+            "/users/{}/balance".format(MOCK_BUYER.id),
+            headers={"Authorization": self.buyer_authorization_token}
+        )
+
+        assert res.status_code == 400
+
+    @patch.object(app.user_controller, "user_service")
+    def test_request_user_balance_returns_ok(self, mock_user_service):
+        res = client.post(
+            "/users/{}/balance".format(MOCK_PRINTER.id),
+            headers={"Authorization": self.printer_authorization_token}
+        )
+
+        assert res.status_code == 200
+
+        mock_user_service.request_balance.assert_called_once_with(MOCK_PRINTER.id)
+
+    def test_request_user_balance_returns_400_if_user_is_a_buyer(self):
+        res = client.post(
+            "/users/{}/balance".format(MOCK_BUYER.id),
+            headers={"Authorization": self.buyer_authorization_token}
+        )
+
+        assert res.status_code == 400

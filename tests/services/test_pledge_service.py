@@ -5,11 +5,11 @@ from unittest.mock import Mock
 
 import pytest
 
-from my_app.api.domain import PledgePrototype
+from my_app.api.domain import PledgePrototype, TransactionType
 from my_app.api.exceptions import CancellationException
 from my_app.api.exceptions.pledge_creation_exception import PledgeCreationException
 from my_app.api.services import PledgeService
-from tests.test_utils.mock_entities import MOCK_PLEDGE, MOCK_CAMPAIGN
+from tests.test_utils.mock_entities import MOCK_PLEDGE, MOCK_CAMPAIGN, MOCK_PAYMENT
 
 
 class TestPledgeService(unittest.TestCase):
@@ -17,7 +17,10 @@ class TestPledgeService(unittest.TestCase):
     def setUp(self):
         self.mock_pledge_repository = Mock()
         self.mock_campaign_repository = Mock()
-        self.pledge_service = PledgeService(self.mock_pledge_repository, self.mock_campaign_repository)
+        self.mock_mercadopago_repository = Mock()
+        self.mock_transaction_repository = Mock()
+        self.pledge_service = PledgeService(self.mock_pledge_repository, self.mock_campaign_repository,
+                                            self.mock_mercadopago_repository, self.mock_transaction_repository)
 
     def test_create_pledge_returns_created_pledge_when_campaign_is_not_completed_and_campaign_has_any_max_pledgers_value(
             self):
@@ -190,3 +193,22 @@ class TestPledgeService(unittest.TestCase):
 
         assert pledges == [MOCK_PLEDGE]
         self.mock_pledge_repository.get_pledges.assert_called_once_with({"campaign_id": 1})
+
+    def test_update_pledge_with_payment_returns_updated_pledge(self):
+        self.mock_pledge_repository.get_pledge.return_value = MOCK_PLEDGE
+        self.mock_mercadopago_repository.get_payment_data.return_value = MOCK_PAYMENT
+        self.mock_transaction_repository.associate_transactions_to_pledge.return_value = MOCK_PLEDGE
+
+        updated_pledge = self.pledge_service.update_pledge_with_payment(1, 123)
+
+        assert updated_pledge == MOCK_PLEDGE
+        self.mock_pledge_repository.get_pledge.assert_called_once_with(1)
+        self.mock_mercadopago_repository.get_payment_data.assert_called_once_with(123)
+        self.mock_transaction_repository.associate_transactions_to_pledge.assert_called_once()
+
+        called_transaction_prototype = self.mock_transaction_repository.associate_transactions_to_pledge.mock_calls[0].args[1]
+        assert called_transaction_prototype.amount == MOCK_PAYMENT.get_transaction_net_amount()
+        assert called_transaction_prototype.mp_payment_id == 123
+        assert called_transaction_prototype.type == TransactionType.PLEDGE
+        assert called_transaction_prototype.user_id == MOCK_PLEDGE.buyer_id
+        assert called_transaction_prototype.is_future is True

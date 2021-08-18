@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import request
 
 from my_app.api.domain import UserType, User, PrinterPrototype, UserPrototype, BankInformationPrototype, BuyerPrototype, \
-    AddressPrototype
+    AddressPrototype, Balance
 from my_app.api.exceptions import AuthException, BusinessException
 from my_app.api.services import UserService
 
@@ -42,6 +42,28 @@ class UserController:
             raise BusinessException("Invalid user type from access token")
 
         return updated_user.to_json(), 200
+
+    def get_user_balance(self, req: request, user_id: int, user_data: dict) -> (Balance, int):
+        if user_id != int(user_data["id"]):
+            raise AuthException("Identified user and user_id do not match")
+
+        if user_data["user_type"] == UserType.BUYER.value:
+            raise BusinessException("Buyers do not have balance")
+
+        balance = self.user_service.get_user_balance(user_id)
+
+        return balance.to_json(), 200
+
+    def request_balance(self, req: request, user_id: int, user_data: dict) -> (dict, int):
+        if user_id != int(user_data["id"]):
+            raise AuthException("Identified user and user_id do not match")
+
+        if user_data["user_type"] == UserType.BUYER.value:
+            raise BusinessException("Buyers do not have balance")
+
+        self.user_service.request_balance(user_id)
+
+        return {"status": "ok"}, 200
 
     def _generate_printer_prototype(self, body: dict) -> PrinterPrototype:
         return PrinterPrototype(

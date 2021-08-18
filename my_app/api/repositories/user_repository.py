@@ -24,6 +24,11 @@ class UserRepository:
 
         return user_model.to_user_entity() if user_model is not None else None
 
+    def get_user_by_id(self, id: int) -> User:
+        user_model = self._get_user_model_by_id(id)
+
+        return user_model.to_user_entity() if user_model is not None else None
+
     def is_user_name_in_use(self, user_name: str) -> bool:
         return self.db.session.query(UserModel).filter_by(user_name=user_name.lower()).first() is not None
 
@@ -124,6 +129,9 @@ class UserRepository:
 
     def _get_user_model_by_email(self, email: str) -> UserModel:
         return self.db.session.query(UserModel).filter_by(email=email).first()
+
+    def _get_user_model_by_id(self, id: int) -> UserModel:
+        return self.db.session.query(UserModel).filter_by(id=id).first()
 
     def _get_buyer_model_by_id(self, user_id: int) -> BuyerModel:
         return self.db.session.query(BuyerModel).filter_by(id=user_id).first()

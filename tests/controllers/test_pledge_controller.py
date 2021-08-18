@@ -71,3 +71,11 @@ class TestPledgeController(unittest.TestCase):
         called_filters = mock_pledge_service.get_pledges.mock_calls[0][1][0]
         assert "campaign_id" in called_filters
         assert "buyer_id" in called_filters
+
+    @patch.object(app.pledge_controller, "pledge_service")
+    def test_update_pledge_with_payment_returns_updated_pledge(self, mock_pledge_service):
+        mock_pledge_service.update_pledge_with_payment.return_value = MOCK_PLEDGE
+
+        res = client.patch("/pledges/1/payment", data=json.dumps({"mp_payment_id": 123455}))
+        assert res.status_code == 200
+        assert res.json["id"] == MOCK_PLEDGE.id

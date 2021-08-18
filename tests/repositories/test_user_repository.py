@@ -151,3 +151,10 @@ class TestUserRepository(unittest.TestCase):
         assert response.address.city != MOCK_BUYER_MODEL.address.city
         assert response.address.floor != MOCK_BUYER_MODEL.address.floor
         assert response.address.apartment != MOCK_BUYER_MODEL.address.apartment
+
+    def test_get_user_by_id_returns_user(self):
+        self.test_db.session.query.return_value.filter_by.return_value.first.return_value = MOCK_USER_BUYER_MODEL
+
+        response = self.user_repository.get_user_by_id(MOCK_USER_BUYER_MODEL.id)
+
+        assert isinstance(response, User)

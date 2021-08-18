@@ -3,17 +3,22 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from my_app.api.domain import Printer, Buyer
+from my_app.api.domain import Printer, Buyer, Balance
 from my_app.api.exceptions import BusinessException
 from my_app.api.services import UserService
-from tests.test_utils.mock_entities import MOCK_PRINTER, MOCK_PRINTER_PROTOTYPE, MOCK_BUYER, MOCK_BUYER_PROTOTYPE
+from tests.test_utils.mock_entities import MOCK_PRINTER, MOCK_PRINTER_PROTOTYPE, MOCK_BUYER, MOCK_BUYER_PROTOTYPE, \
+    MOCK_BALANCE
 
 
 class TestUserService(unittest.TestCase):
 
     def setUp(self):
+        self.mock_transaction_repository = MagicMock()
         self.mock_user_repository = MagicMock()
-        self.user_service = UserService(self.mock_user_repository)
+        self.mock_email_repository = MagicMock()
+        self.mock_executor = MagicMock()
+        self.user_service = UserService(self.mock_user_repository, self.mock_transaction_repository,
+                                        self.mock_email_repository, self.mock_executor)
 
     def test_create_printer_returns_printer(self):
         self.mock_user_repository.is_user_name_in_use.return_value = False
@@ -96,6 +101,30 @@ class TestUserService(unittest.TestCase):
 
         assert isinstance(response, Buyer)
         self.mock_user_repository.update_buyer.assert_called_once_with(1, MOCK_BUYER_PROTOTYPE)
+
+    def test_get_user_balance_returns_balance(self):
+        self.mock_transaction_repository.get_user_balance.return_value = MOCK_BALANCE
+
+        response = self.user_service.get_user_balance(1)
+
+        assert isinstance(response, Balance)
+        self.mock_transaction_repository.get_user_balance.assert_called_once_with(1)
+
+    def test_request_user_balance_sends_email_if_balance_is_not_0(self):
+        self.mock_transaction_repository.create_balance_request.return_value = 50.0
+        self.mock_user_repository.get_user_by_id.return_value = MOCK_PRINTER
+
+        self.user_service.request_balance(MOCK_PRINTER.id)
+
+        self.mock_executor.submit.assert_called_once()
+
+    def test_request_user_balance_does_not_send_email_if_balance_is_0(self):
+        self.mock_transaction_repository.create_balance_request.return_value = 0.0
+        self.mock_user_repository.get_user_by_id.return_value = MOCK_PRINTER
+
+        self.user_service.request_balance(MOCK_PRINTER.id)
+
+        self.mock_executor.submit.assert_not_called()
 
     def test_validate_user_name_and_email_existence_returns_validation(self):
         self.mock_user_repository.is_email_in_use.return_value = True

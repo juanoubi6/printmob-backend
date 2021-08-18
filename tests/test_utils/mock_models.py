@@ -1,8 +1,8 @@
 import datetime
 
-from my_app.api.domain import OrderStatus, UserType
+from my_app.api.domain import OrderStatus, UserType, TransactionType
 from my_app.api.repositories.models import CampaignModel, TechDetailsModel, PrinterModel, UserModel, PledgeModel, \
-    CampaignModelImageModel, BuyerModel, AddressModel, OrderModel, BankInformationModel
+    CampaignModelImageModel, BuyerModel, AddressModel, OrderModel, BankInformationModel, TransactionModel
 
 MOCK_BANK_INFORMATION_MODEL = BankInformationModel(
     id=1,
@@ -10,6 +10,14 @@ MOCK_BANK_INFORMATION_MODEL = BankInformationModel(
     alias=None,
     account_number="324324",
     bank="Galicia"
+)
+
+MOCK_PRINTER_TRANSACTION_MODEL = TransactionModel(
+    mp_payment_id=12345,
+    user_id=2,
+    amount=150,
+    type=TransactionType.PLEDGE.value,
+    is_future=True,
 )
 
 MOCK_TECH_DETAIL_MODEL = TechDetailsModel(
@@ -75,7 +83,8 @@ MOCK_PLEDGE_MODEL = PledgeModel(
     buyer_id=1,
     buyer=MOCK_BUYER_MODEL,
     created_at=datetime.datetime(2020, 5, 17),
-    updated_at=datetime.datetime(2020, 5, 17)
+    updated_at=datetime.datetime(2020, 5, 17),
+    printer_transaction=MOCK_PRINTER_TRANSACTION_MODEL
 )
 
 MOCK_CAMPAIGN_MODEL_IMAGE_MODEL = CampaignModelImageModel(
@@ -100,7 +109,8 @@ MOCK_CAMPAIGN_MODEL = CampaignModel(
     pledges=[MOCK_PLEDGE_MODEL],
     created_at=datetime.datetime(2020, 5, 17),
     updated_at=datetime.datetime(2020, 5, 17),
-    status="In progress"
+    status="In progress",
+    mp_preference_id="preference_id"
 )
 
 MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED = CampaignModel(
@@ -118,7 +128,8 @@ MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED = CampaignModel(
     pledges=[MOCK_PLEDGE_MODEL],
     created_at=datetime.datetime(2020, 5, 17),
     updated_at=datetime.datetime(2020, 5, 17),
-    status="In progress"
+    status="In progress",
+    mp_preference_id="preference_id"
 )
 
 MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_REACHED = CampaignModel(
@@ -136,7 +147,8 @@ MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_REACHED = CampaignModel(
     pledges=[MOCK_PLEDGE_MODEL, MOCK_PLEDGE_MODEL],
     created_at=datetime.datetime(2020, 5, 17),
     updated_at=datetime.datetime(2020, 5, 17),
-    status="In progress"
+    status="In progress",
+    mp_preference_id="preference_id"
 )
 
 MOCK_ORDER_MODEL = OrderModel(

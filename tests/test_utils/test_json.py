@@ -36,6 +36,11 @@ GET_PRINTER_PROFILE_RESPONSE_JSON = {
     'user_type': 'Printer'
 }
 
+GET_BALANCE_RESPONSE_JSON = {
+    'current_balance': 100.5,
+    'future_balance': 25.6
+}
+
 GET_PLEDGES_RESPONSE_JSON = [
     {
         'buyer_id': 1,
@@ -133,7 +138,8 @@ CAMPAIGN_GET_RESPONSE_JSON = {
     "created_at": "Sun, 17 May 2020 00:00:00 GMT",
     "updated_at": "Sun, 17 May 2020 00:00:00 GMT",
     "deleted_at": None,
-    "status": "In progress"
+    "status": "In progress",
+    'mp_preference_id': 'preference_id'
 }
 
 CAMPAIGN_POST_REQUEST_JSON = {
@@ -200,7 +206,8 @@ CAMPAIGN_POST_RESPONSE_JSON = {
         "weight": 100
     },
     "updated_at": "Sun, 17 May 2020 00:00:00 GMT",
-    "status": "In progress"
+    "status": "In progress",
+    'mp_preference_id': 'preference_id'
 }
 
 CAMPAIGN_MODEL_IMAGE_JSON = {

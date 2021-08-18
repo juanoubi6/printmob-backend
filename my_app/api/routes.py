@@ -94,6 +94,11 @@ def create_pledge(user_data):
     return current_app.pledge_controller.create_pledge(request)
 
 
+@route(pledgeBlueprint, '/<pledge_id>/payment', methods=['PATCH'])
+def update_pledge_with_payment(pledge_id):
+    return current_app.pledge_controller.update_pledge_with_payment(request, int(pledge_id))
+
+
 @route(pledgeBlueprint, '/<pledge_id>', methods=['DELETE'])
 @validate_bearer_token
 def cancel_pledge(pledge_id, user_data):
@@ -103,6 +108,12 @@ def cancel_pledge(pledge_id, user_data):
 @route(pledgeBlueprint, '/', methods=['GET'])
 def get_pledges():
     return current_app.pledge_controller.get_pledges(request)
+
+
+@route(pledgeBlueprint, '/payment', methods=['POST'])
+@validate_bearer_token
+def create_pledge_with_payment(user_data):
+    return current_app.pledge_controller.create_pledge_with_payment(request, user_data)
 
 
 # Orders
@@ -155,6 +166,18 @@ def create_buyer():
 @validate_bearer_token
 def get_user_profile(user_id, user_data):
     return current_app.user_controller.get_user_profile(request, int(user_id), user_data)
+
+
+@route(userBlueprint, '/<user_id>/balance', methods=['GET'])
+@validate_bearer_token
+def get_user_balance(user_id, user_data):
+    return current_app.user_controller.get_user_balance(request, int(user_id), user_data)
+
+
+@route(userBlueprint, '/<user_id>/balance', methods=['POST'])
+@validate_bearer_token
+def request_balance(user_id, user_data):
+    return current_app.user_controller.request_balance(request, int(user_id), user_data)
 
 
 @route(userBlueprint, '/<user_id>/profile', methods=['PUT'])

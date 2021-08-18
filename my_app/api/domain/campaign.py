@@ -33,9 +33,10 @@ class Campaign:
             current_pledgers: int,
             tech_details: TechDetail,
             status: CampaignStatus,
+            mp_preference_id: str,
             created_at: datetime.datetime = datetime.datetime.utcnow(),
             updated_at: datetime.datetime = datetime.datetime.utcnow(),
-            deleted_at: datetime.datetime = None
+            deleted_at: datetime.datetime = None,
     ):
         self.id = id
         self.name = name
@@ -50,6 +51,7 @@ class Campaign:
         self.current_pledgers = current_pledgers
         self.tech_details = tech_details
         self.status = status
+        self.mp_preference_id = mp_preference_id
         self.created_at = created_at
         self.updated_at = updated_at
         self.deleted_at = deleted_at
@@ -93,6 +95,7 @@ class Campaign:
             "current_pledgers": self.current_pledgers,
             "tech_details": self.tech_details.to_json() if self.tech_details is not None else None,
             "status": self.status.value,
+            "mp_preference_id": self.mp_preference_id,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
             "deleted_at": self.deleted_at

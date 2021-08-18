@@ -2,23 +2,30 @@ import copy
 import os
 import datetime
 
+import mercadopago
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from my_app.api.domain import CampaignStatus, OrderStatus
-from my_app.api.repositories.models import CampaignModel, PledgeModel, OrderModel, TechDetailsModel
+from my_app.api.domain import CampaignStatus, OrderStatus, TransactionType
+from my_app.api.repositories import MercadopagoRepository
+from my_app.api.repositories.models import CampaignModel, PledgeModel, OrderModel, TechDetailsModel, TransactionModel
 
 engine = create_engine(os.environ["DATABASE_URL"])
 db_session_factory = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+mercadopago_repository = MercadopagoRepository(
+    mercadopago.SDK(os.environ["MERCADOPAGO_ACCESS_TOKEN"]),
+    os.environ["PREFERENCE_BACK_URL_FOR_PAYMENT_ERRORS"],
+    os.environ["PREFERENCE_BACK_URL_FOR_SUCCESS_PLEDGE_PAYMENT"]
+)
 
 # Change with your own printer and buyer account IDs
 PRINTER_ID = 1
 BUYER_ID = 2
 
 # Buyers IDs (don't use your own)
-ADDITIONAL_BUYER_ID_1 = 4
-ADDITIONAL_BUYER_ID_2 = 6
-ADDITIONAL_BUYER_ID_3 = 8
+ADDITIONAL_BUYER_ID_1 = 5
+ADDITIONAL_BUYER_ID_2 = 7
+ADDITIONAL_BUYER_ID_3 = 9
 
 common_tech_detail_model = TechDetailsModel(
     material="Material",
@@ -44,9 +51,25 @@ def campaña_en_progreso(session):
     session.add(campaign_model)
     session.flush()
 
+    preference_id = mercadopago_repository.create_campaign_pledge_preference(
+        campaign_model.to_campaign_entity()
+    )
+    campaign_model.mp_preference_id = preference_id
+
+    printer_transaction_model = TransactionModel(
+        mp_payment_id=11111111111,
+        user_id=PRINTER_ID,
+        amount=campaign_model.pledge_price,
+        type=TransactionType.PLEDGE.value,
+        is_future=True
+    )
+    session.add(printer_transaction_model)
+    session.flush()
+
     pledge_model = PledgeModel(campaign_id=campaign_model.id,
                                pledge_price=campaign_model.pledge_price,
-                               buyer_id=BUYER_ID)
+                               buyer_id=BUYER_ID,
+                               printer_transaction_id=printer_transaction_model.id)
     session.add(pledge_model)
     session.flush()
 
@@ -72,9 +95,25 @@ def campaña_confirmada_con_1_pledge_faltante(session):
     session.add(campaign_model)
     session.flush()
 
+    preference_id = mercadopago_repository.create_campaign_pledge_preference(
+        campaign_model.to_campaign_entity()
+    )
+    campaign_model.mp_preference_id = preference_id
+
+    printer_transaction_model = TransactionModel(
+        mp_payment_id=11111111111,
+        user_id=PRINTER_ID,
+        amount=campaign_model.pledge_price,
+        type=TransactionType.PLEDGE.value,
+        is_future=True
+    )
+    session.add(printer_transaction_model)
+    session.flush()
+
     pledge_model = PledgeModel(campaign_id=campaign_model.id,
                                pledge_price=campaign_model.pledge_price,
-                               buyer_id=BUYER_ID)
+                               buyer_id=BUYER_ID,
+                               printer_transaction_id=printer_transaction_model.id)
     session.add(pledge_model)
     session.flush()
 
@@ -100,10 +139,27 @@ def campaña_confirmada_pero_no_finalizada_y_sin_max_pledgers(session):
     session.add(campaign_model)
     session.flush()
 
+    preference_id = mercadopago_repository.create_campaign_pledge_preference(
+        campaign_model.to_campaign_entity()
+    )
+    campaign_model.mp_preference_id = preference_id
+
+    printer_transaction_model = TransactionModel(
+        mp_payment_id=11111111111,
+        user_id=PRINTER_ID,
+        amount=campaign_model.pledge_price,
+        type=TransactionType.PLEDGE.value,
+        is_future=True
+    )
+    session.add(printer_transaction_model)
+    session.flush()
+
     pledge_model = PledgeModel(
         campaign_id=campaign_model.id,
         pledge_price=campaign_model.pledge_price,
-        buyer_id=BUYER_ID)
+        buyer_id=BUYER_ID,
+        printer_transaction_id=printer_transaction_model.id
+    )
     session.add(pledge_model)
     session.flush()
 
@@ -128,15 +184,42 @@ def campaña_completada(session):
     session.add(campaign_model)
     session.flush()
 
+    preference_id = mercadopago_repository.create_campaign_pledge_preference(
+        campaign_model.to_campaign_entity()
+    )
+    campaign_model.mp_preference_id = preference_id
+
+    printer_transaction_model_1 = TransactionModel(
+        mp_payment_id=11111111111,
+        user_id=PRINTER_ID,
+        amount=campaign_model.pledge_price,
+        type=TransactionType.PLEDGE.value,
+        is_future=False
+    )
+    session.add(printer_transaction_model_1)
+    session.flush()
+
     pledge_model_1 = PledgeModel(campaign_id=campaign_model.id,
                                  pledge_price=campaign_model.pledge_price,
-                                 buyer_id=BUYER_ID)
+                                 buyer_id=BUYER_ID,
+                                 printer_transaction_id=printer_transaction_model_1.id)
     session.add(pledge_model_1)
+    session.flush()
+
+    printer_transaction_model_2 = TransactionModel(
+        mp_payment_id=11111111111,
+        user_id=PRINTER_ID,
+        amount=campaign_model.pledge_price,
+        type=TransactionType.PLEDGE.value,
+        is_future=False
+    )
+    session.add(printer_transaction_model_2)
     session.flush()
 
     pledge_model_2 = PledgeModel(campaign_id=campaign_model.id,
                                  pledge_price=campaign_model.pledge_price,
-                                 buyer_id=ADDITIONAL_BUYER_ID_1)
+                                 buyer_id=ADDITIONAL_BUYER_ID_1,
+                                 printer_transaction_id=printer_transaction_model_2.id)
     session.add(pledge_model_2)
     session.flush()
 
@@ -179,10 +262,36 @@ def campaña_insatisfecha(session):
     session.add(campaign_model)
     session.flush()
 
+    preference_id = mercadopago_repository.create_campaign_pledge_preference(
+        campaign_model.to_campaign_entity()
+    )
+    campaign_model.mp_preference_id = preference_id
+
+    printer_transaction_model = TransactionModel(
+        mp_payment_id=11111111111,
+        user_id=PRINTER_ID,
+        amount=campaign_model.pledge_price,
+        type=TransactionType.PLEDGE.value,
+        is_future=True
+    )
+    session.add(printer_transaction_model)
+    session.flush()
+
+    printer_refund_transaction_model = TransactionModel(
+        mp_payment_id=printer_transaction_model.mp_payment_id,
+        user_id=printer_transaction_model.user_id,
+        amount=printer_transaction_model.amount * -1,
+        type=TransactionType.REFUND.value,
+        is_future=printer_transaction_model.is_future
+    )
+    session.add(printer_refund_transaction_model)
+    session.flush()
+
     pledge_model_1 = PledgeModel(campaign_id=campaign_model.id,
                                  pledge_price=campaign_model.pledge_price,
                                  buyer_id=BUYER_ID,
-                                 deleted_at=datetime.datetime(2021, 4, 4))
+                                 deleted_at=datetime.datetime(2021, 4, 4),
+                                 printer_transaction_id=printer_transaction_model.id)
     session.add(pledge_model_1)
     session.flush()
 
@@ -209,15 +318,42 @@ def campaña_que_sera_finalizada(session):
     session.add(campaign_model)
     session.flush()
 
+    preference_id = mercadopago_repository.create_campaign_pledge_preference(
+        campaign_model.to_campaign_entity()
+    )
+    campaign_model.mp_preference_id = preference_id
+
+    printer_transaction_model_1 = TransactionModel(
+        mp_payment_id=11111111111,
+        user_id=PRINTER_ID,
+        amount=campaign_model.pledge_price,
+        type=TransactionType.PLEDGE.value,
+        is_future=True
+    )
+    session.add(printer_transaction_model_1)
+    session.flush()
+
     pledge_model_1 = PledgeModel(campaign_id=campaign_model.id,
                                  pledge_price=campaign_model.pledge_price,
-                                 buyer_id=BUYER_ID)
+                                 buyer_id=BUYER_ID,
+                                 printer_transaction_id=printer_transaction_model_1.id)
     session.add(pledge_model_1)
+    session.flush()
+
+    printer_transaction_model_2 = TransactionModel(
+        mp_payment_id=11111111111,
+        user_id=PRINTER_ID,
+        amount=campaign_model.pledge_price,
+        type=TransactionType.PLEDGE.value,
+        is_future=True
+    )
+    session.add(printer_transaction_model_2)
     session.flush()
 
     pledge_model_2 = PledgeModel(campaign_id=campaign_model.id,
                                  pledge_price=campaign_model.pledge_price,
-                                 buyer_id=ADDITIONAL_BUYER_ID_1)
+                                 buyer_id=ADDITIONAL_BUYER_ID_1,
+                                 printer_transaction_id=printer_transaction_model_2.id)
     session.add(pledge_model_2)
     session.flush()
 
@@ -241,10 +377,36 @@ def campaña_cancelada(session):
     session.add(campaign_model)
     session.flush()
 
+    preference_id = mercadopago_repository.create_campaign_pledge_preference(
+        campaign_model.to_campaign_entity()
+    )
+    campaign_model.mp_preference_id = preference_id
+
+    printer_transaction_model = TransactionModel(
+        mp_payment_id=11111111111,
+        user_id=PRINTER_ID,
+        amount=campaign_model.pledge_price,
+        type=TransactionType.PLEDGE.value,
+        is_future=True
+    )
+    session.add(printer_transaction_model)
+    session.flush()
+
+    printer_refund_transaction_model = TransactionModel(
+        mp_payment_id=printer_transaction_model.mp_payment_id,
+        user_id=printer_transaction_model.user_id,
+        amount=printer_transaction_model.amount  * -1,
+        type=TransactionType.REFUND.value,
+        is_future=printer_transaction_model.is_future
+    )
+    session.add(printer_refund_transaction_model)
+    session.flush()
+
     pledge_model_1 = PledgeModel(campaign_id=campaign_model.id,
                                  pledge_price=campaign_model.pledge_price,
                                  buyer_id=BUYER_ID,
-                                 deleted_at=datetime.datetime(2021, 4, 3))
+                                 deleted_at=datetime.datetime(2021, 4, 3),
+                                 printer_transaction_id=printer_transaction_model.id)
     session.add(pledge_model_1)
     session.flush()
 
@@ -269,9 +431,25 @@ def campaña_que_sera_cancelada(session):
     session.add(campaign_model)
     session.flush()
 
+    preference_id = mercadopago_repository.create_campaign_pledge_preference(
+        campaign_model.to_campaign_entity()
+    )
+    campaign_model.mp_preference_id = preference_id
+
+    printer_transaction_model = TransactionModel(
+        mp_payment_id=11111111111,
+        user_id=PRINTER_ID,
+        amount=campaign_model.pledge_price,
+        type=TransactionType.PLEDGE.value,
+        is_future=True
+    )
+    session.add(printer_transaction_model)
+    session.flush()
+
     pledge_model_1 = PledgeModel(campaign_id=campaign_model.id,
                                  pledge_price=campaign_model.pledge_price,
-                                 buyer_id=BUYER_ID)
+                                 buyer_id=BUYER_ID,
+                                 printer_transaction_id=printer_transaction_model.id)
     session.add(pledge_model_1)
     session.flush()
 

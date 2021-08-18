@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import declarative_base, relationship
 
 from my_app.api.domain import Pledge, TechDetail, User, Campaign, CampaignModelImage, Printer, CampaignStatus, Buyer, \
@@ -25,6 +25,7 @@ class CampaignModel(Base):
     updated_at = Column(DateTime, default=datetime.datetime.utcnow)
     deleted_at = Column(DateTime)
     status = Column(String)
+    mp_preference_id = Column(String)
 
     printer = relationship("PrinterModel")
     tech_detail = relationship("TechDetailsModel", uselist=False, back_populates='campaign')
@@ -52,6 +53,7 @@ class CampaignModel(Base):
             current_pledgers=len(self.pledges),
             tech_details=self.tech_detail.to_tech_detail_entity() if self.tech_detail is not None else None,
             status=CampaignStatus(self.status),
+            mp_preference_id=self.mp_preference_id,
             created_at=self.created_at,
             updated_at=self.updated_at,
             deleted_at=self.deleted_at
@@ -169,8 +171,10 @@ class PledgeModel(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow)
     deleted_at = Column(DateTime)
+    printer_transaction_id = Column(Integer, ForeignKey('transactions.id'))
 
     buyer = relationship("BuyerModel")
+    printer_transaction = relationship("TransactionModel")
 
     def __repr__(self):
         return "<Pledge(id='{id}}',campaign_id='{campaign_id}',buyer_id='{buyer_id}')>" \
@@ -301,3 +305,30 @@ class BankInformationModel(Base):
             bank=self.bank,
             account_number=self.account_number
         )
+
+
+class TransactionModel(Base):
+    __tablename__ = 'transactions'
+
+    id = Column(Integer, primary_key=True)
+    mp_payment_id = Column(Integer)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    amount = Column(DECIMAL)
+    type = Column(String)
+    is_future = Column(Boolean)
+
+    def __repr__(self):
+        return "<Transaction(id='{id}}',mp_payment_id='{mp_payment_id}',user_id='{user_id}')>" \
+            .format(id=self.id, mp_payment_id=self.mp_payment_id, user_id=self.user_id)
+
+
+class BalanceRequestModel(Base):
+    __tablename__ = 'balance_requests'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    date = Column(DateTime)
+
+    def __repr__(self):
+        return "<BalanceRequest(id='{id}}',user_id='{user_id}',date='{date}')>" \
+            .format(id=self.id, user_id=self.user_id, date=self.date)

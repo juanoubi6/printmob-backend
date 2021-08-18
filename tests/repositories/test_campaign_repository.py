@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from my_app.api.domain import Campaign, Page, CampaignModelImage, CampaignStatus
-from my_app.api.exceptions import NotFoundException
+from my_app.api.exceptions import NotFoundException, MercadopagoException, CampaignCreationException
 from my_app.api.repositories import CampaignRepository
 from my_app.api.repositories.models import CampaignModel
 from tests.test_utils.mock_entities import MOCK_FILTERS, MOCK_CAMPAIGN_MODEL_IMAGE_PROTOTYPE, MOCK_CAMPAIGN_PROTOTYPE
@@ -16,16 +16,37 @@ class TestCampaignRepository(unittest.TestCase):
 
     def setUp(self):
         self.test_db = MagicMock()
-        self.campaign_repository = CampaignRepository(self.test_db)
+        self.mock_mercadopago_repository = MagicMock()
+        self.campaign_repository = CampaignRepository(self.test_db, self.mock_mercadopago_repository)
 
     def test_create_campaign_creates_campaign(self):
+        self.mock_mercadopago_repository.create_campaign_pledge_preference.return_value = "some_preference_id"
         response = self.campaign_repository.create_campaign(MOCK_CAMPAIGN_PROTOTYPE)
 
         assert isinstance(response, Campaign)
+        assert (response.mp_preference_id, "some_preference_id")
 
         self.test_db.session.add.assert_called()
         self.test_db.session.flush.assert_called_once()
         self.test_db.session.commit.assert_called_once()
+
+    def test_create_campaign_rollbacks_and_raises_mercadopago_exception_on_mercadopago_error(self):
+        self.mock_mercadopago_repository.create_campaign_pledge_preference.side_effect = MercadopagoException(
+            "Some error")
+
+        with pytest.raises(MercadopagoException):
+            self.campaign_repository.create_campaign(MOCK_CAMPAIGN_PROTOTYPE)
+
+        self.test_db.session.rollback.assert_called_once()
+
+    def test_create_campaign_rollbacks_and_raises_campaign_creation_exception_on_database_error(self):
+        self.mock_mercadopago_repository.create_campaign_pledge_preference.return_value = "some_preference_id"
+        self.test_db.session.commit.side_effect = Exception("Some db error")
+
+        with pytest.raises(CampaignCreationException):
+            self.campaign_repository.create_campaign(MOCK_CAMPAIGN_PROTOTYPE)
+
+        self.test_db.session.rollback.assert_called_once()
 
     def test_get_campaign_detail_returns_campaign(self):
         self.test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.return_value = MOCK_CAMPAIGN_MODEL

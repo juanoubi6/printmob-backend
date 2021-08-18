@@ -3,7 +3,7 @@ import datetime
 from my_app.api.domain import Campaign, Printer, User, TechDetail, Pledge, CampaignModelImage, \
     CampaignModelImagePrototype, File, CampaignStatus, Buyer, Address, Order, OrderStatus, CampaignPrototype, \
     TechDetailPrototype, UserType, GoogleUserData, BuyerPrototype, UserPrototype, AddressPrototype, PrinterPrototype, \
-    BankInformation, BankInformationPrototype
+    BankInformation, BankInformationPrototype, Payment, TransactionPrototype, TransactionType, Balance
 
 MOCK_BANK_INFORMATION = BankInformation(
     id=1,
@@ -56,7 +56,8 @@ MOCK_CAMPAIGN = Campaign(
     ),
     created_at=datetime.datetime(2020, 5, 17),
     updated_at=datetime.datetime(2020, 5, 17),
-    status=CampaignStatus.IN_PROGRESS
+    status=CampaignStatus.IN_PROGRESS,
+    mp_preference_id="preference_id"
 )
 
 MOCK_PLEDGE = Pledge(
@@ -198,4 +199,26 @@ MOCK_BUYER_PROTOTYPE = BuyerPrototype(
 MOCK_PRINTER_PROTOTYPE = PrinterPrototype(
     user_prototype=MOCK_PRINTER_USER_PROTOTYPE,
     bank_information_prototype=MOCK_BANK_INFORMATION_PROTOTYPE
+)
+
+MOCK_PAYMENT = Payment(
+    payment_id=123456,
+    payment_data={
+        "transaction_details": {
+            "net_received_amount": 100
+        }
+    }
+)
+
+MOCK_TRANSACTION_PROTOTYPE = TransactionPrototype(
+    mp_payment_id=12345,
+    user_id=1,
+    amount=100,
+    type=TransactionType.PLEDGE,
+    is_future=True
+)
+
+MOCK_BALANCE = Balance(
+    current_balance=100.5,
+    future_balance=25.6
 )

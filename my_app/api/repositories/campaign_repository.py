@@ -1,23 +1,25 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from sqlalchemy import asc
 from sqlalchemy.orm import noload
 
 from my_app.api.domain import Page, Campaign, CampaignModelImagePrototype, CampaignModelImage, CampaignPrototype, \
-    CampaignStatus, Order, UserType, OrderStatus
-from my_app.api.exceptions import NotFoundException
+    CampaignStatus, Order, UserType, OrderStatus, TransactionType
+from my_app.api.exceptions import NotFoundException, MercadopagoException, CampaignCreationException
+from my_app.api.repositories.mercadopago_repository import MercadopagoRepository
 from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, TechDetailsModel, \
-    PrinterModel, BuyerModel, PledgeModel, AddressModel, OrderModel, BankInformationModel
-from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, apply_campaign_filters, \
-    apply_campaign_order_filters
+    PrinterModel, BuyerModel, PledgeModel, AddressModel, OrderModel, BankInformationModel, TransactionModel
+from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, apply_campaign_filters, apply_campaign_order_filters
 
 CAMPAIGN_NOT_FOUND = 'Non-existent campaign'
 CAMPAIGN_MODEL_IMAGE_NOT_FOUND = 'Non-existent campaign model image'
+CAMPAIGN_CREATION_ERROR = 'Could not create campaign'
 
 
 class CampaignRepository:
-    def __init__(self, db):
+    def __init__(self, db, mercadopago_repository: MercadopagoRepository):
         self.db = db
+        self.mercadopago_repository = mercadopago_repository
 
     def init_campaigns(self):
         printer_user_model = UserModel(first_name='Juanma',
@@ -29,13 +31,22 @@ class CampaignRepository:
         self.db.session.add(printer_user_model)
         self.db.session.flush()
 
-        buyer_user_model = UserModel(first_name='Juanma',
+        buyer_user_model_1 = UserModel(first_name='Juanma',
                                      last_name='Oubina',
                                      user_name='juanmabuyer',
                                      date_of_birth=datetime.now(),
                                      email='joubina@frba.utn.edu.ar',
                                      user_type=UserType.BUYER.value)
-        self.db.session.add(buyer_user_model)
+        self.db.session.add(buyer_user_model_1)
+        self.db.session.flush()
+
+        buyer_user_model_2 = UserModel(first_name='Secondary',
+                                               last_name='Buyer',
+                                               user_name='second_buyer',
+                                               date_of_birth=datetime.now(),
+                                               email='secondbuyer@gmail.com',
+                                               user_type=UserType.BUYER.value)
+        self.db.session.add(buyer_user_model_2)
         self.db.session.flush()
 
         bank_information_model = BankInformationModel(
@@ -62,34 +73,55 @@ class CampaignRepository:
         self.db.session.add(address_model)
         self.db.session.flush()
 
-        buyer_model = BuyerModel(id=buyer_user_model.id, address_id=address_model.id)
-        self.db.session.add(buyer_model)
+        buyer_model_1 = BuyerModel(id=buyer_user_model_1.id, address_id=address_model.id)
+        self.db.session.add(buyer_model_1)
+        self.db.session.flush()
+
+        buyer_model_2 = BuyerModel(id=buyer_user_model_2.id, address_id=address_model.id)
+        self.db.session.add(buyer_model_2)
         self.db.session.flush()
 
         campaign_model = CampaignModel(name='Vaso calavera',
                                        description='Un vaso con forma de calavera',
                                        campaign_picture_url='https://s3.us-east-2.amazonaws.com/printmob-dev/campaign_model_images/default_logo',
                                        printer_id=printer_model.id,
-                                       pledge_price=350.0,
+                                       pledge_price=1.0,
                                        end_date=datetime(2022, 5, 17),
                                        min_pledgers=6,
                                        max_pledgers=10,
-                                       status=CampaignStatus.IN_PROGRESS.value)
+                                       status=CampaignStatus.IN_PROGRESS.value,
+                                       mp_preference_id="preference_id")
         self.db.session.add(campaign_model)
         self.db.session.flush()
+
+        preference_id = self.mercadopago_repository.create_campaign_pledge_preference(
+            campaign_model.to_campaign_entity()
+        )
+
+        campaign_model.mp_preference_id = preference_id
 
         campaign_model_image = CampaignModelImageModel(
             campaign_id=campaign_model.id,
             model_picture_url="https://s3.us-east-2.amazonaws.com/printmob-dev/campaign_model_images/default_logo",
             file_name="image file name"
         )
-
         self.db.session.add(campaign_model_image)
+        self.db.session.flush()
+
+        printer_transaction_model = TransactionModel(
+            mp_payment_id=11111111111,
+            user_id=printer_user_model.id,
+            amount=campaign_model.pledge_price,
+            type=TransactionType.PLEDGE.value,
+            is_future=True
+        )
+        self.db.session.add(printer_transaction_model)
         self.db.session.flush()
 
         pledge_model = PledgeModel(campaign_id=campaign_model.id,
                                    pledge_price=campaign_model.pledge_price,
-                                   buyer_id=buyer_model.id)
+                                   buyer_id=buyer_model_1.id,
+                                   printer_transaction_id=printer_transaction_model.id)
         self.db.session.add(pledge_model)
         self.db.session.flush()
 
@@ -105,7 +137,7 @@ class CampaignRepository:
         order_model = OrderModel(
             campaign_id=campaign_model.id,
             pledge_id=pledge_model.id,
-            buyer_id=buyer_model.id,
+            buyer_id=buyer_model_1.id,
             status=OrderStatus.IN_PROGRESS.value
         )
         self.db.session.add(order_model)
@@ -222,29 +254,43 @@ class CampaignRepository:
         self.db.session.commit()
 
     def create_campaign(self, prototype: CampaignPrototype) -> Campaign:
-        campaign_model = CampaignModel(name=prototype.name,
-                                       description=prototype.description,
-                                       campaign_picture_url=prototype.campaign_picture_url,
-                                       printer_id=prototype.printer_id,
-                                       pledge_price=prototype.pledge_price,
-                                       end_date=prototype.end_date,
-                                       min_pledgers=prototype.min_pledgers,
-                                       max_pledgers=prototype.max_pledgers,
-                                       status=prototype.status.value)
+        try:
+            campaign_model = CampaignModel(name=prototype.name,
+                                           description=prototype.description,
+                                           campaign_picture_url=prototype.campaign_picture_url,
+                                           printer_id=prototype.printer_id,
+                                           pledge_price=prototype.pledge_price,
+                                           end_date=prototype.end_date,
+                                           min_pledgers=prototype.min_pledgers,
+                                           max_pledgers=prototype.max_pledgers,
+                                           status=prototype.status.value)
 
-        tech_detail_model = TechDetailsModel(material=prototype.tech_details.material,
-                                             weight=prototype.tech_details.weight,
-                                             width=prototype.tech_details.width,
-                                             length=prototype.tech_details.length,
-                                             depth=prototype.tech_details.depth)
+            tech_detail_model = TechDetailsModel(material=prototype.tech_details.material,
+                                                 weight=prototype.tech_details.weight,
+                                                 width=prototype.tech_details.width,
+                                                 length=prototype.tech_details.length,
+                                                 depth=prototype.tech_details.depth)
 
-        self.db.session.add(campaign_model)
-        self.db.session.flush()
+            self.db.session.add(campaign_model)
+            self.db.session.flush()
 
-        tech_detail_model.campaign_id = campaign_model.id
-        self.db.session.add(tech_detail_model)
+            tech_detail_model.campaign_id = campaign_model.id
+            self.db.session.add(tech_detail_model)
 
-        self.db.session.commit()
+            # Create campaign pledge preference
+            preference_id = self.mercadopago_repository.create_campaign_pledge_preference(
+                campaign_model.to_campaign_entity()
+            )
+
+            campaign_model.mp_preference_id = preference_id
+            self.db.session.commit()
+
+        except MercadopagoException as mpex:
+            self.db.session.rollback()
+            raise mpex
+        except Exception as ex:
+            self.db.session.rollback()
+            raise CampaignCreationException("{}: {}".format(CAMPAIGN_CREATION_ERROR, str(ex)))
 
         return campaign_model.to_campaign_entity()
 
