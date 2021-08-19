@@ -11,9 +11,9 @@ from my_app.api.repositories.models import CampaignModel, CampaignModelImageMode
     PrinterModel, BuyerModel, PledgeModel, AddressModel, OrderModel, BankInformationModel, TransactionModel
 from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, apply_campaign_filters, apply_campaign_order_filters
 
-CAMPAIGN_NOT_FOUND = 'Non-existent campaign'
-CAMPAIGN_MODEL_IMAGE_NOT_FOUND = 'Non-existent campaign model image'
-CAMPAIGN_CREATION_ERROR = 'Could not create campaign'
+CAMPAIGN_NOT_FOUND = 'La campaña no existe'
+CAMPAIGN_MODEL_IMAGE_NOT_FOUND = 'La imagen del modelo de la campaña no existe'
+CAMPAIGN_CREATION_ERROR = 'Ocurrió un error al crear la campaña'
 
 
 class CampaignRepository:

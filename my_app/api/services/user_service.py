@@ -65,10 +65,10 @@ class UserService:
 
     def _validate_user_data(self, prototype: UserPrototype):
         if self.user_repository.is_user_name_in_use(prototype.user_name):
-            raise BusinessException("Username already in use")
+            raise BusinessException("El nombre de usuario ya se encuentra en uso")
 
         if self.user_repository.is_email_in_use(prototype.email):
-            raise BusinessException("Email already in use")
+            raise BusinessException("El email ya se encuentra en uso")
 
     def _validate_user_address(self, prototype: AddressPrototype):
         pass

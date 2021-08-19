@@ -20,7 +20,7 @@ class AuthService:
         user_data = self.user_repository.get_user_by_email(google_user_data.email)
 
         if user_data is None:
-            raise AuthException("User is not registered")
+            raise AuthException("El usuario no se encuentra registrado")
 
         if user_data.user_type is UserType.PRINTER:
             printer = self.user_repository.get_printer_by_email(user_data.email)
@@ -29,4 +29,4 @@ class AuthService:
             buyer = self.user_repository.get_buyer_by_email(user_data.email)
             return buyer, self.token_manager.get_token_from_payload(buyer.identity_data())
         else:
-            raise BusinessException("Invalid user type")
+            raise BusinessException("El tipo de usuario es inválido")

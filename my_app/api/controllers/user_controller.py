@@ -8,6 +8,10 @@ from my_app.api.domain import UserType, User, PrinterPrototype, UserPrototype, B
 from my_app.api.exceptions import AuthException, BusinessException
 from my_app.api.services import UserService
 
+USER_MISMATCH_ERROR = "Tu usuario no tiene permisos para acceder a esta información"
+INVALID_USER_TYPE_ERROR = "El tipo de usuario es inválido"
+BUYER_BALANCE_ERROR = "Los usuarios del tipo 'Comprador' no poseen balance"
+
 
 class UserController:
     def __init__(self, user_service: UserService):
@@ -15,20 +19,20 @@ class UserController:
 
     def get_user_profile(self, req: request, user_id: int, user_data: dict) -> (User, int):
         if user_id != int(user_data["id"]):
-            raise AuthException("Identified user and user_id do not match")
+            raise AuthException(USER_MISMATCH_ERROR)
 
         if user_data["user_type"] == UserType.PRINTER.value:
             user = self.user_service.get_printer_by_email(user_data["email"])
         elif user_data["user_type"] == UserType.BUYER.value:
             user = self.user_service.get_buyer_by_email(user_data["email"])
         else:
-            raise BusinessException("Invalid user type from access token")
+            raise BusinessException(INVALID_USER_TYPE_ERROR)
 
         return user.to_json(), 200
 
     def update_user_profile(self, req: request, user_id: int, user_data: dict) -> (User, int):
         if user_id != int(user_data["id"]):
-            raise AuthException("Identified user and user_id do not match")
+            raise AuthException(USER_MISMATCH_ERROR)
 
         body = json.loads(req.data)
 
@@ -39,16 +43,16 @@ class UserController:
             prototype = self._generate_buyer_prototype(body)
             updated_user = self.user_service.update_buyer(user_id, prototype)
         else:
-            raise BusinessException("Invalid user type from access token")
+            raise BusinessException(INVALID_USER_TYPE_ERROR)
 
         return updated_user.to_json(), 200
 
     def get_user_balance(self, req: request, user_id: int, user_data: dict) -> (Balance, int):
         if user_id != int(user_data["id"]):
-            raise AuthException("Identified user and user_id do not match")
+            raise AuthException(USER_MISMATCH_ERROR)
 
         if user_data["user_type"] == UserType.BUYER.value:
-            raise BusinessException("Buyers do not have balance")
+            raise BusinessException(BUYER_BALANCE_ERROR)
 
         balance = self.user_service.get_user_balance(user_id)
 
@@ -56,10 +60,10 @@ class UserController:
 
     def request_balance(self, req: request, user_id: int, user_data: dict) -> (dict, int):
         if user_id != int(user_data["id"]):
-            raise AuthException("Identified user and user_id do not match")
+            raise AuthException(USER_MISMATCH_ERROR)
 
         if user_data["user_type"] == UserType.BUYER.value:
-            raise BusinessException("Buyers do not have balance")
+            raise BusinessException(BUYER_BALANCE_ERROR)
 
         self.user_service.request_balance(user_id)
 

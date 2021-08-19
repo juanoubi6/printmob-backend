@@ -57,7 +57,7 @@ class TestUserController(unittest.TestCase):
         )
 
         assert res.status_code == 401
-        assert res.json["message"] == "Identified user and user_id do not match"
+        assert res.json["message"] == "Tu usuario no tiene permisos para acceder a esta información"
 
     @patch.object(app.user_controller, "user_service")
     def test_update_user_profile_returns_updated_printer_data_when_printer_token_is_provided(self, mock_user_service):

@@ -5,8 +5,8 @@ from my_app.api.domain.campaign import CampaignPrototype, CampaignStatus
 from my_app.api.exceptions import CancellationException
 from my_app.api.exceptions.unprocessable_entity_exception import UnprocessableEntityException
 
-PRINTER_NOT_FOUND = 'Non-existent printer for campaign'
-CAMPAIGN_CANNOT_BE_CANCELLED = 'The campaign cannot be cancelled'
+PRINTER_NOT_FOUND = 'El impresor asociado a la campaña no existe'
+CAMPAIGN_CANNOT_BE_CANCELLED = 'La campaña ya no puede ser cancelada'
 
 
 class CampaignService:

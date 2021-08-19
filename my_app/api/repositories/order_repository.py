@@ -1,12 +1,10 @@
 from typing import List
 
-from sqlalchemy.orm import noload
-
 from my_app.api.domain import OrderStatus, Order, OrderPrototype
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories.models import OrderModel
 
-ORDER_NOT_FOUND = "Non existent order"
+ORDER_NOT_FOUND = "La orden no existe"
 
 
 class OrderRepository:

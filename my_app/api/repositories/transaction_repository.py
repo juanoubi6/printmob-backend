@@ -7,7 +7,7 @@ from my_app.api.exceptions import BusinessException
 from my_app.api.repositories.models import TransactionModel, BalanceRequestModel
 from my_app.api.repositories.pledge_repository import PledgeRepository
 
-PLEDGE_TRANSACTION_ASSOCIATION_ERROR = "Pledge transaction could not be created"
+PLEDGE_TRANSACTION_ASSOCIATION_ERROR = "Ocurrió un error al crear la transacción asociada a la reserva"
 
 
 class TransactionRepository:

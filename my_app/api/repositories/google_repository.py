@@ -42,7 +42,7 @@ class GoogleRepository:
             token_data = self._fallback_token_validation(token)
         except Exception as exc:
             raise GoogleValidationException(
-                "Unexpected error while retrieving token data from Google: {}".format(str(exc)))
+                "Error inesperado al validar los datos de su token de autenticación contra Google: {}".format(str(exc)))
 
         self._validate_token_data(token_data)
 
@@ -55,18 +55,18 @@ class GoogleRepository:
 
     def _validate_token_data(self, token_data: dict):
         if token_data["aud"] != self.client_id:
-            raise AuthException("Invalid token. Audit failed")
+            raise AuthException("Token inválido. Audit failed")
 
         if token_data["iss"] != GOOGLE_ISSUER:
-            raise AuthException("Invalid token. Bad issuer")
+            raise AuthException("Token inválido. Bad issuer")
 
         if int(token_data["exp"]) < time.time():
-            raise AuthException("Invalid token. Token already expired")
+            raise AuthException("El token ya ha expirado")
 
     def _fallback_token_validation(self, token) -> dict:
         response = requests.get(self.google_fallback_url + "?id_token={}".format(token), timeout=2)
 
         if response.status_code != http.HTTPStatus.OK:
-            raise GoogleValidationException("Invalid token. Error: {}".format(response.json()["error_description"]))
+            raise GoogleValidationException("Token inválido. Error: {}".format(response.json()["error_description"]))
 
         return response.json()

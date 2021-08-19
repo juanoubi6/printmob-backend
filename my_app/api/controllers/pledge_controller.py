@@ -47,10 +47,10 @@ class PledgeController:
         payment_id = body.get("mp_payment_id", None)
 
         if campaign_id is None:
-            raise BusinessException("Campaign information was not provided")
+            raise BusinessException("El ID de la campaña no fue provisto")
 
         if payment_id is None:
-            raise BusinessException("Payment information was not provided")
+            raise BusinessException("El ID del pago no fue provisto")
 
         created_pledge = self.pledge_service.create_pledge_with_payment(
             campaign_id=int(campaign_id),

@@ -19,7 +19,7 @@ class AuthController:
         auth_token = body.get("token", None)
 
         if auth_token is None:
-            raise InvalidFieldException("Authorization token was not provided")
+            raise InvalidFieldException("El token de autorización no fue provisto")
 
         user_data, token = self.auth_service.get_user_login_data(auth_token)
 

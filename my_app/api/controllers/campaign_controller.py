@@ -9,8 +9,6 @@ from my_app.api.domain import Page, Campaign, CampaignModelImage, File, Order
 from my_app.api.domain.campaign import CampaignPrototype, CampaignStatus
 from my_app.api.domain.tech_detail import TechDetailPrototype
 
-CAMPAIGN_DETAIL_FAILED = 'Campaign detail retrieval has failed'
-
 
 class CampaignController:
     def __init__(self, campaign_service):

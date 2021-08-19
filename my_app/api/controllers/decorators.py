@@ -10,7 +10,7 @@ def validate_bearer_token(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if TOKEN_HEADER_NAME not in request.headers:
-            raise AuthException("Missing Authentication token")
+            raise AuthException("El token de autenticación no ha sido enviado")
 
         payload = current_app.token_manager.get_payload_from_token(request.headers.get(TOKEN_HEADER_NAME))
 

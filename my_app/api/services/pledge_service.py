@@ -5,10 +5,10 @@ from my_app.api.exceptions import CancellationException
 from my_app.api.exceptions.pledge_creation_exception import PledgeCreationException
 from my_app.api.repositories import PledgeRepository, CampaignRepository, MercadopagoRepository, TransactionRepository
 
-MAX_PLEDGERS_REACHED = "Pledge cannot be created once the maximum number of pledgers has been reached"
-END_DATE_REACHED = "Pledge cannot be created once the campaign has finished"
-MAX_PLEDGES_PER_CAMPAIGN_REACHED = "You can't pledge more than once in this campaign"
-PLEDGE_CANCELLATION_ON_GOAL_REACHED = "Pledge cannot be cancelled once the goal has been reached"
+MAX_PLEDGERS_REACHED = "No se puede realizar una reserva ya que la cantidad maxima de reservas de esta campaña ya fue alcanzada"
+END_DATE_REACHED = "No se puede realizar una reserva en una campaña que ya ha finalizado"
+MAX_PLEDGES_PER_CAMPAIGN_REACHED = "No podes realizar mas de una reserva en esta campaña"
+PLEDGE_CANCELLATION_ON_GOAL_REACHED = "No podes cancelar una reserva una vez la campaña ha sido confirmada"
 
 
 class PledgeService:

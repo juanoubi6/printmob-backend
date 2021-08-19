@@ -64,7 +64,7 @@ class TestCampaignController(unittest.TestCase):
         res = client.get("/campaigns?page=1&page_size=-10")
 
         assert res.status_code == 400
-        assert res.json["message"] == "The query param 'page_size' should be numeric"
+        assert res.json["message"] == "El query param 'page_size' debe ser un número"
 
     @patch.object(app.campaign_controller, "campaign_service")
     def test_get_campaign_detail_returns_campaign_json(self, mock_campaign_service):

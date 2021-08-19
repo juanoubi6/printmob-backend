@@ -22,12 +22,12 @@ class TestDecorators(unittest.TestCase):
     def test_endpoint_returns_401_when_token_is_not_present(self):
         res = client.get("/decorator-endpoint", headers={})
         assert res.status_code == 401
-        assert res.json["message"] == "Missing Authentication token"
+        assert res.json["message"] == "El token de autenticación no ha sido enviado"
 
     def test_endpoint_returns_401_when_token_is_not_valid(self):
         res = client.get("/decorator-endpoint", headers={"Authorization": "malformed"})
         assert res.status_code == 401
-        assert res.json["message"] == "There is a problem with the authorization token: Not enough segments"
+        assert res.json["message"] == "Ocurrió un problema al validar tu token de autenticación: Not enough segments"
 
     def test_endpoint_returns_200_when_token_is_valid(self):
         token_manager = TokenManager(os.environ["JWT_SECRET_KEY"])

@@ -59,7 +59,7 @@ class UserRepository:
     def update_buyer(self, buyer_id: int, prototype: BuyerPrototype) -> Buyer:
         buyer_model = self._get_buyer_model_by_id(buyer_id)
         if buyer_model is None:
-            raise NotFoundException("Buyer could not be found")
+            raise NotFoundException("No se encontró al usuario Comprador")
 
         buyer_model.user.first_name = prototype.user_prototype.first_name
         buyer_model.user.last_name = prototype.user_prototype.last_name
@@ -99,7 +99,7 @@ class UserRepository:
     def update_printer(self, printer_id: int, prototype: PrinterPrototype) -> Printer:
         printer_model = self._get_printer_model_by_id(printer_id)
         if printer_model is None:
-            raise NotFoundException("Printer could not be found")
+            raise NotFoundException("No se encontró al usuario Impresor")
 
         printer_model.user.first_name = prototype.user_prototype.first_name
         printer_model.user.last_name = prototype.user_prototype.last_name

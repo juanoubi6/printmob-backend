@@ -10,10 +10,11 @@ from my_app.api.repositories import CampaignRepository, MercadopagoRepository
 from my_app.api.repositories.models import PledgeModel, CampaignModel, TransactionModel
 from my_app.api.repositories.utils import apply_pledge_filters
 
-PLEDGE_NOT_FOUND = "Pledge could not be found"
-PLEDGE_CAMPAIGN_NOT_FOUND = "Pledge's campaign could not be found"
-MAX_PLEDGERS_REACHED = "Pledge cannot be created once the maximum number of pledgers has been reached"
-PLEDGE_COULD_NOT_BE_CANCELLED = "Pledge could not be cancelled"
+PLEDGE_NOT_FOUND = "La reserva no pudo ser encontrada"
+PLEDGE_CAMPAIGN_NOT_FOUND = "La campaña de la reserva no pudo ser ncontrada"
+MAX_PLEDGERS_REACHED = "No se puede crear una reserva una vez que la campaña ha alcanzado el máximo de reservas posibles"
+PLEDGE_COULD_NOT_BE_CANCELLED = "La reserva no pudo ser cancelada"
+
 
 class PledgeRepository:
     def __init__(self, db, campaign_repository: CampaignRepository, mercadopago_repository: MercadopagoRepository):
@@ -168,6 +169,6 @@ class PledgeRepository:
             self.db.session.commit()
         except Exception as exc:
             self.db.session.rollback()
-            raise BusinessException("Error creating pledge: {}".format(str(exc)))
+            raise BusinessException("Ocurrió un error al crear la reserva: {}".format(str(exc)))
 
         return pledge_model.to_pledge_entity()

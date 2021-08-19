@@ -43,7 +43,7 @@ class MercadopagoRepository:
 
             preference = preference_response["response"]
         except Exception as exc:
-            raise MercadopagoException("Failed to create campaign pledge preference: {}".format(str(exc)))
+            raise MercadopagoException("Ocurrió un error al crear un preference para la campaña: {}".format(str(exc)))
 
         return preference["id"]
 
@@ -55,7 +55,7 @@ class MercadopagoRepository:
 
             payment = payment_response["response"]
         except Exception as exc:
-            raise MercadopagoException("Failed to retrieve payment {} data: {}".format(payment_id, str(exc)))
+            raise MercadopagoException("Ocurrió un error al obtenr los datos del pago #{}: {}".format(payment_id, str(exc)))
 
         return Payment(payment_id=payment_id, payment_data=payment)
 
@@ -67,4 +67,4 @@ class MercadopagoRepository:
         except Exception as exc:
             if "live credentials" in str(exc):
                 return
-            raise MercadopagoException("Failed to refund payment {}: {}".format(payment_id, str(exc)))
+            raise MercadopagoException("Ocurrió un error al realizar la devolución del dinero del pago #{}: {}".format(payment_id, str(exc)))
