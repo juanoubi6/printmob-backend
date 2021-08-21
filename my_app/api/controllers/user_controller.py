@@ -77,7 +77,8 @@ class UserController:
                 user_name=body["user_name"],
                 date_of_birth=datetime.strptime(body["date_of_birth"], '%d-%m-%Y'),
                 email=body["email"],
-                user_type=UserType.PRINTER
+                user_type=UserType.PRINTER,
+                profile_picture_url=body.get("profile_picture_url", None)
             ),
             bank_information_prototype=BankInformationPrototype(
                 cbu=body["bank_information"]["cbu"],
@@ -95,7 +96,8 @@ class UserController:
                 user_name=body["user_name"],
                 date_of_birth=datetime.strptime(body["date_of_birth"], '%d-%m-%Y'),
                 email=body["email"],
-                user_type=UserType.BUYER
+                user_type=UserType.BUYER,
+                profile_picture_url=body.get("profile_picture_url", None)
             ),
             address_prototype=AddressPrototype(
                 address=body["address"]["address"],

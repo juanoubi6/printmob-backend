@@ -35,6 +35,7 @@ MOCK_CAMPAIGN = Campaign(
             date_of_birth=datetime.datetime(2020, 5, 17),
             email="email@email.com",
             user_type=UserType.PRINTER.value,
+            profile_picture_url="url",
             created_at=datetime.datetime(2020, 5, 17),
             updated_at=datetime.datetime(2020, 5, 17),
         ),
@@ -97,6 +98,7 @@ MOCK_BUYER_USER = User(
     date_of_birth=datetime.datetime(2020, 5, 17),
     email="email@email.com",
     user_type=UserType.BUYER,
+    profile_picture_url="url",
     created_at=datetime.datetime(2020, 5, 17),
     updated_at=datetime.datetime(2020, 5, 17)
 )
@@ -109,6 +111,7 @@ MOCK_PRINTER_USER = User(
     date_of_birth=datetime.datetime(2020, 5, 17),
     email="email@email.com",
     user_type=UserType.PRINTER,
+    profile_picture_url="url",
     created_at=datetime.datetime(2020, 5, 17),
     updated_at=datetime.datetime(2020, 5, 17)
 )
@@ -171,6 +174,7 @@ MOCK_PRINTER_USER_PROTOTYPE = UserPrototype(
     date_of_birth=datetime.datetime(2020, 5, 17),
     email="email@email.com",
     user_type=UserType.PRINTER,
+    profile_picture_url="url",
 )
 
 MOCK_BUYER_USER_PROTOTYPE = UserPrototype(
@@ -180,6 +184,7 @@ MOCK_BUYER_USER_PROTOTYPE = UserPrototype(
     date_of_birth=datetime.datetime(2020, 5, 17),
     email="email@email.com",
     user_type=UserType.BUYER,
+    profile_picture_url="url",
 )
 
 MOCK_ADDRESS_PROTOTYPE = AddressPrototype(

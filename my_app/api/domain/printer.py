@@ -12,6 +12,7 @@ class Printer(User):
             date_of_birth=user.date_of_birth,
             email=user.email,
             user_type=UserType.PRINTER,
+            profile_picture_url=user.profile_picture_url,
             created_at=user.created_at,
             updated_at=user.updated_at,
             deleted_at=user.deleted_at

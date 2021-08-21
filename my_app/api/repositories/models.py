@@ -111,6 +111,7 @@ class UserModel(Base):
     updated_at = Column(DateTime, default=datetime.datetime.utcnow)
     deleted_at = Column(DateTime)
     user_type = Column(String)
+    profile_picture_url = Column(String, nullable=True)
 
     printer = relationship("PrinterModel", uselist=False, back_populates="user")
     buyer = relationship("BuyerModel", uselist=False, back_populates="user")
@@ -127,6 +128,7 @@ class UserModel(Base):
             date_of_birth=self.date_of_birth,
             email=self.email,
             user_type=UserType(self.user_type),
+            profile_picture_url=self.profile_picture_url,
             created_at=self.created_at,
             updated_at=self.updated_at,
             deleted_at=self.deleted_at
