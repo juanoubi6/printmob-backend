@@ -16,6 +16,7 @@ GET_BUYER_PROFILE_RESPONSE_JSON = {
     'id': 1,
     'last_name': 'Doe',
     'user_name': 'johnDoe5',
+    'profile_picture_url': "url",
     'user_type': 'Buyer'
 }
 
@@ -33,6 +34,7 @@ GET_PRINTER_PROFILE_RESPONSE_JSON = {
     'id': 1,
     'last_name': 'Doe',
     'user_name': 'johnDoe5',
+    'profile_picture_url': "url",
     'user_type': 'Printer'
 }
 
@@ -70,6 +72,7 @@ UPDATE_ORDER_RESPONSE_JSON = {
         "user_type": "Buyer",
         'last_name': 'Doe',
         'id': 1,
+        'profile_picture_url': "url",
         'user_name': 'johnDoe5'
     },
     'comments': 'comments',
@@ -115,6 +118,7 @@ CAMPAIGN_GET_RESPONSE_JSON = {
         "last_name": "Doe",
         "user_name": "johnDoe5",
         "user_type": "Printer",
+        'profile_picture_url': "url",
         'id': 1,
         'bank_information': {
             'account_number': '324324',
@@ -186,6 +190,7 @@ CAMPAIGN_POST_RESPONSE_JSON = {
         "last_name": "Doe",
         'id': 1,
         "user_name": "johnDoe5",
+        'profile_picture_url': "url",
         'bank_information': {
             'account_number': '324324',
             'alias': None,
@@ -236,6 +241,7 @@ CAMPAIGN_BUYERS_JSON_RESPONSE = [
         'last_name': 'Doe',
         "user_type": "Buyer",
         'updated_at': 'Sun, 17 May 2020 00:00:00 GMT',
+        'profile_picture_url': "url",
         'user_name': 'johnDoe5'
     }
 ]
@@ -259,6 +265,7 @@ LOGIN_RESPONSE_JSON = {
         'last_name': 'Doe',
         'user_name': 'johnDoe5',
         'user_type': 'Buyer',
+        'profile_picture_url': "url",
         'id': 1
     }
 }

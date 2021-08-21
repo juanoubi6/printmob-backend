@@ -122,7 +122,8 @@ class UserRepository:
             user_name=prototype.user_name,
             date_of_birth=prototype.date_of_birth,
             email=prototype.email,
-            user_type=prototype.user_type.value
+            user_type=prototype.user_type.value,
+            profile_picture_url=prototype.profile_picture_url
         )
 
         return user_model

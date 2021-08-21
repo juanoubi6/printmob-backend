@@ -1,5 +1,6 @@
 import datetime
 import enum
+from typing import Optional
 
 
 class UserType(enum.Enum):
@@ -18,6 +19,7 @@ class User:
             date_of_birth: datetime.datetime,
             email: str,
             user_type: UserType,
+            profile_picture_url: Optional[str],
             created_at: datetime.datetime = datetime.datetime.utcnow(),
             updated_at: datetime.datetime = datetime.datetime.utcnow(),
             deleted_at: datetime.datetime = None
@@ -29,6 +31,7 @@ class User:
         self.date_of_birth = date_of_birth
         self.email = email
         self.user_type = user_type
+        self.profile_picture_url = profile_picture_url
         self.created_at = created_at
         self.updated_at = updated_at
         self.deleted_at = deleted_at
@@ -42,6 +45,7 @@ class User:
             "date_of_birth": self.date_of_birth,
             "email": self.email,
             "user_type": self.user_type.value,
+            "profile_picture_url": self.profile_picture_url
         }
 
     def identity_data(self):
@@ -61,6 +65,7 @@ class UserPrototype:
             date_of_birth: datetime.datetime,
             email: str,
             user_type: UserType,
+            profile_picture_url: Optional[str],
     ):
         self.first_name = first_name
         self.last_name = last_name
@@ -68,3 +73,4 @@ class UserPrototype:
         self.date_of_birth = date_of_birth
         self.email = email
         self.user_type = user_type
+        self.profile_picture_url = profile_picture_url

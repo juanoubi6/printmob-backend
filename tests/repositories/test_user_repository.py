@@ -88,7 +88,8 @@ class TestUserRepository(unittest.TestCase):
                 user_name="upd user name",
                 date_of_birth=datetime.strptime("20-07-1995", '%d-%m-%Y'),
                 email="upd email",
-                user_type=UserType.PRINTER
+                user_type=UserType.PRINTER,
+                profile_picture_url="url",
             ),
             bank_information_prototype=BankInformationPrototype(
                 cbu="upd cbu",
@@ -123,7 +124,8 @@ class TestUserRepository(unittest.TestCase):
                 user_name="upd user name",
                 date_of_birth=datetime.strptime("20-07-1995", '%d-%m-%Y'),
                 email="upd email",
-                user_type=UserType.PRINTER
+                user_type=UserType.PRINTER,
+                profile_picture_url="url",
             ),
             address_prototype=AddressPrototype(
                 address="upd address",

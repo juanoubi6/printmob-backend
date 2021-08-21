@@ -39,7 +39,8 @@ class AuthController:
                 user_name=str(body["user_name"]).lower(),
                 date_of_birth=datetime.strptime(body["date_of_birth"], '%d-%m-%Y'),
                 email=str(body["email"]).lower(),
-                user_type=UserType.PRINTER
+                user_type=UserType.PRINTER,
+                profile_picture_url=body.get("profile_picture_url", None)
             ),
             bank_information_prototype=BankInformationPrototype(
                 cbu=body["bank_information"]["cbu"],
@@ -63,7 +64,8 @@ class AuthController:
                 user_name=str(body["user_name"]).lower(),
                 date_of_birth=datetime.strptime(body["date_of_birth"], '%d-%m-%Y'),
                 email=str(body["email"]).lower(),
-                user_type=UserType.BUYER
+                user_type=UserType.BUYER,
+                profile_picture_url=body.get("profile_picture_url", None)
             ),
             address_prototype=AddressPrototype(
                 address=body["address"]["address"],
