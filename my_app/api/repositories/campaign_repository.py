@@ -386,7 +386,7 @@ class CampaignRepository:
         buyer_id: int
             Buyer id.
         """
-        query = self.db.session.query(CampaignModel).join(PledgeModel)\
+        query = self.db.session.query(CampaignModel).join(PledgeModel).distinct(CampaignModel.id) \
             .filter(CampaignModel.id == PledgeModel.campaign_id)\
             .filter(PledgeModel.buyer_id == buyer_id)
         query = apply_campaign_filters(query, filters)
