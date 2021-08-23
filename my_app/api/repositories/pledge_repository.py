@@ -39,26 +39,6 @@ class PledgeRepository:
 
         return [pledge_model.to_pledge_entity() for pledge_model in pledge_models]
 
-    def create_pledge(self, prototype: PledgePrototype, confirm_campaign: bool, finalize_campaign: bool) -> Pledge:
-        # This just creates the pledge without the payment. The pledge will be updated with payment
-        # data in another endpoint.
-        pledge_model = PledgeModel(campaign_id=prototype.campaign_id,
-                                   pledge_price=prototype.pledge_price,
-                                   buyer_id=prototype.buyer_id)
-        self.db.session.add(pledge_model)
-
-        if finalize_campaign:
-            campaign_model = self._campaign_repository.get_campaign_model_by_id(prototype.campaign_id)
-            campaign_model.status = CampaignStatus.TO_BE_FINALIZED.value
-            campaign_model.end_date = datetime.datetime.now() + datetime.timedelta(days=1)
-        elif confirm_campaign:
-            campaign_model = self._campaign_repository.get_campaign_model_by_id(prototype.campaign_id)
-            campaign_model.status = CampaignStatus.CONFIRMED.value
-
-        self.db.session.commit()
-
-        return pledge_model.to_pledge_entity()
-
     def get_pledge_campaign(self, pledge_id: int) -> Campaign:
         pledge = self.get_pledge(pledge_id)
 

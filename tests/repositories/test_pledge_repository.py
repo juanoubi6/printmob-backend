@@ -1,16 +1,15 @@
-import copy
 import datetime
 import unittest
 from unittest.mock import MagicMock
 
 import pytest
 
-from my_app.api.domain import PledgePrototype, Pledge, Campaign, CampaignStatus, Payment
+from my_app.api.domain import Pledge, Campaign, CampaignStatus, Payment
 from my_app.api.exceptions import NotFoundException, MercadopagoException, BusinessException
 from my_app.api.repositories import PledgeRepository
 from my_app.api.repositories.models import CampaignModel
-from tests.test_utils.mock_models import MOCK_CAMPAIGN_MODEL, MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED, \
-    MOCK_PLEDGE_MODEL, MOCK_TECH_DETAIL_MODEL, MOCK_CAMPAIGN_MODEL_IMAGE_MODEL, MOCK_PRINTER_MODEL
+from tests.test_utils.mock_models import MOCK_CAMPAIGN_MODEL, MOCK_PLEDGE_MODEL, MOCK_TECH_DETAIL_MODEL, \
+    MOCK_CAMPAIGN_MODEL_IMAGE_MODEL, MOCK_PRINTER_MODEL
 
 
 class TestPledgeRepository(unittest.TestCase):
@@ -21,109 +20,6 @@ class TestPledgeRepository(unittest.TestCase):
         self.mock_mercadopago_repository = MagicMock()
         self.pledge_repository = PledgeRepository(self.test_db, self.mock_campaign_repository,
                                                   self.mock_mercadopago_repository)
-
-    def test_create_pledge_returns_created_pledge(self):
-        self.test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.side_effect = [
-            MOCK_CAMPAIGN_MODEL
-        ]
-
-        test_proto = PledgePrototype(
-            buyer_id=1,
-            campaign_id=1,
-            pledge_price=34
-        )
-
-        response = self.pledge_repository.create_pledge(
-            test_proto,
-            confirm_campaign=False,
-            finalize_campaign=False
-        )
-
-        assert isinstance(response, Pledge)
-        self.test_db.session.add.assert_called_once()
-        self.test_db.session.commit.assert_called_once()
-
-    def test_create_pledge_change_campaign_status_and_end_date_when_finalize_campaign_flag_is_true_and_returns_created_pledge(self):
-        campaign_model = CampaignModel(
-            id=1,
-            name="Campaign name",
-            description="Description",
-            campaign_picture_url="campaign picture url",
-            pledge_price=10.50,
-            end_date=datetime.datetime(2030, 5, 17),
-            min_pledgers=1,
-            max_pledgers=2,
-            tech_detail=MOCK_TECH_DETAIL_MODEL,
-            images=[MOCK_CAMPAIGN_MODEL_IMAGE_MODEL],
-            printer=MOCK_PRINTER_MODEL,
-            pledges=[MOCK_PLEDGE_MODEL],
-            created_at=datetime.datetime(2020, 5, 17),
-            updated_at=datetime.datetime(2020, 5, 17),
-            status="In progress",
-            mp_preference_id="preference_id"
-        )
-        campaign_original_end_date = campaign_model.end_date
-        self.mock_campaign_repository.get_campaign_model_by_id.return_value = campaign_model
-
-        test_proto = PledgePrototype(
-            buyer_id=1,
-            campaign_id=1,
-            pledge_price=34
-        )
-
-        response = self.pledge_repository.create_pledge(
-            test_proto,
-            confirm_campaign=False,
-            finalize_campaign=True
-        )
-
-        assert campaign_model.status == CampaignStatus.TO_BE_FINALIZED.value
-        assert campaign_model.end_date <= campaign_original_end_date
-        assert campaign_model.end_date.day <= (
-                    datetime.datetime.now() + datetime.timedelta(days=1)).day  # Assert the end date is tomorrow date
-        assert isinstance(response, Pledge)
-        self.test_db.session.add.assert_called_once()
-        self.test_db.session.commit.assert_called_once()
-
-    def test_create_pledge_change_campaign_status_when_confirm_campaign_flag_is_true_and_returns_created_pledge(self):
-        campaign_model = CampaignModel(
-            id=1,
-            name="Campaign name",
-            description="Description",
-            campaign_picture_url="campaign picture url",
-            pledge_price=10.50,
-            end_date=datetime.datetime(2030, 5, 17),
-            min_pledgers=1,
-            max_pledgers=2,
-            tech_detail=MOCK_TECH_DETAIL_MODEL,
-            images=[MOCK_CAMPAIGN_MODEL_IMAGE_MODEL],
-            printer=MOCK_PRINTER_MODEL,
-            pledges=[MOCK_PLEDGE_MODEL],
-            created_at=datetime.datetime(2020, 5, 17),
-            updated_at=datetime.datetime(2020, 5, 17),
-            status="In progress",
-            mp_preference_id="preference_id"
-        )
-        campaign_original_end_date = campaign_model.end_date
-        self.mock_campaign_repository.get_campaign_model_by_id.return_value = campaign_model
-
-        test_proto = PledgePrototype(
-            buyer_id=1,
-            campaign_id=1,
-            pledge_price=34
-        )
-
-        response = self.pledge_repository.create_pledge(
-            test_proto,
-            confirm_campaign=True,
-            finalize_campaign=False
-        )
-
-        assert campaign_model.status == CampaignStatus.CONFIRMED.value
-        assert campaign_model.end_date == campaign_original_end_date
-        assert isinstance(response, Pledge)
-        self.test_db.session.add.assert_called_once()
-        self.test_db.session.commit.assert_called_once()
 
     def test_get_pledge_campaigns_returns_campaign_when_found(self):
         # Because the way the pledge and the campaign are looked up on DB are the same, we use a side effect

@@ -28,7 +28,7 @@ def inject_controllers(app, db):
     campaign_repository = CampaignRepository(db, mercadopago_repository)
     printer_repository = PrinterRepository(db)
     pledge_repository = PledgeRepository(db, campaign_repository, mercadopago_repository)
-    transaction_repository = TransactionRepository(db, pledge_repository)
+    transaction_repository = TransactionRepository(db)
     s3_repository = S3Repository(s3_client, AWS_BUCKET_NAME)
     order_repository = OrderRepository(db)
     email_repository = EmailRepository(ses_client, SENDER_EMAIL)
@@ -36,8 +36,7 @@ def inject_controllers(app, db):
     user_repository = UserRepository(db)
 
     app.campaign_controller = build_campaign_controller(campaign_repository, printer_repository, s3_repository)
-    app.pledge_controller = build_pledge_controller(pledge_repository, campaign_repository, mercadopago_repository,
-                                                    transaction_repository)
+    app.pledge_controller = build_pledge_controller(pledge_repository, campaign_repository, mercadopago_repository)
     app.order_controller = build_order_controller(order_repository, campaign_repository, email_repository, executor)
     app.auth_controller = build_auth_controller(google_repository, user_repository, transaction_repository, executor,
                                                 email_repository)
@@ -58,9 +57,9 @@ def build_campaign_controller(campaign_repository, printer_repository, s3_reposi
     return CampaignController(campaign_service)
 
 
-def build_pledge_controller(pledge_repository, campaign_repository, mercadopago_repository, transaction_repository):
+def build_pledge_controller(pledge_repository, campaign_repository, mercadopago_repository):
     pledge_service = PledgeService(
-        pledge_repository, campaign_repository, mercadopago_repository, transaction_repository
+        pledge_repository, campaign_repository, mercadopago_repository
     )
 
     return PledgeController(pledge_service)

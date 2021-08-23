@@ -88,17 +88,6 @@ def get_campaign_orders(campaign_id):
 
 
 # Pledges
-@route(pledgeBlueprint, '/', methods=['POST'])
-@validate_bearer_token
-def create_pledge(user_data):
-    return current_app.pledge_controller.create_pledge(request)
-
-
-@route(pledgeBlueprint, '/<pledge_id>/payment', methods=['PATCH'])
-def update_pledge_with_payment(pledge_id):
-    return current_app.pledge_controller.update_pledge_with_payment(request, int(pledge_id))
-
-
 @route(pledgeBlueprint, '/<pledge_id>', methods=['DELETE'])
 @validate_bearer_token
 def cancel_pledge(pledge_id, user_data):
