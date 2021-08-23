@@ -79,3 +79,37 @@ class TestPledgeController(unittest.TestCase):
         res = client.patch("/pledges/1/payment", data=json.dumps({"mp_payment_id": 123455}))
         assert res.status_code == 200
         assert res.json["id"] == MOCK_PLEDGE.id
+
+    @patch.object(app.pledge_controller, "pledge_service")
+    def test_create_pledge_with_payment_returns_created_pledge(self, mock_pledge_service):
+        mock_pledge_service.create_pledge_with_payment.return_value = MOCK_PLEDGE
+
+        res = client.post("/pledges/payment",
+                          data=json.dumps({
+                              "campaign_id": 1,
+                              "mp_payment_id": 2
+                          }),
+                          headers={"Authorization": self.buyer_authorization_token})
+
+        assert res.status_code == 201
+        assert res.json["id"] == MOCK_PLEDGE.id
+
+    def test_create_pledge_with_payment_fails_when_campaign_id_is_not_provided(self):
+        res = client.post("/pledges/payment",
+                          data=json.dumps({
+                              "mp_payment_id": 2
+                          }),
+                          headers={"Authorization": self.buyer_authorization_token})
+
+        assert res.status_code == 400
+        assert res.json["message"] == "El ID de la campaña no fue provisto"
+
+    def test_create_pledge_with_payment_fails_when_payment_id_is_not_provided(self):
+        res = client.post("/pledges/payment",
+                          data=json.dumps({
+                              "campaign_id": 2
+                          }),
+                          headers={"Authorization": self.buyer_authorization_token})
+
+        assert res.status_code == 400
+        assert res.json["message"] == "El ID del pago no fue provisto"

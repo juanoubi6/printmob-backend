@@ -1,14 +1,16 @@
+import copy
 import datetime
 import unittest
 from unittest.mock import MagicMock
 
 import pytest
 
-from my_app.api.domain import PledgePrototype, Pledge, Campaign, CampaignStatus
+from my_app.api.domain import PledgePrototype, Pledge, Campaign, CampaignStatus, Payment
 from my_app.api.exceptions import NotFoundException, MercadopagoException, BusinessException
 from my_app.api.repositories import PledgeRepository
+from my_app.api.repositories.models import CampaignModel
 from tests.test_utils.mock_models import MOCK_CAMPAIGN_MODEL, MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED, \
-    MOCK_PLEDGE_MODEL
+    MOCK_PLEDGE_MODEL, MOCK_TECH_DETAIL_MODEL, MOCK_CAMPAIGN_MODEL_IMAGE_MODEL, MOCK_PRINTER_MODEL
 
 
 class TestPledgeRepository(unittest.TestCase):
@@ -42,7 +44,24 @@ class TestPledgeRepository(unittest.TestCase):
         self.test_db.session.commit.assert_called_once()
 
     def test_create_pledge_change_campaign_status_and_end_date_when_finalize_campaign_flag_is_true_and_returns_created_pledge(self):
-        campaign_model = MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED
+        campaign_model = CampaignModel(
+            id=1,
+            name="Campaign name",
+            description="Description",
+            campaign_picture_url="campaign picture url",
+            pledge_price=10.50,
+            end_date=datetime.datetime(2030, 5, 17),
+            min_pledgers=1,
+            max_pledgers=2,
+            tech_detail=MOCK_TECH_DETAIL_MODEL,
+            images=[MOCK_CAMPAIGN_MODEL_IMAGE_MODEL],
+            printer=MOCK_PRINTER_MODEL,
+            pledges=[MOCK_PLEDGE_MODEL],
+            created_at=datetime.datetime(2020, 5, 17),
+            updated_at=datetime.datetime(2020, 5, 17),
+            status="In progress",
+            mp_preference_id="preference_id"
+        )
         campaign_original_end_date = campaign_model.end_date
         self.mock_campaign_repository.get_campaign_model_by_id.return_value = campaign_model
 
@@ -67,7 +86,24 @@ class TestPledgeRepository(unittest.TestCase):
         self.test_db.session.commit.assert_called_once()
 
     def test_create_pledge_change_campaign_status_when_confirm_campaign_flag_is_true_and_returns_created_pledge(self):
-        campaign_model = MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED
+        campaign_model = CampaignModel(
+            id=1,
+            name="Campaign name",
+            description="Description",
+            campaign_picture_url="campaign picture url",
+            pledge_price=10.50,
+            end_date=datetime.datetime(2030, 5, 17),
+            min_pledgers=1,
+            max_pledgers=2,
+            tech_detail=MOCK_TECH_DETAIL_MODEL,
+            images=[MOCK_CAMPAIGN_MODEL_IMAGE_MODEL],
+            printer=MOCK_PRINTER_MODEL,
+            pledges=[MOCK_PLEDGE_MODEL],
+            created_at=datetime.datetime(2020, 5, 17),
+            updated_at=datetime.datetime(2020, 5, 17),
+            status="In progress",
+            mp_preference_id="preference_id"
+        )
         campaign_original_end_date = campaign_model.end_date
         self.mock_campaign_repository.get_campaign_model_by_id.return_value = campaign_model
 
@@ -192,3 +228,107 @@ class TestPledgeRepository(unittest.TestCase):
         response = self.pledge_repository.has_pledge_in_campaign(buyer_id=1, campaign_id=1)
 
         assert response is True
+
+    def test_create_pledge_with_payment_returns_created_pledge(self):
+        self.mock_mercadopago_repository.get_payment_data.return_value = Payment(
+            payment_id=1,
+            payment_data={"transaction_details": {"net_received_amount": 100}}
+        )
+
+        self.mock_campaign_repository.get_campaign_model_by_id.return_value = MOCK_CAMPAIGN_MODEL
+
+        response = self.pledge_repository.create_pledge_with_payment(
+            campaign_id=1,
+            buyer_id=2,
+            payment_id=3,
+            confirm_campaign=False,
+            finalize_campaign=False
+        )
+
+        assert isinstance(response, Pledge)
+        assert self.test_db.session.add.call_count == 2
+        self.test_db.session.commit.assert_called_once()
+
+    def test_create_pledge_with_payment_change_campaign_status_and_end_date_when_finalize_campaign_flag_is_true_and_returns_created_pledge(self):
+        self.mock_mercadopago_repository.get_payment_data.return_value = Payment(
+            payment_id=1,
+            payment_data={"transaction_details": {"net_received_amount": 100}}
+        )
+
+        campaign_model = CampaignModel(
+            id=1,
+            name="Campaign name",
+            description="Description",
+            campaign_picture_url="campaign picture url",
+            pledge_price=10.50,
+            end_date=datetime.datetime(2030, 5, 17),
+            min_pledgers=1,
+            max_pledgers=2,
+            tech_detail=MOCK_TECH_DETAIL_MODEL,
+            images=[MOCK_CAMPAIGN_MODEL_IMAGE_MODEL],
+            printer=MOCK_PRINTER_MODEL,
+            pledges=[MOCK_PLEDGE_MODEL],
+            created_at=datetime.datetime(2020, 5, 17),
+            updated_at=datetime.datetime(2020, 5, 17),
+            status="In progress",
+            mp_preference_id="preference_id"
+        )
+        campaign_original_end_date = campaign_model.end_date
+        self.mock_campaign_repository.get_campaign_model_by_id.return_value = campaign_model
+
+        response = self.pledge_repository.create_pledge_with_payment(
+            campaign_id=1,
+            buyer_id=2,
+            payment_id=3,
+            confirm_campaign=False,
+            finalize_campaign=True
+        )
+
+        assert campaign_model.status == CampaignStatus.TO_BE_FINALIZED.value
+        assert campaign_model.end_date <= campaign_original_end_date
+        assert campaign_model.end_date.day <= (
+                    datetime.datetime.now() + datetime.timedelta(days=1)).day  # Assert the end date is tomorrow date
+        assert isinstance(response, Pledge)
+        assert self.test_db.session.add.call_count == 2
+        self.test_db.session.commit.assert_called_once()
+
+    def test_create_pledge_with_payment_change_campaign_status_when_confirm_campaign_flag_is_true_and_returns_created_pledge(self):
+        self.mock_mercadopago_repository.get_payment_data.return_value = Payment(
+            payment_id=1,
+            payment_data={"transaction_details": {"net_received_amount": 100}}
+        )
+
+        campaign_model = CampaignModel(
+            id=1,
+            name="Campaign name",
+            description="Description",
+            campaign_picture_url="campaign picture url",
+            pledge_price=10.50,
+            end_date=datetime.datetime(2030, 5, 17),
+            min_pledgers=1,
+            max_pledgers=2,
+            tech_detail=MOCK_TECH_DETAIL_MODEL,
+            images=[MOCK_CAMPAIGN_MODEL_IMAGE_MODEL],
+            printer=MOCK_PRINTER_MODEL,
+            pledges=[MOCK_PLEDGE_MODEL],
+            created_at=datetime.datetime(2020, 5, 17),
+            updated_at=datetime.datetime(2020, 5, 17),
+            status="In progress",
+            mp_preference_id="preference_id"
+        )
+        campaign_original_end_date = campaign_model.end_date
+        self.mock_campaign_repository.get_campaign_model_by_id.return_value = campaign_model
+
+        response = self.pledge_repository.create_pledge_with_payment(
+            campaign_id=1,
+            buyer_id=2,
+            payment_id=3,
+            confirm_campaign=True,
+            finalize_campaign=False
+        )
+
+        assert campaign_model.status == CampaignStatus.CONFIRMED.value
+        assert campaign_model.end_date == campaign_original_end_date
+        assert isinstance(response, Pledge)
+        assert self.test_db.session.add.call_count == 2
+        self.test_db.session.commit.assert_called_once()
