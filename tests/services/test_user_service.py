@@ -3,11 +3,11 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from my_app.api.domain import Printer, Buyer, Balance
+from my_app.api.domain import Printer, Buyer, Balance, PrinterDataDashboard
 from my_app.api.exceptions import BusinessException
 from my_app.api.services import UserService
 from tests.test_utils.mock_entities import MOCK_PRINTER, MOCK_PRINTER_PROTOTYPE, MOCK_BUYER, MOCK_BUYER_PROTOTYPE, \
-    MOCK_BALANCE
+    MOCK_BALANCE, MOCK_PRINTER_DATA_DASHBOARD
 
 
 class TestUserService(unittest.TestCase):
@@ -137,3 +137,11 @@ class TestUserService(unittest.TestCase):
 
         self.mock_user_repository.is_email_in_use.assert_called_once_with("email")
         self.mock_user_repository.is_user_name_in_use.assert_called_once_with("user_name")
+
+    def test_get_printer_data_dashboard_returns_printer_data_dashboard(self):
+        self.mock_user_repository.get_printer_data_dashboard.return_value = MOCK_PRINTER_DATA_DASHBOARD
+
+        response = self.user_service.get_printer_data_dashboard(MOCK_PRINTER.id)
+
+        assert isinstance(response, PrinterDataDashboard)
+        self.mock_user_repository.get_printer_data_dashboard.assert_called_once_with(MOCK_PRINTER.id)

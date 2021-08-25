@@ -128,7 +128,7 @@ MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED = CampaignModel(
     pledges=[MOCK_PLEDGE_MODEL],
     created_at=datetime.datetime(2020, 5, 17),
     updated_at=datetime.datetime(2020, 5, 17),
-    status="In progress",
+    status="Confirmed",
     mp_preference_id="preference_id"
 )
 
@@ -147,7 +147,45 @@ MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_REACHED = CampaignModel(
     pledges=[MOCK_PLEDGE_MODEL, MOCK_PLEDGE_MODEL],
     created_at=datetime.datetime(2020, 5, 17),
     updated_at=datetime.datetime(2020, 5, 17),
-    status="In progress",
+    status="To be finalized",
+    mp_preference_id="preference_id"
+)
+
+MOCK_COMPLETED_CAMPAIGN_MODEL = CampaignModel(
+    id=1,
+    name="Campaign name",
+    description="Description",
+    campaign_picture_url="campaign picture url",
+    pledge_price=10.50,
+    end_date=datetime.datetime(2020, 5, 17),
+    min_pledgers=1,
+    max_pledgers=10,
+    tech_detail=MOCK_TECH_DETAIL_MODEL,
+    images=[MOCK_CAMPAIGN_MODEL_IMAGE_MODEL],
+    printer=MOCK_PRINTER_MODEL,
+    pledges=[MOCK_PLEDGE_MODEL],
+    created_at=datetime.datetime(2020, 5, 17),
+    updated_at=datetime.datetime(2020, 5, 17),
+    status="Completed",
+    mp_preference_id="preference_id"
+)
+
+MOCK_CONFIRMED_CAMPAIGN_MODEL = CampaignModel(
+    id=1,
+    name="Campaign name",
+    description="Description",
+    campaign_picture_url="campaign picture url",
+    pledge_price=10.50,
+    end_date=datetime.datetime(2020, 5, 17),
+    min_pledgers=1,
+    max_pledgers=10,
+    tech_detail=MOCK_TECH_DETAIL_MODEL,
+    images=[MOCK_CAMPAIGN_MODEL_IMAGE_MODEL],
+    printer=MOCK_PRINTER_MODEL,
+    pledges=[MOCK_PLEDGE_MODEL],
+    created_at=datetime.datetime(2020, 5, 17),
+    updated_at=datetime.datetime(2020, 5, 17),
+    status="Confirmed",
     mp_preference_id="preference_id"
 )
 

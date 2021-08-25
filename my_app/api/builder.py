@@ -33,7 +33,7 @@ def inject_controllers(app, db):
     order_repository = OrderRepository(db)
     email_repository = EmailRepository(ses_client, SENDER_EMAIL)
     google_repository = GoogleRepository(GOOGLE_CLIENT_ID, GOOGLE_AUTH_FALLBACK_URL, executor)
-    user_repository = UserRepository(db)
+    user_repository = UserRepository(db, transaction_repository)
 
     app.campaign_controller = build_campaign_controller(campaign_repository, printer_repository, s3_repository)
     app.pledge_controller = build_pledge_controller(pledge_repository, campaign_repository, mercadopago_repository)

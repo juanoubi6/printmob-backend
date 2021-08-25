@@ -1,21 +1,23 @@
 import copy
 import unittest
 from datetime import datetime
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, Mock
 
 from my_app.api.domain import Printer, Buyer, User, PrinterPrototype, UserPrototype, BankInformationPrototype, UserType, \
-    AddressPrototype, BuyerPrototype
+    AddressPrototype, BuyerPrototype, OrderStatus, PrinterDataDashboard
 from my_app.api.repositories import UserRepository
-from tests.test_utils.mock_entities import MOCK_BUYER_PROTOTYPE, MOCK_PRINTER_PROTOTYPE
+from tests.test_utils.mock_entities import MOCK_BUYER_PROTOTYPE, MOCK_PRINTER_PROTOTYPE, MOCK_BALANCE
 from tests.test_utils.mock_models import MOCK_USER_PRINTER_MODEL, MOCK_PRINTER_MODEL, \
-    MOCK_USER_BUYER_MODEL, MOCK_BUYER_MODEL
+    MOCK_USER_BUYER_MODEL, MOCK_BUYER_MODEL, MOCK_CAMPAIGN_MODEL, MOCK_CONFIRMED_CAMPAIGN_MODEL, \
+    MOCK_COMPLETED_CAMPAIGN_MODEL, MOCK_ORDER_MODEL
 
 
 class TestUserRepository(unittest.TestCase):
 
     def setUp(self):
         self.test_db = MagicMock()
-        self.user_repository = UserRepository(self.test_db)
+        self.mock_transaction_repository = Mock()
+        self.user_repository = UserRepository(self.test_db, self.mock_transaction_repository)
 
     def test_get_printer_by_email_returns_printer(self):
         user_printer_model = copy.deepcopy(MOCK_USER_PRINTER_MODEL)
@@ -160,3 +162,38 @@ class TestUserRepository(unittest.TestCase):
         response = self.user_repository.get_user_by_id(MOCK_USER_BUYER_MODEL.id)
 
         assert isinstance(response, User)
+
+
+    def test_get_printer_data_dashboard_returns_printer_data_dashboard(self):
+        # Mock campaigns query
+        self.test_db.session.query.return_value.\
+            filter.return_value. \
+            filter.return_value. \
+            filter.return_value. \
+            options.return_value. \
+            options.return_value. \
+            options.return_value. \
+            options.return_value. \
+            all.return_value = [MOCK_CAMPAIGN_MODEL, MOCK_CONFIRMED_CAMPAIGN_MODEL, MOCK_COMPLETED_CAMPAIGN_MODEL]
+
+        # Mock balance
+        self.mock_transaction_repository.get_user_balance.return_value = MOCK_BALANCE
+
+        # Mock orders query
+        pending_order = copy.deepcopy(MOCK_ORDER_MODEL)
+        pending_order.status = OrderStatus.IN_PROGRESS.value
+
+        self.test_db.session.query.return_value.\
+            filter.return_value. \
+            filter.return_value. \
+            options.return_value. \
+            all.return_value = [pending_order]
+
+        response = self.user_repository.get_printer_data_dashboard(MOCK_USER_BUYER_MODEL.id)
+
+        assert isinstance(response, PrinterDataDashboard)
+        assert response.completed_campaigns == 1
+        assert response.campaigns_in_progress == 2
+        assert response.pending_orders == 1
+        assert response.pledges_in_progress == len(MOCK_CAMPAIGN_MODEL.pledges) + len(MOCK_CONFIRMED_CAMPAIGN_MODEL.pledges)
+        assert response.balance == MOCK_BALANCE

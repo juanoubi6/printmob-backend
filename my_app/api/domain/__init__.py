@@ -4,6 +4,7 @@ from .bank_information import BankInformation, BankInformationPrototype
 from .buyer import Buyer, BuyerPrototype
 from .campaign import Campaign, CampaignPrototype, CampaignStatus
 from .campaign_model_image import CampaignModelImage, CampaignModelImagePrototype
+from .data_dashboard import PrinterDataDashboard
 from .file import File
 from .google_user_data import GoogleUserData
 from .order import Order, OrderStatus, OrderPrototype

@@ -1,7 +1,7 @@
 from concurrent.futures import Executor
 
 from my_app.api.domain import PrinterPrototype, Printer, BuyerPrototype, Buyer, \
-    UserPrototype, AddressPrototype, BankInformationPrototype, Balance
+    UserPrototype, AddressPrototype, BankInformationPrototype, Balance, PrinterDataDashboard
 from my_app.api.exceptions import BusinessException
 from my_app.api.repositories import UserRepository, TransactionRepository, EmailRepository
 from my_app.api.utils.email import create_money_request_email
@@ -19,6 +19,9 @@ class UserService:
         self.transaction_repository = transaction_repository
         self.email_repository = email_repository
         self.executor = executor
+
+    def get_printer_data_dashboard(self, printer_id: int) -> PrinterDataDashboard:
+        return self.user_repository.get_printer_data_dashboard(printer_id)
 
     def create_printer(self, prototype: PrinterPrototype) -> Printer:
         self._validate_user_data(prototype.user_prototype)

@@ -1,13 +1,63 @@
 import datetime
 
-from my_app.api.domain import Printer, Buyer, User, BuyerPrototype, PrinterPrototype, UserPrototype
+from sqlalchemy.orm import noload
+
+from my_app.api.domain import Printer, Buyer, User, BuyerPrototype, PrinterPrototype, UserPrototype, CampaignStatus, \
+    OrderStatus, PrinterDataDashboard
 from my_app.api.exceptions import NotFoundException
-from my_app.api.repositories.models import PrinterModel, UserModel, BuyerModel, AddressModel, BankInformationModel
+from my_app.api.repositories import TransactionRepository
+from my_app.api.repositories.models import PrinterModel, UserModel, BuyerModel, AddressModel, BankInformationModel, \
+    CampaignModel, OrderModel
 
 
 class UserRepository:
-    def __init__(self, db):
+    def __init__(self, db, transaction_repository: TransactionRepository):
         self.db = db
+        self.transaction_repository = transaction_repository
+
+    def get_printer_data_dashboard(self, printer_id: int) -> PrinterDataDashboard:
+        # Total amount of in progress and completed campaigns, and the total of current pledges
+        current_printer_campaigns = self.db.session.query(CampaignModel) \
+            .filter(CampaignModel.printer_id == printer_id) \
+            .filter(CampaignModel.deleted_at == None) \
+            .filter(CampaignModel.status.in_([CampaignStatus.IN_PROGRESS.value, CampaignStatus.CONFIRMED.value, CampaignStatus.COMPLETED.value])) \
+            .options(noload(CampaignModel.tech_detail)) \
+            .options(noload(CampaignModel.tech_detail)) \
+            .options(noload(CampaignModel.printer)) \
+            .options(noload(CampaignModel.images)) \
+            .all()
+
+        completed_campaign_ids = []
+        campaigns_in_progress = 0
+        completed_campaigns = 0
+        current_pledges = 0
+
+        for campaign in current_printer_campaigns:
+            if campaign.status in [CampaignStatus.IN_PROGRESS.value, CampaignStatus.CONFIRMED.value]:
+                campaigns_in_progress += 1
+                current_pledges += len(campaign.pledges)
+            else:
+                completed_campaigns += 1
+                completed_campaign_ids.append(campaign.id)
+
+        # Current and future balance
+        user_balance = self.transaction_repository.get_user_balance(printer_id)
+
+        # Total pending orders of printer
+        in_progress_orders_from_printer = self.db.session.query(OrderModel) \
+            .filter(OrderModel.campaign_id.in_(completed_campaign_ids)) \
+            .filter(OrderModel.status == OrderStatus.IN_PROGRESS.value) \
+            .options(noload(OrderModel.buyer)) \
+            .all()
+        pending_orders = len(in_progress_orders_from_printer) if in_progress_orders_from_printer is not None else 0
+
+        return PrinterDataDashboard(
+            campaigns_in_progress=campaigns_in_progress,
+            completed_campaigns=completed_campaigns,
+            pledges_in_progress=current_pledges,
+            balance=user_balance,
+            pending_orders=pending_orders
+        )
 
     def get_printer_by_email(self, email: str) -> Printer:
         user_model = self._get_user_model_by_email(email)

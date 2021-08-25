@@ -17,6 +17,17 @@ class UserController:
     def __init__(self, user_service: UserService):
         self.user_service = user_service
 
+    def get_user_data_dashboard(self, req: request, user_id: int, user_data: dict) -> (dict, int):
+        if user_id != int(user_data["id"]):
+            raise AuthException(USER_MISMATCH_ERROR)
+
+        if user_data["user_type"] == UserType.PRINTER.value:
+            data_dashboard = self.user_service.get_printer_data_dashboard(user_id)
+        else:
+            raise BusinessException(INVALID_USER_TYPE_ERROR)
+
+        return data_dashboard.to_json(), 200
+
     def get_user_profile(self, req: request, user_id: int, user_data: dict) -> (User, int):
         if user_id != int(user_data["id"]):
             raise AuthException(USER_MISMATCH_ERROR)

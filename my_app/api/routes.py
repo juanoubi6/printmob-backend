@@ -157,6 +157,12 @@ def get_user_profile(user_id, user_data):
     return current_app.user_controller.get_user_profile(request, int(user_id), user_data)
 
 
+@route(userBlueprint, '/<user_id>/data-dashboard', methods=['GET'])
+@validate_bearer_token
+def get_user_data_dashboard(user_id, user_data):
+    return current_app.user_controller.get_user_data_dashboard(request, int(user_id), user_data)
+
+
 @route(userBlueprint, '/<user_id>/balance', methods=['GET'])
 @validate_bearer_token
 def get_user_balance(user_id, user_data):

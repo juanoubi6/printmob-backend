@@ -3,7 +3,8 @@ import datetime
 from my_app.api.domain import Campaign, Printer, User, TechDetail, Pledge, CampaignModelImage, \
     CampaignModelImagePrototype, File, CampaignStatus, Buyer, Address, Order, OrderStatus, CampaignPrototype, \
     TechDetailPrototype, UserType, GoogleUserData, BuyerPrototype, UserPrototype, AddressPrototype, PrinterPrototype, \
-    BankInformation, BankInformationPrototype, Payment, TransactionPrototype, TransactionType, Balance
+    BankInformation, BankInformationPrototype, Payment, TransactionPrototype, TransactionType, Balance, \
+    PrinterDataDashboard
 
 MOCK_BANK_INFORMATION = BankInformation(
     id=1,
@@ -226,4 +227,12 @@ MOCK_TRANSACTION_PROTOTYPE = TransactionPrototype(
 MOCK_BALANCE = Balance(
     current_balance=100.5,
     future_balance=25.6
+)
+
+MOCK_PRINTER_DATA_DASHBOARD = PrinterDataDashboard(
+    campaigns_in_progress=1,
+    completed_campaigns=2,
+    pledges_in_progress=3,
+    balance=MOCK_BALANCE,
+    pending_orders=5
 )

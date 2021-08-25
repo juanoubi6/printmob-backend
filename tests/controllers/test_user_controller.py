@@ -5,9 +5,10 @@ from unittest.mock import patch
 
 from my_app.api import create_app
 from my_app.api.utils.token_manager import TokenManager
-from tests.test_utils.mock_entities import MOCK_BUYER, MOCK_PRINTER, MOCK_BALANCE
+from tests.test_utils.mock_entities import MOCK_BUYER, MOCK_PRINTER, MOCK_BALANCE, MOCK_PRINTER_DATA_DASHBOARD
 from tests.test_utils.test_json import GET_PRINTER_PROFILE_RESPONSE_JSON, GET_BUYER_PROFILE_RESPONSE_JSON, \
-    CREATE_PRINTER_JSON_REQUEST, CREATE_BUYER_JSON_REQUEST, GET_BALANCE_RESPONSE_JSON
+    CREATE_PRINTER_JSON_REQUEST, CREATE_BUYER_JSON_REQUEST, GET_BALANCE_RESPONSE_JSON, \
+    PRINTER_DATA_DASHBOARD_RESPONSE_JSON
 
 app = create_app()
 app.config['TESTING'] = True
@@ -129,3 +130,26 @@ class TestUserController(unittest.TestCase):
         )
 
         assert res.status_code == 400
+
+    def test_get_user_data_dashboard_returns_401_if_requested_user_id_information_does_not_match_token_id(self):
+        res = client.get(
+            "/users/99/data-dashboard",
+            headers={"Authorization": self.printer_authorization_token}
+        )
+
+        assert res.status_code == 401
+        assert res.json["message"] == "Tu usuario no tiene permisos para acceder a esta información"
+
+    @patch.object(app.user_controller, "user_service")
+    def test_get_user_data_dashboard_returns_printer_dashboard_data_when_printer_token_is_provided(self, mock_user_service):
+        mock_user_service.get_printer_data_dashboard.return_value = MOCK_PRINTER_DATA_DASHBOARD
+
+        res = client.get(
+            "/users/{}/data-dashboard".format(MOCK_PRINTER.id),
+            headers={"Authorization": self.printer_authorization_token}
+        )
+
+        assert res.status_code == 200
+        assert res.json == PRINTER_DATA_DASHBOARD_RESPONSE_JSON
+
+        mock_user_service.get_printer_data_dashboard.assert_called_once_with(MOCK_PRINTER.id)

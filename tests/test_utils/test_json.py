@@ -299,3 +299,11 @@ CREATE_BUYER_JSON_REQUEST = {
         "apartment": None
     }
 }
+
+PRINTER_DATA_DASHBOARD_RESPONSE_JSON = {
+    'balance': {'current_balance': 100.5, 'future_balance': 25.6},
+    'campaigns_in_progress': 1,
+    'completed_campaigns': 2,
+    'pending_orders': 5,
+    'pledges_in_progress': 3
+}
