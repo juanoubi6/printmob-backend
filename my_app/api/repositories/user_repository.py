@@ -52,6 +52,7 @@ class UserRepository:
             .filter(OrderModel.campaign_id.in_(completed_campaign_ids)) \
             .filter(OrderModel.status == OrderStatus.IN_PROGRESS.value) \
             .options(noload(OrderModel.buyer)) \
+            .options(noload(OrderModel.campaign)) \
             .all()
         pending_orders = len(in_progress_orders_from_printer) if in_progress_orders_from_printer is not None else 0
 

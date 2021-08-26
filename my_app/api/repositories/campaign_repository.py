@@ -363,6 +363,7 @@ class CampaignRepository:
         """
         query = self.db.session.query(OrderModel).filter(OrderModel.campaign_id == campaign_id)
         query = apply_campaign_order_filters(query, filters)
+        query = query.options(noload(OrderModel.campaign))
         query = query.order_by(asc(OrderModel.id))
 
         order_models = paginate(query, filters).all()

@@ -1,7 +1,7 @@
 from concurrent.futures import Executor
 from typing import List
 
-from my_app.api.domain import OrderStatus, OrderPrototype, Order
+from my_app.api.domain import OrderStatus, OrderPrototype, Order, Page
 from my_app.api.repositories import EmailRepository, OrderRepository, CampaignRepository
 from my_app.api.utils.email import create_updated_order_status_email_for_buyer, create_updated_order_email_for_buyer
 
@@ -46,3 +46,6 @@ class OrderService:
 
     def get_campaign_order_from_buyer(self, buyer_id: int, campaign_id: int) -> Order:
         return self.order_repository.get_campaign_order_from_buyer(buyer_id, campaign_id)
+
+    def get_orders_of_printer(self, printer_id: int, filters: dict) -> Page[Order]:
+        return self.order_repository.get_orders_of_printer(printer_id, filters)

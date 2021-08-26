@@ -132,6 +132,7 @@ MOCK_PRINTER = Printer(MOCK_PRINTER_USER, MOCK_BANK_INFORMATION)
 
 MOCK_ORDER = Order(
     id=1,
+    campaign=MOCK_CAMPAIGN,
     campaign_id=MOCK_CAMPAIGN.id,
     pledge_id=MOCK_PLEDGE.id,
     buyer=MOCK_BUYER,

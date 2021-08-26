@@ -1,6 +1,8 @@
 import enum
+from typing import Optional
 
-from my_app.api.domain import Buyer
+from my_app.api.domain.campaign import Campaign
+from my_app.api.domain.buyer import Buyer
 
 
 class OrderStatus(enum.Enum):
@@ -13,6 +15,7 @@ class Order:
             self,
             id: int,
             campaign_id: int,
+            campaign: Optional[Campaign],
             pledge_id: int,
             buyer: Buyer,
             status: OrderStatus,
@@ -21,6 +24,7 @@ class Order:
             comments: str = None
     ):
         self.id = id
+        self.campaign = campaign
         self.campaign_id = campaign_id
         self.pledge_id = pledge_id
         self.buyer = buyer
@@ -40,6 +44,7 @@ class Order:
     def to_json(self):
         return {
             "id": self.id,
+            "campaign": self.campaign.to_json() if self.campaign is not None else None,
             "buyer": self.buyer.to_json(),
             "status": self.status.value,
             "mail_company": self.mail_company,

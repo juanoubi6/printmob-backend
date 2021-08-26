@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock
 
-from my_app.api.domain import OrderStatus, OrderPrototype, Order
+from my_app.api.domain import OrderStatus, OrderPrototype, Order, Page
 from my_app.api.services import OrderService
 from tests.test_utils.mock_entities import MOCK_ORDER
 
@@ -52,3 +52,12 @@ class TestOrderService(unittest.TestCase):
 
         assert isinstance(response, Order)
         self.mock_order_repository.get_campaign_order_from_buyer.assert_called_once_with(1, 2)
+
+    def test_get_orders_of_printer_returns_order_page(self):
+        self.mock_order_repository.get_orders_of_printer.return_value = Page(1, 2, 3, [MOCK_ORDER])
+
+        filters = {"filter": "filter"}
+        orders_page = self.order_service.get_orders_of_printer(1, filters)
+
+        assert orders_page.page == 1
+        self.mock_order_repository.get_orders_of_printer.assert_called_once_with(1, filters)

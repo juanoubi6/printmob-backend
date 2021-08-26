@@ -24,7 +24,7 @@ class TestCampaignRepository(unittest.TestCase):
         response = self.campaign_repository.create_campaign(MOCK_CAMPAIGN_PROTOTYPE)
 
         assert isinstance(response, Campaign)
-        assert (response.mp_preference_id, "some_preference_id")
+        assert response.mp_preference_id == "some_preference_id"
 
         self.test_db.session.add.assert_called()
         self.test_db.session.flush.assert_called_once()

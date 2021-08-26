@@ -2,8 +2,12 @@ import json
 
 from flask import request
 
-from my_app.api.domain import OrderStatus, OrderPrototype, Order
+from my_app.api.controllers.validators import validate_pagination_filters
+from my_app.api.domain import OrderStatus, OrderPrototype, Order, Page
+from my_app.api.exceptions import BusinessException
 from my_app.api.services import OrderService
+
+USER_MISMATCH_ERROR = "Tu usuario no tiene permisos para acceder a esta información"
 
 
 class OrderController:
@@ -36,3 +40,13 @@ class OrderController:
         order = self.order_service.get_campaign_order_from_buyer(buyer_id, campaign_id)
 
         return order.to_json(), 200
+
+    def get_orders_of_printer(self, req: request, printer_id:int, user_data:dict) -> (Page[Order], int):
+        if printer_id != int(user_data["id"]):
+            return BusinessException(USER_MISMATCH_ERROR)
+
+        filters = req.args
+        validate_pagination_filters(filters)
+        orders_page = self.order_service.get_orders_of_printer(printer_id, filters)
+
+        return orders_page.to_json(), 200

@@ -39,7 +39,7 @@ def create_app(settings_override=None, register_security_blueprint=False):
 def create_db(app):
     app.config['SQLALCHEMY_DATABASE_URI'] = DB_CONFIG['SQLALCHEMY_DATABASE_URI']
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = DB_CONFIG['SQLALCHEMY_TRACK_MODIFICATIONS']
-    db = SQLAlchemy(app)
+    db = SQLAlchemy(app, engine_options={"echo":True})
     app.db = db
 
     return db

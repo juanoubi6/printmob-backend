@@ -121,6 +121,12 @@ def get_campaign_order_from_buyer(buyer_id, campaign_id):
     return current_app.order_controller.get_campaign_order_from_buyer(request, int(buyer_id), int(campaign_id))
 
 
+@route(orderBlueprint, '/printers/<printer_id>', methods=['GET'])
+@validate_bearer_token
+def get_orders_of_printer(printer_id, user_data):
+    return current_app.order_controller.get_orders_of_printer(request, int(printer_id), user_data)
+
+
 # Auth
 @route(authBlueprint, '/login', methods=['POST'])
 def login():

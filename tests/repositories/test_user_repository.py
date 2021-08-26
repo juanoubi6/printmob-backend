@@ -181,10 +181,10 @@ class TestUserRepository(unittest.TestCase):
         # Mock orders query
         pending_order = copy.deepcopy(MOCK_ORDER_MODEL)
         pending_order.status = OrderStatus.IN_PROGRESS.value
-
         self.test_db.session.query.return_value.\
             filter.return_value. \
             filter.return_value. \
+            options.return_value. \
             options.return_value. \
             all.return_value = [pending_order]
 

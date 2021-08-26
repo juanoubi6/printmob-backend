@@ -268,6 +268,7 @@ class OrderModel(Base):
     comments = Column(String, nullable=True)
 
     buyer = relationship("BuyerModel")
+    campaign = relationship("CampaignModel")
 
     def __repr__(self):
         return "<Order(id='{id}}',campaign_id='{campaign_id}',buyer_id='{buyer_id}')>" \
@@ -277,6 +278,7 @@ class OrderModel(Base):
         return Order(
             id=self.id,
             campaign_id=self.campaign_id,
+            campaign=self.campaign.to_campaign_entity() if self.campaign is not None else None,
             pledge_id=self.pledge_id,
             buyer=self.buyer.to_buyer_entity(),
             status=OrderStatus(self.status),
