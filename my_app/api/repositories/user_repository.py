@@ -196,7 +196,7 @@ class UserRepository:
         return self.db.session.query(PrinterModel).filter_by(id=user_id).first()
 
     def _campaign_model_to_ending_campaign_resume(self, campaign_model: CampaignModel) -> EndingCampaignResume:
-        base_percentage = campaign_model.pledges / campaign_model.min_pledgers
+        base_percentage = len(campaign_model.pledges) / campaign_model.min_pledgers
         percentage = 100 if base_percentage > 1 else base_percentage * 100
 
         return EndingCampaignResume(

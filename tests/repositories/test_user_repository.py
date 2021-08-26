@@ -163,7 +163,6 @@ class TestUserRepository(unittest.TestCase):
 
         assert isinstance(response, User)
 
-
     def test_get_printer_data_dashboard_returns_printer_data_dashboard(self):
         # Mock campaigns query
         self.test_db.session.query.return_value.\
@@ -197,3 +196,4 @@ class TestUserRepository(unittest.TestCase):
         assert response.pending_orders == 1
         assert response.pledges_in_progress == len(MOCK_CAMPAIGN_MODEL.pledges) + len(MOCK_CONFIRMED_CAMPAIGN_MODEL.pledges)
         assert response.balance == MOCK_BALANCE
+        assert len(response.ending_campaigns) == 2
