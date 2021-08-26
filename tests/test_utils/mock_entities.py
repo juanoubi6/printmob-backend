@@ -4,7 +4,7 @@ from my_app.api.domain import Campaign, Printer, User, TechDetail, Pledge, Campa
     CampaignModelImagePrototype, File, CampaignStatus, Buyer, Address, Order, OrderStatus, CampaignPrototype, \
     TechDetailPrototype, UserType, GoogleUserData, BuyerPrototype, UserPrototype, AddressPrototype, PrinterPrototype, \
     BankInformation, BankInformationPrototype, Payment, TransactionPrototype, TransactionType, Balance, \
-    PrinterDataDashboard
+    PrinterDataDashboard, EndingCampaignResume
 
 MOCK_BANK_INFORMATION = BankInformation(
     id=1,
@@ -229,10 +229,18 @@ MOCK_BALANCE = Balance(
     future_balance=25.6
 )
 
+MOCK_ENDING_CAMPAIGN_RESUME = EndingCampaignResume(
+    id=1,
+    name="Campaña 1",
+    percentage=50,
+    remaining_days=4
+)
+
 MOCK_PRINTER_DATA_DASHBOARD = PrinterDataDashboard(
     campaigns_in_progress=1,
     completed_campaigns=2,
     pledges_in_progress=3,
     balance=MOCK_BALANCE,
-    pending_orders=5
+    pending_orders=5,
+    ending_campaigns=[MOCK_ENDING_CAMPAIGN_RESUME]
 )

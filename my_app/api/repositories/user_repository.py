@@ -3,7 +3,7 @@ import datetime
 from sqlalchemy.orm import noload
 
 from my_app.api.domain import Printer, Buyer, User, BuyerPrototype, PrinterPrototype, UserPrototype, CampaignStatus, \
-    OrderStatus, PrinterDataDashboard
+    OrderStatus, PrinterDataDashboard, EndingCampaignResume
 from my_app.api.exceptions import NotFoundException
 from my_app.api.repositories import TransactionRepository
 from my_app.api.repositories.models import PrinterModel, UserModel, BuyerModel, AddressModel, BankInformationModel, \
@@ -27,6 +27,7 @@ class UserRepository:
             .options(noload(CampaignModel.images)) \
             .all()
 
+        ending_campaigns = []
         completed_campaign_ids = []
         campaigns_in_progress = 0
         completed_campaigns = 0
@@ -36,6 +37,9 @@ class UserRepository:
             if campaign.status in [CampaignStatus.IN_PROGRESS.value, CampaignStatus.CONFIRMED.value]:
                 campaigns_in_progress += 1
                 current_pledges += len(campaign.pledges)
+
+                if (campaign.end_date - datetime.datetime.now()).days <= 4:
+                    ending_campaigns.append(campaign)
             else:
                 completed_campaigns += 1
                 completed_campaign_ids.append(campaign.id)
@@ -56,7 +60,8 @@ class UserRepository:
             completed_campaigns=completed_campaigns,
             pledges_in_progress=current_pledges,
             balance=user_balance,
-            pending_orders=pending_orders
+            pending_orders=pending_orders,
+            ending_campaigns=[self._campaign_model_to_ending_campaign_resume(ec) for ec in ending_campaigns]
         )
 
     def get_printer_by_email(self, email: str) -> Printer:
@@ -189,3 +194,14 @@ class UserRepository:
 
     def _get_printer_model_by_id(self, user_id: int) -> PrinterModel:
         return self.db.session.query(PrinterModel).filter_by(id=user_id).first()
+
+    def _campaign_model_to_ending_campaign_resume(self, campaign_model: CampaignModel) -> EndingCampaignResume:
+        base_percentage = campaign_model.pledges / campaign_model.min_pledgers
+        percentage = 100 if base_percentage > 1 else base_percentage * 100
+
+        return EndingCampaignResume(
+            id=campaign_model.id,
+            name=campaign_model.name,
+            percentage=percentage,
+            remaining_days=(campaign_model.end_date - datetime.datetime.now()).days,
+        )

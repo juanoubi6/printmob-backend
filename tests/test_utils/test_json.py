@@ -305,5 +305,13 @@ PRINTER_DATA_DASHBOARD_RESPONSE_JSON = {
     'campaigns_in_progress': 1,
     'completed_campaigns': 2,
     'pending_orders': 5,
-    'pledges_in_progress': 3
+    'pledges_in_progress': 3,
+    'ending_campaigns': [
+        {
+            'id': 1,
+            'name': 'Campaña 1',
+            'percentage': 50,
+            'remaining_days': 4
+        }
+    ],
 }
