@@ -15,9 +15,9 @@ migrate:
 	docker exec -ti printmob-backend_backend_1 alembic upgrade head
 
 push:
-	docker build --no-cache .
+	docker build --no-cache -t printmob-backend-prod .
 	aws ecr get-login-password --region us-east-2 --profile printmob | docker login --username AWS --password-stdin 715052550658.dkr.ecr.us-east-2.amazonaws.com
-	docker tag printmob-backend_backend:latest 715052550658.dkr.ecr.us-east-2.amazonaws.com/printmob-backend:latest
+	docker tag printmob-backend-prod:latest 715052550658.dkr.ecr.us-east-2.amazonaws.com/printmob-backend:latest
 	docker push 715052550658.dkr.ecr.us-east-2.amazonaws.com/printmob-backend:latest
 
 deploy:
