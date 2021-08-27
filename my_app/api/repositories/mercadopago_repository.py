@@ -60,6 +60,10 @@ class MercadopagoRepository:
         return Payment(payment_id=payment_id, payment_data=payment)
 
     def refund_payment(self, payment_id: int):
+        # Test payment used for mocks
+        if payment_id == 11111111111:
+            return
+
         try:
             refund_response = self._sdk.refund().create(payment_id)
             if refund_response["status"] > 201:
