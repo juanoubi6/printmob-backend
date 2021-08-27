@@ -62,7 +62,7 @@ class MercadopagoRepository:
     def refund_payment(self, payment_id: int):
         try:
             refund_response = self._sdk.refund().create(payment_id)
-            if refund_response["status"] > 200:
+            if refund_response["status"] > 201:
                 raise Exception(refund_response["response"]["message"])
         except Exception as exc:
             if "live credentials" in str(exc):
