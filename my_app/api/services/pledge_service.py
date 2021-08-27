@@ -7,8 +7,8 @@ from my_app.api.repositories import PledgeRepository, CampaignRepository, Mercad
 
 MAX_PLEDGERS_REACHED = "No se puede realizar una reserva ya que la cantidad maxima de reservas de esta campaña ya fue alcanzada"
 END_DATE_REACHED = "No se puede realizar una reserva en una campaña que ya ha finalizado"
-MAX_PLEDGES_PER_CAMPAIGN_REACHED = "No podes realizar mas de una reserva en esta campaña"
-PLEDGE_CANCELLATION_ON_GOAL_REACHED = "No podes cancelar una reserva una vez la campaña ha sido confirmada"
+MAX_PLEDGES_PER_CAMPAIGN_REACHED = "No podes realizar más de una reserva en esta campaña"
+PLEDGE_CANCELLATION_ON_GOAL_REACHED = "No podes cancelar una reserva una vez que la campaña ha sido confirmada"
 
 
 class PledgeService:
