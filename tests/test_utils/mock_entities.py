@@ -234,7 +234,7 @@ MOCK_ENDING_CAMPAIGN_RESUME = EndingCampaignResume(
     id=1,
     name="Campaña 1",
     percentage=50,
-    remaining_days=4
+    end_date=datetime.datetime(2020, 5, 17),
 )
 
 MOCK_PRINTER_DATA_DASHBOARD = PrinterDataDashboard(

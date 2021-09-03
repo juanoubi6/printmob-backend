@@ -1,3 +1,4 @@
+import datetime
 from typing import List
 
 from my_app.api.domain.balance import Balance
@@ -9,19 +10,19 @@ class EndingCampaignResume:
             id: int,
             name: str,
             percentage: int,
-            remaining_days: int,
+            end_date: datetime.datetime,
     ):
         self.id = id
         self.name = name
         self.percentage = percentage
-        self.remaining_days = remaining_days
+        self.end_date = end_date
 
     def to_json(self):
         return {
             "id": self.id,
             "name": self.name,
             "percentage": self.percentage,
-            "remaining_days": self.remaining_days
+            "end_date": self.end_date
         }
 
 

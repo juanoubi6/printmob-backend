@@ -348,7 +348,7 @@ PRINTER_DATA_DASHBOARD_RESPONSE_JSON = {
             'id': 1,
             'name': 'Campaña 1',
             'percentage': 50,
-            'remaining_days': 4
+            'end_date': 'Sun, 17 May 2020 00:00:00 GMT'
         }
     ],
 }

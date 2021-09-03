@@ -198,11 +198,11 @@ class UserRepository:
 
     def _campaign_model_to_ending_campaign_resume(self, campaign_model: CampaignModel) -> EndingCampaignResume:
         base_percentage = len(campaign_model.pledges) / campaign_model.min_pledgers
-        percentage = 100 if base_percentage > 1 else base_percentage * 100
+        percentage = 100 if base_percentage > 1 else int(base_percentage * 100)
 
         return EndingCampaignResume(
             id=campaign_model.id,
             name=campaign_model.name,
             percentage=percentage,
-            remaining_days=(campaign_model.end_date - datetime.datetime.now()).days,
+            end_date=campaign_model.end_date,
         )
