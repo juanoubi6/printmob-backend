@@ -26,7 +26,9 @@ class TransactionRepository:
             future_balance=0 if future_balance[0] is None else float(future_balance[0])
         )
 
-    def create_balance_request(self, user_id: int) -> float:
+    def create_balance_request(self, user_id: int) -> (float, bool):
+        send_email = False
+
         current_balance = self.db.session.query(
             func.sum(TransactionModel.amount).label("current_balance")
         ).filter(TransactionModel.user_id == user_id).filter(TransactionModel.is_future == False).first()
@@ -34,11 +36,19 @@ class TransactionRepository:
         balance = 0.0 if current_balance[0] is None else float(current_balance[0])
 
         if int(balance) != 0:
-            balance_request_model = BalanceRequestModel(
-                user_id=user_id,
-                date=datetime.datetime.now()
-            )
-            self.db.session.add(balance_request_model)
+            # Update existing request date
+            existing_balance_request = self.db.session.query(BalanceRequestModel).filter_by(user_id=user_id).first()
+
+            if existing_balance_request is None:
+                balance_request_model = BalanceRequestModel(
+                    user_id=user_id,
+                    date=datetime.datetime.now()
+                )
+                self.db.session.add(balance_request_model)
+                send_email = True
+            else:
+                existing_balance_request.date = datetime.datetime.now()
+
             self.db.session.commit()
 
-        return balance
+        return balance, send_email

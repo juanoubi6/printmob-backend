@@ -4,7 +4,7 @@ from typing import List
 from sqlalchemy import asc
 from sqlalchemy.orm import noload
 
-from my_app.api.domain import PledgePrototype, Pledge, Campaign, CampaignStatus, TransactionType
+from my_app.api.domain import Pledge, Campaign, CampaignStatus, TransactionType
 from my_app.api.exceptions import NotFoundException, MercadopagoException, BusinessException
 from my_app.api.repositories import CampaignRepository, MercadopagoRepository
 from my_app.api.repositories.models import PledgeModel, CampaignModel, TransactionModel

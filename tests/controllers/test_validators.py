@@ -5,7 +5,7 @@ import pytest
 
 from my_app.api.controllers.validators import validate_pagination_filters, validate_alphanumeric_field, \
     validate_url_field, validate_positive_integer_field, validate_positive_decimal_field, \
-    validate_time_interval, validate_campaign_pledgers_interval
+    validate_time_interval, validate_campaign_pledgers_interval, validate_model_file_upload
 from my_app.api.exceptions import InvalidParamException
 
 
@@ -166,3 +166,36 @@ class TestValidators(unittest.TestCase):
     def test_validate_campaign_pledgers_interval_throws_exception_with_invalid_pledgers_interval(self):
         with pytest.raises(InvalidParamException):
             validate_campaign_pledgers_interval(2, 1)
+
+    def test_validate_model_file_upload_raises_error_when_file_is_not_present(self):
+        class SomeFile(object):
+            pass
+
+        new_file = SomeFile()
+        new_file.mimetype = "model/stl"
+        new_file.filename = "someName.stl"
+
+        with pytest.raises(InvalidParamException):
+            validate_model_file_upload({"otherFileName": new_file}, "expectedFileName")
+
+    def test_validate_model_file_upload_raises_error_when_file_has_invalid_mimetype(self):
+        class SomeFile(object):
+            pass
+
+        new_file = SomeFile()
+        new_file.mimetype = "model/other"
+        new_file.filename = "someName.stl"
+
+        with pytest.raises(InvalidParamException):
+            validate_model_file_upload({"expectedFileName": new_file}, "expectedFileName")
+
+    def test_validate_model_file_upload_raises_error_when_file_has_no_stl_extension(self):
+        class SomeFile(object):
+            pass
+
+        new_file = SomeFile()
+        new_file.mimetype = "model/stl"
+        new_file.filename = "someName.png"
+
+        with pytest.raises(InvalidParamException):
+            validate_model_file_upload({"otherFileName": new_file}, "expectedFileName")

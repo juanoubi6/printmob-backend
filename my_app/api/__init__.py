@@ -58,6 +58,9 @@ def route(bp, *args, **kwargs):
             if isinstance(response_value, Response):
                 return response_value
 
+            if not isinstance(response_value, tuple):
+                return response_value
+
             if isinstance(response_value, tuple):
                 status_code = response_value[1]
                 response_value = response_value[0]

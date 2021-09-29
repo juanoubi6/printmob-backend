@@ -104,7 +104,7 @@ def finalize_campaign(
                                         mp_payment_id=pledge_to_cancel.printer_transaction.mp_payment_id,
                                         user_id=pledge_to_cancel.printer_transaction.user_id,
                                         amount=pledge_to_cancel.printer_transaction.amount*-1,
-                                        type=TransactionType.REFUND,
+                                        type=TransactionType.REFUND.value,
                                         is_future=pledge_to_cancel.printer_transaction.is_future
                                     )
                                 )

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from sqlalchemy import asc
 from sqlalchemy.orm import noload
@@ -9,7 +9,8 @@ from my_app.api.exceptions import NotFoundException, MercadopagoException, Campa
 from my_app.api.repositories.mercadopago_repository import MercadopagoRepository
 from my_app.api.repositories.models import CampaignModel, CampaignModelImageModel, UserModel, TechDetailsModel, \
     PrinterModel, BuyerModel, PledgeModel, AddressModel, OrderModel, BankInformationModel, TransactionModel
-from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, apply_campaign_filters, apply_campaign_order_filters
+from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, apply_campaign_filters, \
+    apply_campaign_order_filters
 
 CAMPAIGN_NOT_FOUND = 'La campaña no existe'
 CAMPAIGN_MODEL_IMAGE_NOT_FOUND = 'La imagen del modelo de la campaña no existe'

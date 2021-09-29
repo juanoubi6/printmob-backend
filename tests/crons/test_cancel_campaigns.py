@@ -46,9 +46,9 @@ class TestCancelCampaignsCron(unittest.TestCase):
         assert campaign_to_cancel.pledges[1].deleted_at is not None
 
         # Assert refund transactions were created
-        assert session_mock.add.mock_calls[0].args[0].type == TransactionType.REFUND
+        assert session_mock.add.mock_calls[0].args[0].type == TransactionType.REFUND.value
         assert session_mock.add.mock_calls[0].args[0].amount == campaign_to_cancel.pledges[0].printer_transaction.amount * -1
-        assert session_mock.add.mock_calls[1].args[0].type == TransactionType.REFUND
+        assert session_mock.add.mock_calls[1].args[0].type == TransactionType.REFUND.value
         assert session_mock.add.mock_calls[1].args[0].amount == campaign_to_cancel.pledges[1].printer_transaction.amount * -1
 
     def test_cancel_campaigns_rollbacks_pledge_on_exception(self):

@@ -63,9 +63,9 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
         assert unsuccessful_campaign.pledges[1].deleted_at is not None
 
         # Assert refund transactions were created
-        assert session_mock.add.mock_calls[2].args[0].type == TransactionType.REFUND
+        assert session_mock.add.mock_calls[2].args[0].type == TransactionType.REFUND.value
         assert session_mock.add.mock_calls[2].args[0].amount == unsuccessful_campaign.pledges[0].printer_transaction.amount * -1
-        assert session_mock.add.mock_calls[3].args[0].type == TransactionType.REFUND
+        assert session_mock.add.mock_calls[3].args[0].type == TransactionType.REFUND.value
         assert session_mock.add.mock_calls[3].args[0].amount == unsuccessful_campaign.pledges[1].printer_transaction.amount * -1
 
     def test_finalize_campaign_rollbacks_pledge_on_exception(self):

@@ -6,7 +6,7 @@ import pytest
 from my_app.api.exceptions import AuthException
 from my_app.api.services import AuthService
 from tests.test_utils.mock_entities import MOCK_GOOGLE_USER_DATA, MOCK_PRINTER_USER, MOCK_PRINTER, \
-    MOCK_BUYER_USER, MOCK_BUYER
+    MOCK_BUYER_USER, MOCK_BUYER, MOCK_DESIGNER_USER, MOCK_DESIGNER
 
 
 class TestAuthService(unittest.TestCase):
@@ -46,6 +46,22 @@ class TestAuthService(unittest.TestCase):
         self.mock_user_repository.get_user_by_email.assert_called_once_with(MOCK_GOOGLE_USER_DATA.email)
         self.mock_user_repository.get_buyer_by_email.assert_called_once_with(MOCK_BUYER_USER.email)
         self.mock_token_manager.get_token_from_payload.assert_called_once_with(MOCK_BUYER.identity_data())
+
+    def test_get_user_login_data_returns_designer_data_on_buyer_login(self):
+        self.mock_google_repository.retrieve_token_data.return_value = MOCK_GOOGLE_USER_DATA
+        self.mock_user_repository.get_user_by_email.return_value = MOCK_DESIGNER_USER
+        self.mock_user_repository.get_designer_by_email.return_value = MOCK_DESIGNER
+        self.mock_token_manager.get_token_from_payload.return_value = "signed_jwt"
+
+        user, jwt = self.auth_service.get_user_login_data("auth_token")
+
+        assert user == MOCK_DESIGNER
+        assert jwt == "signed_jwt"
+        self.mock_google_repository.retrieve_token_data.assert_called_once_with("auth_token")
+        self.mock_user_repository.get_user_by_email.assert_called_once_with(MOCK_GOOGLE_USER_DATA.email)
+        self.mock_user_repository.get_designer_by_email.assert_called_once_with(MOCK_DESIGNER_USER.email)
+        self.mock_token_manager.get_token_from_payload.assert_called_once_with(MOCK_DESIGNER.identity_data())
+
 
     def test_get_user_login_data_raises_exception_if_user_does_not_exist(self):
         self.mock_google_repository.retrieve_token_data.return_value = MOCK_GOOGLE_USER_DATA

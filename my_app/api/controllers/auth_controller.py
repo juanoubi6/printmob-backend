@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import request
 
 from my_app.api.domain import Printer, PrinterPrototype, UserPrototype, UserType, Buyer, BuyerPrototype, \
-    AddressPrototype, BankInformationPrototype
+    AddressPrototype, BankInformationPrototype, DesignerPrototype
 from my_app.api.exceptions import InvalidFieldException, InvalidParamException
 from my_app.api.services import AuthService, UserService
 
@@ -53,6 +53,31 @@ class AuthController:
         printer = self.user_service.create_printer(prototype)
 
         return printer.to_json(), 201
+
+    def create_designer(self, req: request) -> (Printer, int):
+        body = json.loads(req.data)
+
+        prototype = DesignerPrototype(
+            user_prototype=UserPrototype(
+                first_name=body["first_name"],
+                last_name=body["last_name"],
+                user_name=str(body["user_name"]).lower(),
+                date_of_birth=datetime.strptime(body["date_of_birth"], '%d-%m-%Y'),
+                email=str(body["email"]).lower(),
+                user_type=UserType.DESIGNER,
+                profile_picture_url=body.get("profile_picture_url", None)
+            ),
+            bank_information_prototype=BankInformationPrototype(
+                cbu=body["bank_information"]["cbu"],
+                bank=body["bank_information"]["bank"],
+                account_number=body["bank_information"]["account_number"],
+                alias=body["bank_information"]["alias"]
+            )
+        )
+
+        designer = self.user_service.create_designer(prototype)
+
+        return designer.to_json(), 201
 
     def create_buyer(self, req: request) -> (Buyer, int):
         body = json.loads(req.data)

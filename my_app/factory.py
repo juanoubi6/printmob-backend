@@ -1,5 +1,7 @@
 from flask import Flask
+from flask_compress import Compress
 from flask_cors import CORS
+
 from .helpers import register_blueprints
 
 
@@ -16,6 +18,10 @@ def create_app(package_name, package_path, settings_override=None,
     """
     app = Flask(package_name, instance_relative_config=True)
     CORS(app)
+
+    # Configure compression
+    app.config["COMPRESS_ALGORITHM"] = ["gzip"]
+    Compress(app)
 
     app.config.from_object('my_app.settings')
     app.config.from_pyfile('settings.cfg', silent=True)

@@ -3,8 +3,9 @@ import unittest
 from unittest.mock import patch
 
 from my_app.api import create_app
-from tests.test_utils.mock_entities import MOCK_BUYER, MOCK_PRINTER
-from tests.test_utils.test_json import LOGIN_RESPONSE_JSON, CREATE_PRINTER_JSON_REQUEST, CREATE_BUYER_JSON_REQUEST
+from tests.test_utils.mock_entities import MOCK_BUYER, MOCK_PRINTER, MOCK_DESIGNER
+from tests.test_utils.test_json import LOGIN_RESPONSE_JSON, CREATE_PRINTER_JSON_REQUEST, CREATE_BUYER_JSON_REQUEST, \
+    CREATE_DESIGNER_JSON_REQUEST
 
 app = create_app()
 app.config['TESTING'] = True
@@ -46,6 +47,15 @@ class TestAuthController(unittest.TestCase):
 
         assert res.status_code == 201
         mock_user_service.create_buyer.assert_called_once()
+
+    @patch.object(app.auth_controller, "user_service")
+    def test_create_designer_returns_201_on_success(self, mock_user_service):
+        mock_user_service.create_designer.return_value = MOCK_DESIGNER
+
+        res = client.post("/auth/signup/designer", data=json.dumps(CREATE_DESIGNER_JSON_REQUEST))
+
+        assert res.status_code == 201
+        mock_user_service.create_designer.assert_called_once()
 
     def test_validate_user_data_returns_400_when_username_or_email_are_missing(self):
         res = client.post("/auth/signup/validate", data=json.dumps({"email": "pepe@gmail.com"}))

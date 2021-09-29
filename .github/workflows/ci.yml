@@ -1,0 +1,40 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: CI tests
+on: [pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    env:
+      ENV: testing
+      DATABASE_URL: sqlite://
+      AWS_BUCKET_NAME: printmob-dev
+      AWS_DEFAULT_REGION: us-east-2
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      SENDER_EMAIL: printmobgarg@gmail.com
+      GOOGLE_CLIENT_ID: test_id
+      GOOGLE_AUTH_FALLBACK_URL: https://oauth2.googleapis.com/tokeninfo
+      JWT_SECRET_KEY: s3cr3t4
+      MERCADOPAGO_ACCESS_TOKEN: test_token
+      PREFERENCE_BACK_URL_FOR_SUCCESS_PLEDGE_PAYMENT: http://localhost:3000/campaigns/payment/success
+      PREFERENCE_BACK_URL_FOR_SUCCESS_MODEL_PURCHASE_PAYMENT: http://localhost:3000/designs/payment/success
+      PREFERENCE_BACK_URL_FOR_PAYMENT_ERRORS: http://localhost:3000/payment/error
+      PREFERENCE_BACK_URL_FOR_MODEL_PURCHASE_ERRORS: http://localhost:3000/designs/payment/error
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Test with pytest
+      run: |
+        python -m pytest --ignore=tests/integration --ignore=tests/crons

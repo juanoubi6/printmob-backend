@@ -1,4 +1,4 @@
-from my_app.api.domain import Order, Campaign
+from my_app.api.domain import Order, Campaign, Model
 from my_app.api.domain import User
 from my_app.api.repositories.models import CampaignModel
 
@@ -146,5 +146,20 @@ def create_money_request_email(receiver: str, user: User, amount: float) -> Emai
     return Email(
         to=receiver,
         subject="El usuario {} ha solicitado una transferencia".format(user.id),
+        body=email_body
+    )
+
+
+def create_model_purchase_email(receiver: str, model: Model) -> Email:
+    email_body = """
+        Tu modelo '{name}' fue comprador por un usuario. En las próximas horas actualizaremos tu saldo disponible
+        para que puedas retirarlo.
+
+        Saludos!
+    """.format(name=model.name,)
+
+    return Email(
+        to=receiver,
+        subject="Uno de tus modelos fue vendido!",
         body=email_body
     )

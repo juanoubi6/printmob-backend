@@ -23,5 +23,6 @@ push:
 deploy:
 	aws ecs stop-task --profile printmob --cluster "printmob-cluster" --task $(aws ecs list-tasks --profile printmob --cluster "printmob-cluster" --service "backend-service" --output text --query taskArns)
 
-create-test-campaigns:
-	docker exec -ti printmob-backend_backend_1 python3 campaign-fixture.py
+integration-tests:
+	echo "Esto requiere que hayas hecho make run"
+	docker exec -it printmob-backend_backend_1 python3 -m pytest tests/integration/

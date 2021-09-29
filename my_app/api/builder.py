@@ -5,15 +5,17 @@ import boto3
 import mercadopago
 
 from my_app.api.controllers import CampaignController, PledgeController, OrderController, AuthController, \
-    CronController, UserController
+    CronController, UserController, ModelController
 from my_app.api.db_builder import create_db_session_factory
 from my_app.api.repositories import CampaignRepository, PledgeRepository, S3Repository, EmailRepository, \
-    GoogleRepository, PrinterRepository, OrderRepository, UserRepository, MercadopagoRepository, TransactionRepository
-from my_app.api.services import CampaignService, PledgeService, OrderService, AuthService, UserService
+    GoogleRepository, PrinterRepository, OrderRepository, UserRepository, MercadopagoRepository, TransactionRepository, \
+    ModelRepository
+from my_app.api.services import CampaignService, PledgeService, OrderService, AuthService, UserService, ModelService
 from my_app.api.utils.token_manager import TokenManager
 from my_app.settings import AWS_BUCKET_NAME, SENDER_EMAIL, GOOGLE_CLIENT_ID, GOOGLE_AUTH_FALLBACK_URL, JWT_SECRET_KEY, \
     ENV, DB_CONFIG, MERCADOPAGO_ACCESS_TOKEN, PREFERENCE_BACK_URL_FOR_PAYMENT_ERRORS, \
-    PREFERENCE_BACK_URL_FOR_SUCCESS_PLEDGE_PAYMENT
+    PREFERENCE_BACK_URL_FOR_SUCCESS_PLEDGE_PAYMENT, PREFERENCE_BACK_URL_FOR_SUCCESS_MODEL_PURCHASE_PAYMENT, \
+    PREFERENCE_BACK_URL_FOR_MODEL_PURCHASE_ERRORS
 
 
 def inject_controllers(app, db):
@@ -24,7 +26,9 @@ def inject_controllers(app, db):
 
     # Build repositories
     mercadopago_repository = MercadopagoRepository(mercadopago_sdk, PREFERENCE_BACK_URL_FOR_PAYMENT_ERRORS,
-                                                   PREFERENCE_BACK_URL_FOR_SUCCESS_PLEDGE_PAYMENT)
+                                                   PREFERENCE_BACK_URL_FOR_SUCCESS_PLEDGE_PAYMENT,
+                                                   PREFERENCE_BACK_URL_FOR_SUCCESS_MODEL_PURCHASE_PAYMENT,
+                                                   PREFERENCE_BACK_URL_FOR_MODEL_PURCHASE_ERRORS)
     campaign_repository = CampaignRepository(db, mercadopago_repository)
     printer_repository = PrinterRepository(db)
     pledge_repository = PledgeRepository(db, campaign_repository, mercadopago_repository)
@@ -34,7 +38,9 @@ def inject_controllers(app, db):
     email_repository = EmailRepository(ses_client, SENDER_EMAIL)
     google_repository = GoogleRepository(GOOGLE_CLIENT_ID, GOOGLE_AUTH_FALLBACK_URL, executor)
     user_repository = UserRepository(db, transaction_repository)
+    model_repository = ModelRepository(db, mercadopago_repository, s3_repository)
 
+    app.model_controller = build_model_controller(model_repository, s3_repository, executor, email_repository)
     app.campaign_controller = build_campaign_controller(campaign_repository, printer_repository, s3_repository)
     app.pledge_controller = build_pledge_controller(pledge_repository, campaign_repository, mercadopago_repository)
     app.order_controller = build_order_controller(order_repository, campaign_repository, email_repository, executor)
@@ -46,7 +52,7 @@ def inject_controllers(app, db):
     # Test-controller
     db_session_factory = create_db_session_factory(DB_CONFIG["SQLALCHEMY_DATABASE_URI"])
     email_repository = EmailRepository(build_ses_client(), SENDER_EMAIL)
-    app.cron_controller = CronController(db_session_factory, email_repository, executor, "mercadopago_repo")
+    app.cron_controller = CronController(db_session_factory, email_repository, executor, mercadopago_repository)
 
 
 def build_campaign_controller(campaign_repository, printer_repository, s3_repository):
@@ -86,6 +92,12 @@ def build_user_controller(user_repository, transaction_repository, email_reposit
     user_service = UserService(user_repository, transaction_repository, email_repository, executor)
 
     return UserController(user_service)
+
+
+def build_model_controller(model_repository, s3_repository, executor, email_repository):
+    model_service = ModelService(model_repository, s3_repository, executor, email_repository)
+
+    return ModelController(model_service)
 
 
 def build_s3_client():

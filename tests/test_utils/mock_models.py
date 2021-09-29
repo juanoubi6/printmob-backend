@@ -2,7 +2,8 @@ import datetime
 
 from my_app.api.domain import OrderStatus, UserType, TransactionType
 from my_app.api.repositories.models import CampaignModel, TechDetailsModel, PrinterModel, UserModel, PledgeModel, \
-    CampaignModelImageModel, BuyerModel, AddressModel, OrderModel, BankInformationModel, TransactionModel
+    CampaignModelImageModel, BuyerModel, AddressModel, OrderModel, BankInformationModel, TransactionModel, \
+    DesignerModel, ModelImageModel, ModelLikeModel, ModelCategoryModel, ModelModel, ModelFileModel, ModelPurchaseModel
 
 MOCK_BANK_INFORMATION_MODEL = BankInformationModel(
     id=1,
@@ -42,6 +43,19 @@ MOCK_USER_PRINTER_MODEL = UserModel(
     updated_at=datetime.datetime(2020, 5, 17)
 )
 
+MOCK_USER_DESIGNER_MODEL = UserModel(
+    id=1,
+    first_name="John",
+    last_name="Doe",
+    user_name="johnDoe5",
+    date_of_birth=datetime.datetime(2020, 5, 17),
+    email="email@email.com",
+    user_type=UserType.DESIGNER.value,
+    profile_picture_url="url",
+    created_at=datetime.datetime(2020, 5, 17),
+    updated_at=datetime.datetime(2020, 5, 17)
+)
+
 MOCK_USER_BUYER_MODEL = UserModel(
     id=1,
     first_name="John",
@@ -59,6 +73,13 @@ MOCK_PRINTER_MODEL = PrinterModel(
     user=MOCK_USER_PRINTER_MODEL,
     bank_information=MOCK_BANK_INFORMATION_MODEL
 )
+
+MOCK_DESIGNER_MODEL = DesignerModel(
+    id=1,
+    user=MOCK_USER_DESIGNER_MODEL,
+    bank_information=MOCK_BANK_INFORMATION_MODEL
+)
+
 MOCK_ADDRESS_MODEL = AddressModel(
     id=1,
     address="Calle falsa 123",
@@ -92,6 +113,24 @@ MOCK_CAMPAIGN_MODEL_IMAGE_MODEL = CampaignModelImageModel(
     model_picture_url="url",
     campaign_id=1,
     file_name="file_name"
+)
+
+MOCK_MODEL_IMAGE_MODEL = ModelImageModel(
+    id=1,
+    model_picture_url="url",
+    model_id=1,
+    file_name="file_name"
+)
+
+MOCK_MODEL_LIKE_MODEL = ModelLikeModel(
+    id=1,
+    user_id=2,
+    model_id=3
+)
+
+MOCK_MODEL_CATEGORY_MODEL = ModelCategoryModel(
+    id=1,
+    name="Categoria 1"
 )
 
 MOCK_CAMPAIGN_MODEL = CampaignModel(
@@ -201,4 +240,55 @@ MOCK_ORDER_MODEL = OrderModel(
     buyer=MOCK_BUYER_MODEL
 )
 
+MOCK_DISPATCHED_ORDER_MODEL = OrderModel(
+    id=1,
+    campaign_id=MOCK_CAMPAIGN_MODEL.id,
+    pledge_id=MOCK_PLEDGE_MODEL.id,
+    buyer_id=MOCK_BUYER_MODEL.id,
+    status=OrderStatus.DISPATCHED.value,
+    mail_company="mail_company",
+    tracking_code="tracking_code",
+    comments="comments",
+    buyer=MOCK_BUYER_MODEL
+)
 
+MOCK_MODEL_FILE_MODEL = ModelFileModel(
+    id=1,
+    model_file_url="url",
+    file_name="file_name"
+)
+
+MOCK_MODEL_MODEL = ModelModel(
+    id=1,
+    designer_id=2,
+    name="name",
+    description="description",
+    model_file_id=1,
+    model_category_id=2,
+    likes=1,
+    width=12,
+    length=12,
+    depth=12,
+    mp_preference_id="preference",
+    allow_purchases=True,
+    allow_alliances=True,
+    purchase_price=25.5,
+    created_at=datetime.datetime(2020, 5, 17),
+    updated_at=datetime.datetime(2020, 5, 17),
+    deleted_at=None,
+    designer=MOCK_DESIGNER_MODEL,
+    images=[MOCK_MODEL_IMAGE_MODEL],
+    model_file=MOCK_MODEL_FILE_MODEL,
+    model_category=MOCK_MODEL_CATEGORY_MODEL
+)
+
+MOCK_MODEL_PURCHASE_MODEL = ModelPurchaseModel(
+    id=1,
+    printer_id=2,
+    model_id=1,
+    price=20,
+    transaction_id=1,
+    created_at=datetime.datetime(2020, 5, 17),
+    model=MOCK_MODEL_MODEL,
+    printer=MOCK_PRINTER_MODEL,
+)

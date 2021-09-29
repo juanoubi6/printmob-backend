@@ -21,7 +21,7 @@ class S3Repository:
 
             return self._generate_file_url(key)
         except Exception as exc:
-            raise ServerException("Unexpected error when uploading image to S3: {}".format(str(exc)))
+            raise ServerException("Unexpected error when uploading file to S3: {}".format(str(exc)))
 
     def delete_file(self, key: str):
         try:

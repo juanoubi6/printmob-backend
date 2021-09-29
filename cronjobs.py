@@ -17,7 +17,9 @@ email_repository = EmailRepository(build_ses_client(), os.environ["SENDER_EMAIL"
 mercadopago_repository = MercadopagoRepository(
     build_mercadopago_sdk(),
     os.environ["PREFERENCE_BACK_URL_FOR_PAYMENT_ERRORS"],
-    os.environ["PREFERENCE_BACK_URL_FOR_SUCCESS_PLEDGE_PAYMENT"]
+    os.environ["PREFERENCE_BACK_URL_FOR_SUCCESS_PLEDGE_PAYMENT"],
+    os.environ["PREFERENCE_BACK_URL_FOR_SUCCESS_MODEL_PURCHASE_PAYMENT"],
+    os.environ["PREFERENCE_BACK_URL_FOR_MODEL_PURCHASE_ERRORS"]
 )
 
 
@@ -38,7 +40,7 @@ if __name__ == '__main__':
         cron_func=cancel_campaigns,
         params=(db_session_factory, email_repository, executor, mercadopago_repository)
     )
-    schedule.run_all()
+
     while True:
         schedule.run_pending()
         time.sleep(1)

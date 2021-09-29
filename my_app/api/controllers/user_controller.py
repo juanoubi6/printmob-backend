@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import request
 
 from my_app.api.domain import UserType, User, PrinterPrototype, UserPrototype, BankInformationPrototype, BuyerPrototype, \
-    AddressPrototype, Balance
+    AddressPrototype, Balance, DesignerPrototype
 from my_app.api.exceptions import AuthException, BusinessException
 from my_app.api.services import UserService
 
@@ -23,6 +23,10 @@ class UserController:
 
         if user_data["user_type"] == UserType.PRINTER.value:
             data_dashboard = self.user_service.get_printer_data_dashboard(user_id)
+        elif user_data["user_type"] == UserType.DESIGNER.value:
+            data_dashboard = self.user_service.get_designer_data_dashboard(user_id)
+        elif user_data["user_type"] == UserType.BUYER.value:
+            data_dashboard = self.user_service.get_buyer_data_dashboard(user_id)
         else:
             raise BusinessException(INVALID_USER_TYPE_ERROR)
 
@@ -36,6 +40,8 @@ class UserController:
             user = self.user_service.get_printer_by_email(user_data["email"])
         elif user_data["user_type"] == UserType.BUYER.value:
             user = self.user_service.get_buyer_by_email(user_data["email"])
+        elif user_data["user_type"] == UserType.DESIGNER.value:
+            user = self.user_service.get_designer_by_email(user_data["email"])
         else:
             raise BusinessException(INVALID_USER_TYPE_ERROR)
 
@@ -53,6 +59,9 @@ class UserController:
         elif user_data["user_type"] == UserType.BUYER.value:
             prototype = self._generate_buyer_prototype(body)
             updated_user = self.user_service.update_buyer(user_id, prototype)
+        elif user_data["user_type"] == UserType.DESIGNER.value:
+            prototype = self._generate_designer_prototype(body)
+            updated_user = self.user_service.update_designer(user_id, prototype)
         else:
             raise BusinessException(INVALID_USER_TYPE_ERROR)
 
@@ -117,5 +126,24 @@ class UserController:
                 city=body["address"]["city"],
                 floor=body["address"]["floor"],
                 apartment=body["address"]["apartment"],
+            )
+        )
+
+    def _generate_designer_prototype(self, body: dict) -> DesignerPrototype:
+        return DesignerPrototype(
+            user_prototype=UserPrototype(
+                first_name=body["first_name"],
+                last_name=body["last_name"],
+                user_name=body["user_name"],
+                date_of_birth=datetime.strptime(body["date_of_birth"], '%d-%m-%Y'),
+                email=body["email"],
+                user_type=UserType.DESIGNER,
+                profile_picture_url=body.get("profile_picture_url", None)
+            ),
+            bank_information_prototype=BankInformationPrototype(
+                cbu=body["bank_information"]["cbu"],
+                bank=body["bank_information"]["bank"],
+                account_number=body["bank_information"]["account_number"],
+                alias=body["bank_information"]["alias"]
             )
         )

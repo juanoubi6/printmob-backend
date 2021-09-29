@@ -7,6 +7,8 @@ from my_app.api.exceptions import InvalidParamException
 PAGE_FILTER_NAME = "page"
 PAGE_SIZE_FILTER_NAME = "page_size"
 VALID_IMAGE_MIMETYPES = ['image/jpeg', "image/png"]
+VALID_MODEL_FILE_MIMETYPES = ['application/sla', 'model/stl', 'application/vnd.ms-pki.stl', 'application/x-navistyle',
+                              'application/octet-stream']
 
 
 def validate_pagination_filters(filters: dict):
@@ -96,3 +98,22 @@ def validate_image_upload(file_dict: dict, image_name: str):
 
     if file_dict[image_name].mimetype not in VALID_IMAGE_MIMETYPES:
         raise InvalidParamException("Formato de imagen inválido. Solo se acepta el formato JPG")
+
+
+def validate_image_file(image_file):
+    if image_file.mimetype not in VALID_IMAGE_MIMETYPES:
+        raise InvalidParamException("Formato de imagen inválido. Solo se acepta el formato JPG")
+
+
+def validate_model_file_upload(file_dict: dict, image_name: str):
+    if image_name not in file_dict:
+        raise InvalidParamException("No se ha enviado ningun archivo de modelo 3D")
+
+    image_file = file_dict[image_name]
+
+    if not image_file.filename.lower().endswith(".stl"):
+        raise InvalidParamException("Formato de archivo inválido. La extensión debe ser .stl")
+
+    if image_file.mimetype not in VALID_MODEL_FILE_MIMETYPES:
+        raise InvalidParamException("Formato de archivo inválido. Solo se acepta el formato STL")
+

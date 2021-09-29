@@ -3,7 +3,7 @@ from typing import List
 from my_app.api.domain import Pledge
 from my_app.api.exceptions import CancellationException
 from my_app.api.exceptions.pledge_creation_exception import PledgeCreationException
-from my_app.api.repositories import PledgeRepository, CampaignRepository, MercadopagoRepository, TransactionRepository
+from my_app.api.repositories import PledgeRepository, CampaignRepository, MercadopagoRepository
 
 MAX_PLEDGERS_REACHED = "No se puede realizar una reserva ya que la cantidad maxima de reservas de esta campaña ya fue alcanzada"
 END_DATE_REACHED = "No se puede realizar una reserva en una campaña que ya ha finalizado"

@@ -25,6 +25,7 @@ setup(
         "requests==2.25.1",
         "cachecontrol==0.12.6",
         "PyJWT==2.1.0",
-        "mercadopago==2.0.7"
+        "mercadopago==2.0.7",
+        "flask-compress==1.10.1"
     ],
 )

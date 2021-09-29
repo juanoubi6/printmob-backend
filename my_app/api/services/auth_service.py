@@ -28,5 +28,8 @@ class AuthService:
         elif user_data.user_type is UserType.BUYER:
             buyer = self.user_repository.get_buyer_by_email(user_data.email)
             return buyer, self.token_manager.get_token_from_payload(buyer.identity_data())
+        if user_data.user_type is UserType.DESIGNER:
+            designer = self.user_repository.get_designer_by_email(user_data.email)
+            return designer, self.token_manager.get_token_from_payload(designer.identity_data())
         else:
             raise BusinessException("El tipo de usuario es inválido")

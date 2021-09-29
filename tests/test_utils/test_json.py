@@ -1,4 +1,6 @@
-from tests.test_utils.mock_entities import MOCK_CAMPAIGN_MODEL_IMAGE
+import io
+
+from tests.test_utils.mock_entities import MOCK_CAMPAIGN_MODEL_IMAGE, MOCK_MODEL_IMAGE
 
 GET_BUYER_PROFILE_RESPONSE_JSON = {
     'address': {
@@ -36,6 +38,24 @@ GET_PRINTER_PROFILE_RESPONSE_JSON = {
     'user_name': 'johnDoe5',
     'profile_picture_url': "url",
     'user_type': 'Printer'
+}
+
+GET_DESIGNER_PROFILE_RESPONSE_JSON = {
+    'bank_information': {
+        'account_number': '324324',
+        'alias': None,
+        'bank': 'Galicia',
+        'cbu': '2222222222',
+        'id': 1
+    },
+    'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
+    'email': 'email@email.com',
+    'first_name': 'John',
+    'id': 1,
+    'last_name': 'Doe',
+    'user_name': 'johnDoe5',
+    'profile_picture_url': "url",
+    'user_type': 'Designer'
 }
 
 GET_BALANCE_RESPONSE_JSON = {
@@ -258,6 +278,12 @@ CAMPAIGN_MODEL_IMAGE_JSON = {
     "model_picture_url": MOCK_CAMPAIGN_MODEL_IMAGE.model_picture_url
 }
 
+MODEL_IMAGE_JSON = {
+    "id": MOCK_MODEL_IMAGE.id,
+    "model_id": MOCK_MODEL_IMAGE.model_id,
+    "model_picture_url": MOCK_MODEL_IMAGE.model_picture_url
+}
+
 CAMPAIGN_BUYERS_JSON_RESPONSE = [
     {
         'address': {
@@ -321,6 +347,21 @@ CREATE_PRINTER_JSON_REQUEST = {
     }
 }
 
+CREATE_DESIGNER_JSON_REQUEST = {
+    "first_name": "Juan",
+    "last_name": "Perez",
+    "user_name": "juanperez1211",
+    "date_of_birth": "21-05-2023",
+    "email": "juanperez11@gmail.com",
+    "profile_picture_url": "url",
+    "bank_information": {
+        "cbu": "222222222333333333344",
+        "alias": None,
+        "bank": "Galicia",
+        "account_number": "26163-44"
+    }
+}
+
 CREATE_BUYER_JSON_REQUEST = {
     "first_name": "Juan",
     "last_name": "Perez",
@@ -351,4 +392,144 @@ PRINTER_DATA_DASHBOARD_RESPONSE_JSON = {
             'end_date': 'Sun, 17 May 2020 00:00:00 GMT'
         }
     ],
+}
+
+DESIGNER_DATA_DASHBOARD_RESPONSE_JSON = {
+    'alliances_income': 200.0,
+    'balance': {'current_balance': 100.5, 'future_balance': 25.6},
+    'model_purchase_income': 300.0,
+    'total_likes': 50,
+    'uploaded_models': 40
+}
+
+BUYER_DATA_DASHBOARD_RESPONSE_JSON = {
+    'completed_orders': 3,
+    'ending_campaigns': [
+        {
+            'end_date': 'Sun, 17 May 2020 00:00:00 GMT',
+            'id': 1,
+            'name': 'Campaña 1',
+            'percentage': 50
+        }
+    ],
+    'in_progress_orders': 2,
+    'take_part_campaigns': 200
+}
+
+CREATE_MODEL_REQUEST = {
+    "name": "Model name",
+    "description": "Model description",
+    "model_category_id": "1",
+    "width": "2",
+    "length": "3",
+    "depth": "4",
+    "allow_purchases": "true",
+    "allow_alliances": "false",
+    "purchase_price": "25.5",
+    "model_file": (io.BytesIO(b"someStlFileData"), 'testStlFile.stl'),
+    "image[]": (io.BytesIO(b"someImageData"), 'image1.jpg'),
+    "image[]": (io.BytesIO(b"someImageData"), 'image2.jpg')
+}
+
+CREATE_MODEL_RESPONSE_JSON = {
+    "allow_alliances": False,
+    "allow_purchases": True,
+    "depth": 4,
+    "description": "Model description",
+    "designer": {
+        'bank_information': {
+            'account_number': '324324',
+            'alias': None,
+            'bank': 'Galicia',
+            'cbu': '2222222222',
+            'id': 1
+        },
+        'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
+        'email': 'email@email.com',
+        'first_name': 'John',
+        'id': 1,
+        'last_name': 'Doe',
+        'user_name': 'johnDoe5',
+        'profile_picture_url': "url",
+        'user_type': 'Designer'
+    },
+    "id": 1,
+    "length": 3,
+    "likes": 4,
+    "model_file": {
+        "id": 1,
+        "model_file_url": "url"
+    },
+    "model_images": [{'id': 1, 'model_id': 1, 'model_picture_url': 'url'}],
+    "mp_preference_id": "preference_id",
+    "name": "Model name",
+    "purchase_price": 25.5,
+    'desired_percentage': 20,
+    "width": 2,
+    'liked_by_user': None,
+    'model_category': {'id': 1, 'name': 'Categoria 1'}
+}
+
+GET_USER_LIKED_MODEL_DETAIL_JSON_RESPONSE = {
+    'allow_alliances': False,
+    'allow_purchases': True,
+    'depth': 4,
+    'description': 'Model description',
+    'designer': {'bank_information': {'account_number': '324324',
+                                      'alias': None,
+                                      'bank': 'Galicia',
+                                      'cbu': '2222222222',
+                                      'id': 1},
+                 'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
+                 'email': 'email@email.com',
+                 'first_name': 'John',
+                 'id': 1,
+                 'last_name': 'Doe',
+                 'profile_picture_url': 'url',
+                 'user_name': 'johnDoe5',
+                 'user_type': 'Designer'},
+    'id': 1,
+    'length': 3,
+    'likes': 4,
+    'model_category': {'id': 1, 'name': 'Categoria 1'},
+    'model_file': {'id': 1, 'model_file_url': 'url'},
+    'model_images': [{'id': 1, 'model_id': 1, 'model_picture_url': 'url'}],
+    'mp_preference_id': 'preference_id',
+    'name': 'Model name',
+    'purchase_price': 25.5,
+    'desired_percentage': 20,
+    'width': 2,
+    'liked_by_user': True
+}
+
+GET_NEUTRAL_MODEL_DETAIL_JSON_RESPONSE = {
+    'allow_alliances': False,
+    'allow_purchases': True,
+    'depth': 4,
+    'description': 'Model description',
+    'designer': {'bank_information': {'account_number': '324324',
+                                      'alias': None,
+                                      'bank': 'Galicia',
+                                      'cbu': '2222222222',
+                                      'id': 1},
+                 'date_of_birth': 'Sun, 17 May 2020 00:00:00 GMT',
+                 'email': 'email@email.com',
+                 'first_name': 'John',
+                 'id': 1,
+                 'last_name': 'Doe',
+                 'profile_picture_url': 'url',
+                 'user_name': 'johnDoe5',
+                 'user_type': 'Designer'},
+    'id': 1,
+    'length': 3,
+    'likes': 4,
+    'model_category': {'id': 1, 'name': 'Categoria 1'},
+    'model_file': {'id': 1, 'model_file_url': 'url'},
+    'model_images': [{'id': 1, 'model_id': 1, 'model_picture_url': 'url'}],
+    'mp_preference_id': 'preference_id',
+    'name': 'Model name',
+    'purchase_price': 25.5,
+    'desired_percentage': 20,
+    'width': 2,
+    'liked_by_user': None
 }

@@ -6,4 +6,5 @@ from .google_validation_exception import GoogleValidationException, GoogleTimeou
 from .invalid_field_exception import InvalidFieldException
 from .invalid_param_exception import InvalidParamException
 from .mercadopago_exception import MercadopagoException
+from .model_creation_exception import ModelCreationException
 from .not_found_exception import NotFoundException
