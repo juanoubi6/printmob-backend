@@ -9,7 +9,8 @@ from my_app.api.exceptions import NotFoundException, MercadopagoException, Busin
 from my_app.api.repositories import PledgeRepository
 from my_app.api.repositories.models import CampaignModel
 from tests.test_utils.mock_models import MOCK_CAMPAIGN_MODEL, MOCK_PLEDGE_MODEL, MOCK_TECH_DETAIL_MODEL, \
-    MOCK_CAMPAIGN_MODEL_IMAGE_MODEL, MOCK_PRINTER_MODEL
+    MOCK_CAMPAIGN_MODEL_IMAGE_MODEL, MOCK_PRINTER_MODEL, MOCK_CAMPAIGN_MODEL_WITH_ASSOCIATED_MODEL, MOCK_MODEL_MODEL, \
+    MOCK_PLEDGE_MODEL_WITH_DESIGNER_TRANSACTION
 
 
 class TestPledgeRepository(unittest.TestCase):
@@ -68,7 +69,7 @@ class TestPledgeRepository(unittest.TestCase):
         with pytest.raises(NotFoundException):
             self.pledge_repository.get_pledge(1)
 
-    def test_delete_pledge_returns_deleted_pledge_on_success(self):
+    def test_delete_pledge_returns_deleted_pledge_on_success_when_pledge_does_not_have_a_designer_transaction(self):
         self.test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.side_effect = [
             MOCK_PLEDGE_MODEL
         ]
@@ -78,6 +79,23 @@ class TestPledgeRepository(unittest.TestCase):
         assert isinstance(response, Pledge)
         assert response.deleted_at is not None
         assert self.test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.call_count == 1
+        self.test_db.session.add.assert_called_once()
+        self.test_db.session.commit.assert_called_once()
+        self.mock_mercadopago_repository.refund_payment.assert_called_once_with(
+            MOCK_PLEDGE_MODEL.printer_transaction.mp_payment_id
+        )
+
+    def test_delete_pledge_returns_deleted_pledge_on_success_when_pledge_has_a_designer_transaction(self):
+        self.test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.side_effect = [
+            MOCK_PLEDGE_MODEL_WITH_DESIGNER_TRANSACTION
+        ]
+
+        response = self.pledge_repository.delete_pledge(1)
+
+        assert isinstance(response, Pledge)
+        assert response.deleted_at is not None
+        assert self.test_db.session.query.return_value.filter_by.return_value.filter.return_value.first.call_count == 1
+        assert self.test_db.session.add.call_count == 2
         self.test_db.session.commit.assert_called_once()
         self.mock_mercadopago_repository.refund_payment.assert_called_once_with(
             MOCK_PLEDGE_MODEL.printer_transaction.mp_payment_id
@@ -125,7 +143,7 @@ class TestPledgeRepository(unittest.TestCase):
 
         assert response is True
 
-    def test_create_pledge_with_payment_returns_created_pledge(self):
+    def test_create_pledge_with_payment_returns_created_pledge_in_a_campaign_without_model(self):
         self.mock_mercadopago_repository.get_payment_data.return_value = Payment(
             payment_id=1,
             payment_data={"transaction_details": {"net_received_amount": 100}}
@@ -144,6 +162,38 @@ class TestPledgeRepository(unittest.TestCase):
         assert isinstance(response, Pledge)
         assert self.test_db.session.add.call_count == 2
         self.test_db.session.commit.assert_called_once()
+
+    def test_create_pledge_with_payment_returns_created_pledge_in_a_campaign_with_model(self):
+        self.mock_mercadopago_repository.get_payment_data.return_value = Payment(
+            payment_id=1,
+            payment_data={"transaction_details": {"net_received_amount": 100}}
+        )
+
+        self.mock_campaign_repository.get_campaign_model_by_id.return_value = MOCK_CAMPAIGN_MODEL_WITH_ASSOCIATED_MODEL
+
+        # Mock model query
+        self.test_db.session \
+            .query.return_value \
+            .filter.return_value \
+            .options.return_value \
+            .first.return_value = MOCK_MODEL_MODEL
+
+        response = self.pledge_repository.create_pledge_with_payment(
+            campaign_id=1,
+            buyer_id=2,
+            payment_id=3,
+            confirm_campaign=False,
+            finalize_campaign=False
+        )
+
+        assert isinstance(response, Pledge)
+        assert self.test_db.session.add.call_count == 3
+        self.test_db.session.commit.assert_called_once()
+
+        created_designer_transaction = self.test_db.session.add.call_args_list[0][0][0]
+        created_printer_transaction = self.test_db.session.add.call_args_list[1][0][0]
+        assert created_designer_transaction.amount == 20.0
+        assert created_printer_transaction.amount == 80.0
 
     def test_create_pledge_with_payment_change_campaign_status_and_end_date_when_finalize_campaign_flag_is_true_and_returns_created_pledge(self):
         self.mock_mercadopago_repository.get_payment_data.return_value = Payment(

@@ -29,3 +29,14 @@ class CampaignModelImagePrototype:
         self.model_picture_url = model_picture_url
         self.campaign_id = campaign_id
         self.file_name = file_name
+
+
+class CampaignModelImageWithoutCampaignPrototype:
+    def __init__(
+            self,
+            model_picture_url: str,
+            file_name: str
+    ):
+        self.model_picture_url = model_picture_url
+        self.file_name = file_name
+

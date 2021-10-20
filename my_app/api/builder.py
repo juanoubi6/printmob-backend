@@ -41,7 +41,7 @@ def inject_controllers(app, db):
     model_repository = ModelRepository(db, mercadopago_repository, s3_repository)
 
     app.model_controller = build_model_controller(model_repository, s3_repository, executor, email_repository)
-    app.campaign_controller = build_campaign_controller(campaign_repository, printer_repository, s3_repository)
+    app.campaign_controller = build_campaign_controller(campaign_repository, printer_repository, s3_repository, model_repository)
     app.pledge_controller = build_pledge_controller(pledge_repository, campaign_repository, mercadopago_repository)
     app.order_controller = build_order_controller(order_repository, campaign_repository, email_repository, executor)
     app.auth_controller = build_auth_controller(google_repository, user_repository, transaction_repository, executor,
@@ -55,10 +55,11 @@ def inject_controllers(app, db):
     app.cron_controller = CronController(db_session_factory, email_repository, executor, mercadopago_repository)
 
 
-def build_campaign_controller(campaign_repository, printer_repository, s3_repository):
+def build_campaign_controller(campaign_repository, printer_repository, s3_repository, model_repository):
     campaign_service = CampaignService(campaign_repository,
                                        printer_repository,
-                                       s3_repository)
+                                       s3_repository,
+                                       model_repository)
 
     return CampaignController(campaign_service)
 

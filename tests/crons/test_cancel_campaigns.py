@@ -4,7 +4,7 @@ from unittest.mock import Mock, MagicMock
 
 from my_app.api.domain import CampaignStatus, TransactionType
 from my_app.api.repositories.models import CampaignModel, UserModel, PledgeModel, BuyerModel, PrinterModel, \
-    TransactionModel
+    TransactionModel, DesignerModel
 from my_app.crons.cancel_campaigns import cancel_campaigns
 
 
@@ -33,7 +33,7 @@ class TestCancelCampaignsCron(unittest.TestCase):
         cancel_campaigns(session_factory_mock, email_repository_mock, executor_mock, mercadopago_repository_mock)
 
         # Assert calls to repositories
-        assert session_mock.add.call_count == 2  # Refunded printer transactions
+        assert session_mock.add.call_count == 4  # Refunded printer and designer transactions
         assert session_mock.commit.call_count == 3  # 2 for the pledges, 1 for the campaign at the end
         assert session_mock.rollback.call_count == 0  # No errors so no rollbacks
         assert executor_mock.submit.call_count == 1
@@ -46,10 +46,14 @@ class TestCancelCampaignsCron(unittest.TestCase):
         assert campaign_to_cancel.pledges[1].deleted_at is not None
 
         # Assert refund transactions were created
-        assert session_mock.add.mock_calls[0].args[0].type == TransactionType.REFUND.value
-        assert session_mock.add.mock_calls[0].args[0].amount == campaign_to_cancel.pledges[0].printer_transaction.amount * -1
-        assert session_mock.add.mock_calls[1].args[0].type == TransactionType.REFUND.value
-        assert session_mock.add.mock_calls[1].args[0].amount == campaign_to_cancel.pledges[1].printer_transaction.amount * -1
+        assert session_mock.add.mock_calls[0][1][0].type == TransactionType.REFUND.value
+        assert session_mock.add.mock_calls[0][1][0].amount == campaign_to_cancel.pledges[0].printer_transaction.amount * -1
+        assert session_mock.add.mock_calls[1][1][0].type == TransactionType.REFUND.value
+        assert session_mock.add.mock_calls[1][1][0].amount == campaign_to_cancel.pledges[0].designer_transaction.amount * -1
+        assert session_mock.add.mock_calls[2][1][0].type == TransactionType.REFUND.value
+        assert session_mock.add.mock_calls[2][1][0].amount == campaign_to_cancel.pledges[1].printer_transaction.amount * -1
+        assert session_mock.add.mock_calls[3][1][0].type == TransactionType.REFUND.value
+        assert session_mock.add.mock_calls[3][1][0].amount == campaign_to_cancel.pledges[1].designer_transaction.amount * -1
 
     def test_cancel_campaigns_rollbacks_pledge_on_exception(self):
         session_factory_mock = MagicMock()
@@ -126,6 +130,21 @@ class TestCancelCampaignsCron(unittest.TestCase):
             )
         )
 
+        mock_designer = DesignerModel(
+            id=2,
+            user=UserModel(
+                id=2,
+                first_name="Designer 1",
+                last_name="Designer 1",
+                user_name="Designer",
+                date_of_birth=datetime.datetime(2020, 5, 17),
+                email="Designer@email.com",
+                created_at=datetime.datetime(2020, 5, 17),
+                updated_at=datetime.datetime(2020, 5, 17),
+                deleted_at=None
+            )
+        )
+
         campaign_model = CampaignModel(
             id=1,
             name="Campaign to cancel",
@@ -166,6 +185,14 @@ class TestCancelCampaignsCron(unittest.TestCase):
                         amount=10,
                         type=TransactionType.PLEDGE.value,
                         is_future=True,
+                    ),
+                    designer_transaction=TransactionModel(
+                        id=2,
+                        mp_payment_id=12345,
+                        user_id=mock_designer.id,
+                        amount=5,
+                        type=TransactionType.PLEDGE.value,
+                        is_future=True,
                     )
                 ),
                 PledgeModel(
@@ -189,10 +216,18 @@ class TestCancelCampaignsCron(unittest.TestCase):
                     created_at=datetime.datetime(2020, 5, 17),
                     updated_at=datetime.datetime(2020, 5, 17),
                     printer_transaction=TransactionModel(
-                        id=2,
+                        id=3,
                         mp_payment_id=12345,
                         user_id=mock_printer.id,
                         amount=10,
+                        type=TransactionType.PLEDGE.value,
+                        is_future=True,
+                    ),
+                    designer_transaction=TransactionModel(
+                        id=4,
+                        mp_payment_id=12345,
+                        user_id=mock_designer.id,
+                        amount=5,
                         type=TransactionType.PLEDGE.value,
                         is_future=True,
                     )

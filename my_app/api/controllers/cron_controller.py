@@ -11,7 +11,7 @@ from my_app.api.domain import UserType, CampaignStatus, OrderStatus, Transaction
 from my_app.api.repositories import EmailRepository
 from my_app.api.repositories.models import UserModel, BankInformationModel, PrinterModel, AddressModel, BuyerModel, \
     CampaignModel, TransactionModel, PledgeModel, TechDetailsModel, OrderModel, \
-    ModelCategoryModel, DesignerModel, ModelFileModel, ModelModel, ModelLikeModel, ModelImageModel, ModelPurchaseModel
+    DesignerModel, ModelFileModel, ModelModel, ModelLikeModel, ModelPurchaseModel, ModelCategoryModel
 from my_app.crons import finalize_campaign
 from my_app.crons.cancel_campaigns import cancel_campaigns
 
@@ -94,6 +94,121 @@ class CronController:
                                    pledge_price=campaign_model.pledge_price,
                                    buyer_id=self.BUYER_ID,
                                    printer_transaction_id=printer_transaction_model.id)
+        session.add(pledge_model)
+        session.flush()
+
+        tech_detail_model = copy.deepcopy(common_tech_detail_model)
+        tech_detail_model.campaign_id = campaign_model.id
+        session.add(tech_detail_model)
+        session.flush()
+
+        return campaign_model
+
+    def in_progress_with_model_campaign(self, session, model: ModelModel):
+        # Campaña en progreso, le falta 1 pledge para estar confirmada
+        # 2 pledges minimos, 3 maximos. 1 pledge realizado
+        # Esta en alianza con un modelo
+        campaign_model = CampaignModel(name='Campaña en progreso con una alianza',
+                                       description='Campaña en progreso, en alianza con un modelo. IN_PROGRESS',
+                                       campaign_picture_url=None,
+                                       printer_id=self.PRINTER_ID,
+                                       pledge_price=5,
+                                       end_date=datetime.datetime(2022, 5, 17),
+                                       min_pledgers=2,
+                                       max_pledgers=3,
+                                       status=CampaignStatus.IN_PROGRESS.value,
+                                       model_id=model.id)
+        session.add(campaign_model)
+        session.flush()
+
+        preference_id = self.mercadopago_repository.create_campaign_pledge_preference(
+            campaign_model.to_campaign_entity()
+        )
+        campaign_model.mp_preference_id = preference_id
+
+        printer_transaction_model = TransactionModel(
+            mp_payment_id=11111111111,
+            user_id=self.PRINTER_ID,
+            amount=campaign_model.pledge_price * (1 - (model.desired_percentage / 100)),
+            type=TransactionType.PLEDGE.value,
+            is_future=True
+        )
+        session.add(printer_transaction_model)
+        session.flush()
+
+        designer_transaction_model = TransactionModel(
+            mp_payment_id=11111111111,
+            user_id=self.DESIGNER_ID,
+            amount=campaign_model.pledge_price * (model.desired_percentage / 100),
+            type=TransactionType.PLEDGE.value,
+            is_future=True
+        )
+        session.add(designer_transaction_model)
+        session.flush()
+
+        pledge_model = PledgeModel(campaign_id=campaign_model.id,
+                                   pledge_price=campaign_model.pledge_price,
+                                   buyer_id=self.BUYER_ID,
+                                   printer_transaction_id=printer_transaction_model.id,
+                                   designer_transaction_id=designer_transaction_model.id)
+        session.add(pledge_model)
+        session.flush()
+
+        tech_detail_model = copy.deepcopy(common_tech_detail_model)
+        tech_detail_model.campaign_id = campaign_model.id
+        session.add(tech_detail_model)
+        session.flush()
+
+        return campaign_model
+
+    def confirmed_with_model_campaign(self, session, model: ModelModel):
+        # Campaña confirmada
+        # 1 pledge minimo, 3 maximos. 1 pledge realizado
+        # Esta en alianza con un modelo
+        campaign_model = CampaignModel(name='Campaña confirmada con una alianza',
+                                       description='Campaña confirmada, en alianza con un modelo. CONFIRMED',
+                                       campaign_picture_url=None,
+                                       printer_id=self.PRINTER_ID,
+                                       pledge_price=6,
+                                       end_date=datetime.datetime(2022, 5, 17),
+                                       min_pledgers=1,
+                                       max_pledgers=2,
+                                       status=CampaignStatus.CONFIRMED.value,
+                                       model_id=model.id)
+        session.add(campaign_model)
+        session.flush()
+
+        preference_id = self.mercadopago_repository.create_campaign_pledge_preference(
+            campaign_model.to_campaign_entity()
+        )
+        campaign_model.mp_preference_id = preference_id
+
+        printer_transaction_model = TransactionModel(
+            mp_payment_id=11111111111,
+            user_id=self.PRINTER_ID,
+            amount=campaign_model.pledge_price * (1 - (model.desired_percentage / 100)),
+            type=TransactionType.PLEDGE.value,
+            is_future=True
+        )
+        session.add(printer_transaction_model)
+        session.flush()
+
+        designer_transaction_model = TransactionModel(
+            mp_payment_id=11111111111,
+            user_id=self.DESIGNER_ID,
+            amount=campaign_model.pledge_price * (model.desired_percentage / 100),
+            type=TransactionType.PLEDGE.value,
+            is_future=True
+        )
+        session.add(designer_transaction_model)
+        session.flush()
+
+        pledge_model = PledgeModel(campaign_id=campaign_model.id,
+                                   pledge_price=campaign_model.pledge_price,
+                                   buyer_id=self.BUYER_ID,
+                                   printer_transaction_id=printer_transaction_model.id,
+                                   designer_transaction_id=designer_transaction_model.id)
+
         session.add(pledge_model)
         session.flush()
 
@@ -559,7 +674,7 @@ class CronController:
             allow_purchases=True,
             allow_alliances=True,
             purchase_price=5.5,
-            desired_percentage=20,
+            desired_percentage=50,
             created_at=datetime.datetime.now(),
             updated_at=datetime.datetime.now(),
             deleted_at=None
@@ -605,6 +720,8 @@ class CronController:
         session.add(model_purchase_model)
         session.flush()
 
+        return model_model
+
     def truncate_tables(self):
         with self.session_factory() as session:
             session.execute('TRUNCATE addresses CASCADE;')
@@ -615,7 +732,6 @@ class CronController:
             session.execute('TRUNCATE campaign_model_images CASCADE;')
             session.execute('TRUNCATE designers CASCADE;')
             session.execute('TRUNCATE failed_to_refund_pledges CASCADE;')
-            session.execute('TRUNCATE model_categories CASCADE;')
             session.execute('TRUNCATE model_files CASCADE;')
             session.execute('TRUNCATE model_images CASCADE;')
             session.execute('TRUNCATE model_likes CASCADE;')
@@ -627,6 +743,7 @@ class CronController:
             session.execute('TRUNCATE tech_details CASCADE;')
             session.execute('TRUNCATE transactions CASCADE;')
             session.execute('TRUNCATE users CASCADE;')
+            session.execute('TRUNCATE model_categories CASCADE;')
             session.commit()
 
     def create_test_data(self, req: request) -> (dict, int):
@@ -844,6 +961,9 @@ class CronController:
             self.ADDITIONAL_BUYER_ID_2 = lucas_buyer_model.id
             self.ADDITIONAL_BUYER_ID_3 = pedro_buyer_model.id
 
+            #Diseños
+            model = self.modelo_likeado_y_comprado_que_admite_compra_por_precio_fijo_y_porcentaje(session, category_arquitectura)
+
             # Campaigns
             in_progress_camp = self.in_progress_campaign(session)
             in_progress_wont_confirm_campaign = self.in_progress_wont_confirm_campaign(session)
@@ -854,21 +974,22 @@ class CronController:
             will_be_finalized_camp = self.will_be_finalized_campaign(session)
             will_be_cancelled_camp = self.will_be_cancelled_campaign(session)
             canceled_camp = self.canceled_campaign(session)
+            in_progress_with_model_camp = self.in_progress_with_model_campaign(session, model)
+            confirmed_with_model_campaign = self.confirmed_with_model_campaign(session, model)
 
             created_campaigns = {
                 'in_progress': in_progress_camp.to_campaign_entity().to_json(),
-                'in_progress_wont_confirm_campaign': in_progress_wont_confirm_campaign.to_campaign_entity().to_json(),
+                'in_progress_wont_confirm': in_progress_wont_confirm_campaign.to_campaign_entity().to_json(),
                 'confirmed_not_finished': confirmed_not_finished_camp.to_campaign_entity().to_json(),
                 'confirmed_1_pledge_left': confirmed_1_pledge_left_camp.to_campaign_entity().to_json(),
                 'completed': completed_camp.to_campaign_entity().to_json(),
                 'unsatisfied': unsatisfied_camp.to_campaign_entity().to_json(),
                 'will_finish': will_be_finalized_camp.to_campaign_entity().to_json(),
                 'will_cancel': will_be_cancelled_camp.to_campaign_entity().to_json(),
-                'canceled': canceled_camp.to_campaign_entity().to_json()
+                'canceled': canceled_camp.to_campaign_entity().to_json(),
+                'in_progress_with_model': in_progress_with_model_camp.to_campaign_entity().to_json(),
+                'confirmed_with_model': confirmed_with_model_campaign.to_campaign_entity().to_json()
             }
-
-            #Diseños
-            self.modelo_likeado_y_comprado_que_admite_compra_por_precio_fijo_y_porcentaje(session, category_arquitectura)
 
             session.commit()
 

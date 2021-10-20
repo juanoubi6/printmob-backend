@@ -27,6 +27,7 @@ class CampaignModel(Base):
     deleted_at = Column(DateTime)
     status = Column(String)
     mp_preference_id = Column(String)
+    model_id = Column(Integer, ForeignKey('models.id'))
 
     printer = relationship("PrinterModel")
     tech_detail = relationship("TechDetailsModel", uselist=False, back_populates='campaign')
@@ -35,9 +36,10 @@ class CampaignModel(Base):
         primaryjoin="and_(CampaignModel.id==PledgeModel.campaign_id, PledgeModel.deleted_at==None)"
     )
     images = relationship('CampaignModelImageModel')
+    model = relationship("ModelModel")
 
     def __repr__(self):
-        return "<Campaign(id='{id}}',name='{name}')>".format(id=self.id, name=self.name)
+        return "<Campaign(id='{id}',name='{name}')>".format(id=self.id, name=self.name)
 
     def to_campaign_entity(self) -> Campaign:
         return Campaign(
@@ -57,7 +59,13 @@ class CampaignModel(Base):
             mp_preference_id=self.mp_preference_id,
             created_at=self.created_at,
             updated_at=self.updated_at,
-            deleted_at=self.deleted_at
+            deleted_at=self.deleted_at,
+            model_id=self.model_id,
+            alliance_percentages={
+                "printer_percentage": float(100 - self.model.desired_percentage),
+                "designer_percentage": float(self.model.desired_percentage),
+            } if self.model_id is not None else None,
+            designer=self.model.designer.to_entity() if self.model is not None else None
         )
 
 
@@ -71,7 +79,7 @@ class PrinterModel(Base):
     bank_information = relationship("BankInformationModel")
 
     def __repr__(self):
-        return "<Printer(id='{id}}')>".format(id=self.id)
+        return "<Printer(id='{id}')>".format(id=self.id)
 
     def to_printer_entity(self) -> Printer:
         return Printer(
@@ -96,7 +104,7 @@ class BuyerModel(Base):
         )
 
     def __repr__(self):
-        return "<Buyer(id='{id}}')>".format(id=self.id)
+        return "<Buyer(id='{id}')>".format(id=self.id)
 
 
 class UserModel(Base):
@@ -119,7 +127,7 @@ class UserModel(Base):
     designer = relationship("DesignerModel", uselist=False, back_populates="user")
 
     def __repr__(self):
-        return "<User(id='{id}}',username='{user_name}')>".format(id=self.id, user_name=self.user_name)
+        return "<User(id='{id}',username='{user_name}')>".format(id=self.id, user_name=self.user_name)
 
     def to_user_entity(self) -> User:
         return User(
@@ -151,7 +159,7 @@ class TechDetailsModel(Base):
     campaign = relationship('CampaignModel', back_populates='tech_detail')
 
     def __repr__(self):
-        return "<TechDetail(id='{id}}',campaign_id='{campaign_id}')>".format(id=self.id, campaign_id=self.campaign_id)
+        return "<TechDetail(id='{id}',campaign_id='{campaign_id}')>".format(id=self.id, campaign_id=self.campaign_id)
 
     def to_tech_detail_entity(self) -> TechDetail:
         return TechDetail(
@@ -176,12 +184,14 @@ class PledgeModel(Base):
     updated_at = Column(DateTime, default=datetime.datetime.utcnow)
     deleted_at = Column(DateTime)
     printer_transaction_id = Column(Integer, ForeignKey('transactions.id'))
+    designer_transaction_id = Column(Integer, ForeignKey('transactions.id'))
 
     buyer = relationship("BuyerModel")
-    printer_transaction = relationship("TransactionModel")
+    printer_transaction = relationship("TransactionModel", foreign_keys=[printer_transaction_id])
+    designer_transaction = relationship("TransactionModel", foreign_keys=[designer_transaction_id])
 
     def __repr__(self):
-        return "<Pledge(id='{id}}',campaign_id='{campaign_id}',buyer_id='{buyer_id}')>" \
+        return "<Pledge(id='{id}',campaign_id='{campaign_id}',buyer_id='{buyer_id}')>" \
             .format(id=self.id, campaign_id=self.campaign_id, buyer_id=self.buyer_id)
 
     def to_pledge_entity(self) -> Pledge:
@@ -205,7 +215,7 @@ class CampaignModelImageModel(Base):
     campaign_id = Column(Integer, ForeignKey('campaign.id'))
 
     def __repr__(self):
-        return "<CampaignModelImage(id='{id}}',campaign_id='{campaign_id}',picture_url='{picture_url}')>" \
+        return "<CampaignModelImage(id='{id}',campaign_id='{campaign_id}',picture_url='{picture_url}')>" \
             .format(id=self.id, campaign_id=self.campaign_id, picture_url=self.model_picture_url)
 
     def to_campaign_model_image_entity(self) -> CampaignModelImage:
@@ -226,7 +236,7 @@ class FailedToRefundPledgeModel(Base):
     error = Column(String)
 
     def __repr__(self):
-        return "<FailedToRefundPledgeModel(id='{id}}',pledge_id='{pledge_id}', error='{error}')>" \
+        return "<FailedToRefundPledgeModel(id='{id}',pledge_id='{pledge_id}', error='{error}')>" \
             .format(id=self.id, pledge_id=self.pledge_id, error=self.error)
 
 
@@ -242,7 +252,7 @@ class AddressModel(Base):
     apartment = Column(String)
 
     def __repr__(self):
-        return "<Address(id='{id}}',address='{address}',zip_code='{zip_code}')>" \
+        return "<Address(id='{id}',address='{address}',zip_code='{zip_code}')>" \
             .format(id=self.id, address=self.address, zip_code=self.zip_code)
 
     def to_address_entity(self) -> Address:
@@ -273,7 +283,7 @@ class OrderModel(Base):
     campaign = relationship("CampaignModel")
 
     def __repr__(self):
-        return "<Order(id='{id}}',campaign_id='{campaign_id}',buyer_id='{buyer_id}')>" \
+        return "<Order(id='{id}',campaign_id='{campaign_id}',buyer_id='{buyer_id}')>" \
             .format(id=self.id, campaign_id=self.campaign_id, buyer_id=self.buyer_id)
 
     def to_order_entity(self) -> Order:
@@ -300,7 +310,7 @@ class BankInformationModel(Base):
     account_number = Column(String)
 
     def __repr__(self):
-        return "<BankInformation(id='{id}}',cbu='{cbu}',bank='{bank}')>" \
+        return "<BankInformation(id='{id}',cbu='{cbu}',bank='{bank}')>" \
             .format(id=self.id, cbu=self.cbu, bank=self.bank)
 
     def to_bank_information_entity(self) -> BankInformation:
@@ -324,7 +334,7 @@ class TransactionModel(Base):
     is_future = Column(Boolean)
 
     def __repr__(self):
-        return "<Transaction(id='{id}}',mp_payment_id='{mp_payment_id}',user_id='{user_id}')>" \
+        return "<Transaction(id='{id}',mp_payment_id='{mp_payment_id}',user_id='{user_id}')>" \
             .format(id=self.id, mp_payment_id=self.mp_payment_id, user_id=self.user_id)
 
 
@@ -336,7 +346,7 @@ class BalanceRequestModel(Base):
     date = Column(DateTime)
 
     def __repr__(self):
-        return "<BalanceRequest(id='{id}}',user_id='{user_id}',date='{date}')>" \
+        return "<BalanceRequest(id='{id}',user_id='{user_id}',date='{date}')>" \
             .format(id=self.id, user_id=self.user_id, date=self.date)
 
 
@@ -350,7 +360,7 @@ class DesignerModel(Base):
     bank_information = relationship("BankInformationModel")
 
     def __repr__(self):
-        return "<Designer(id='{id}}')>".format(id=self.id)
+        return "<Designer(id='{id}')>".format(id=self.id)
 
     def to_entity(self) -> Designer:
         return Designer(
@@ -422,7 +432,7 @@ class ModelLikeModel(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
 
     def __repr__(self):
-        return "<ModelLike(id='{id}}',model_id='{model_id}', user_id='{user_id}')>".format(
+        return "<ModelLike(id='{id}',model_id='{model_id}', user_id='{user_id}')>".format(
             id=self.id, model_id=self.model_id, user_id=self.user_id
         )
 
@@ -443,7 +453,7 @@ class ModelImageModel(Base):
     model_id = Column(Integer, ForeignKey('models.id'))
 
     def __repr__(self):
-        return "<ModelImage(id='{id}}',picture_url='{picture_url}')>".format(id=self.id,
+        return "<ModelImage(id='{id}',picture_url='{picture_url}')>".format(id=self.id,
                                                                              picture_url=self.model_picture_url)
 
     def to_entity(self) -> ModelImage:
@@ -469,7 +479,7 @@ class ModelPurchaseModel(Base):
     printer = relationship("PrinterModel")
 
     def __repr__(self):
-        return "<ModelPurchase(id='{id}}',price='{price}')>".format(id=self.id, price=self.price)
+        return "<ModelPurchase(id='{id}',price='{price}')>".format(id=self.id, price=self.price)
 
     def to_entity(self) -> ModelPurchase:
         return ModelPurchase(
@@ -490,7 +500,7 @@ class ModelFileModel(Base):
     file_name = Column(String)
 
     def __repr__(self):
-        return "<ModelFile(id='{id}}',model_file_url='{model_file_url}')>".format(id=self.id,
+        return "<ModelFile(id='{id}',model_file_url='{model_file_url}')>".format(id=self.id,
                                                                                   model_file_url=self.model_file_url)
 
     def to_entity(self) -> ModelFile:
@@ -508,7 +518,7 @@ class ModelCategoryModel(Base):
     name = Column(String)
 
     def __repr__(self):
-        return "<ModelCategory(id='{id}}',name='{name}')>".format(id=self.id, name=self.name)
+        return "<ModelCategory(id='{id}',name='{name}')>".format(id=self.id, name=self.name)
 
     def to_entity(self) -> ModelCategory:
         return ModelCategory(

@@ -21,6 +21,14 @@ MOCK_PRINTER_TRANSACTION_MODEL = TransactionModel(
     is_future=True,
 )
 
+MOCK_DESIGNER_TRANSACTION_MODEL = TransactionModel(
+    mp_payment_id=12345,
+    user_id=3,
+    amount=150,
+    type=TransactionType.PLEDGE.value,
+    is_future=True,
+)
+
 MOCK_TECH_DETAIL_MODEL = TechDetailsModel(
     id=1,
     campaign_id=1,
@@ -149,7 +157,8 @@ MOCK_CAMPAIGN_MODEL = CampaignModel(
     created_at=datetime.datetime(2020, 5, 17),
     updated_at=datetime.datetime(2020, 5, 17),
     status="In progress",
-    mp_preference_id="preference_id"
+    mp_preference_id="preference_id",
+    model_id=None
 )
 
 MOCK_CAMPAIGN_MODEL_MAX_PLEDGES_ALMOST_REACHED = CampaignModel(
@@ -279,7 +288,8 @@ MOCK_MODEL_MODEL = ModelModel(
     designer=MOCK_DESIGNER_MODEL,
     images=[MOCK_MODEL_IMAGE_MODEL],
     model_file=MOCK_MODEL_FILE_MODEL,
-    model_category=MOCK_MODEL_CATEGORY_MODEL
+    model_category=MOCK_MODEL_CATEGORY_MODEL,
+    desired_percentage=20
 )
 
 MOCK_MODEL_PURCHASE_MODEL = ModelPurchaseModel(
@@ -291,4 +301,36 @@ MOCK_MODEL_PURCHASE_MODEL = ModelPurchaseModel(
     created_at=datetime.datetime(2020, 5, 17),
     model=MOCK_MODEL_MODEL,
     printer=MOCK_PRINTER_MODEL,
+)
+
+MOCK_CAMPAIGN_MODEL_WITH_ASSOCIATED_MODEL = CampaignModel(
+    id=1,
+    name="Campaign name",
+    description="Description",
+    campaign_picture_url="campaign picture url",
+    pledge_price=10.50,
+    end_date=datetime.datetime(2020, 5, 17),
+    min_pledgers=5,
+    max_pledgers=10,
+    tech_detail=MOCK_TECH_DETAIL_MODEL,
+    images=[MOCK_CAMPAIGN_MODEL_IMAGE_MODEL],
+    printer=MOCK_PRINTER_MODEL,
+    pledges=[MOCK_PLEDGE_MODEL],
+    created_at=datetime.datetime(2020, 5, 17),
+    updated_at=datetime.datetime(2020, 5, 17),
+    status="In progress",
+    mp_preference_id="preference_id",
+    model_id=MOCK_MODEL_MODEL.id
+)
+
+MOCK_PLEDGE_MODEL_WITH_DESIGNER_TRANSACTION = PledgeModel(
+    id=1,
+    campaign_id=1,
+    pledge_price=1.1,
+    buyer_id=1,
+    buyer=MOCK_BUYER_MODEL,
+    created_at=datetime.datetime(2020, 5, 17),
+    updated_at=datetime.datetime(2020, 5, 17),
+    printer_transaction=MOCK_PRINTER_TRANSACTION_MODEL,
+    designer_transaction=MOCK_DESIGNER_TRANSACTION_MODEL
 )

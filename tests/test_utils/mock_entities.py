@@ -6,7 +6,7 @@ from my_app.api.domain import Campaign, Printer, User, TechDetail, Pledge, Campa
     BankInformation, BankInformationPrototype, Payment, TransactionPrototype, TransactionType, Balance, Designer, \
     DesignerPrototype, Model, ModelFile, ModelImage, ModelPrototype, ModelFilePrototype, ModelImagePrototype, \
     ModelCategory, ModelLike, ModelPurchase, PrinterDataDashboard, EndingCampaignResume, DesignerDataDashboard, \
-    BuyerDataDashboard
+    CampaignWithModelPrototype, BuyerDataDashboard
 
 MOCK_BANK_INFORMATION = BankInformation(
     id=1,
@@ -62,6 +62,51 @@ MOCK_CAMPAIGN = Campaign(
     updated_at=datetime.datetime(2020, 5, 17),
     status=CampaignStatus.IN_PROGRESS,
     mp_preference_id="preference_id"
+)
+
+MOCK_CAMPAIGN_WITH_ALLIANCE_DATA = Campaign(
+    id=1,
+    name="Campaign name",
+    description="Description",
+    campaign_picture_url=None,
+    campaign_model_images=[],
+    printer=Printer(
+        user=User(
+            id=1,
+            first_name="John",
+            last_name="Doe",
+            user_name="johnDoe5",
+            date_of_birth=datetime.datetime(2020, 5, 17),
+            email="email@email.com",
+            user_type=UserType.PRINTER.value,
+            profile_picture_url="url",
+            created_at=datetime.datetime(2020, 5, 17),
+            updated_at=datetime.datetime(2020, 5, 17),
+        ),
+        bank_information=MOCK_BANK_INFORMATION
+    ),
+    pledge_price=10.50,
+    end_date=datetime.datetime(2023, 5, 17),
+    min_pledgers=5,
+    max_pledgers=10,
+    current_pledgers=2,
+    tech_details=TechDetail(
+        id=1,
+        campaign_id=1,
+        material="material",
+        weight=100,
+        width=100,
+        length=100,
+        depth=100,
+    ),
+    created_at=datetime.datetime(2020, 5, 17),
+    updated_at=datetime.datetime(2020, 5, 17),
+    status=CampaignStatus.IN_PROGRESS,
+    mp_preference_id="preference_id",
+    alliance_percentages={
+        "printer_percentage": 80.0,
+        "designer_percentage": 20.0,
+    }
 )
 
 MOCK_MODEL_FILE = ModelFile(
@@ -211,6 +256,26 @@ MOCK_CAMPAIGN_PROTOTYPE = CampaignPrototype(
         depth=15
     ),
     status=CampaignStatus.IN_PROGRESS
+)
+
+MOCK_CAMPAIGN_WITH_MODEL_PROTOTYPE = CampaignWithModelPrototype(
+    name="test_campaign",
+    description="test_campaign_description",
+    campaign_model_images=[],
+    printer_id=1,
+    pledge_price=250.0,
+    end_date=datetime.datetime.strptime("21-05-2022 02:00:00", '%d-%m-%Y %H:%M:%S'),
+    min_pledgers=2,
+    max_pledgers=3,
+    tech_details=TechDetailPrototype(
+        material="campaign_material",
+        weight=10,
+        width=12,
+        length=14,
+        depth=15
+    ),
+    status=CampaignStatus.IN_PROGRESS,
+    model_id=99
 )
 
 MOCK_MODEL_PROTOTYPE = ModelPrototype(

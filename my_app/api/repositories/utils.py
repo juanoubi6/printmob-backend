@@ -60,6 +60,11 @@ def apply_campaign_filters(query, filters: dict):
     if printer_id is not None:
         query = query.filter(CampaignModel.printer_id == printer_id)
 
+    # Name filter
+    name = filters.get("name", None)
+    if name is not None and name != '':
+        query = query.filter(CampaignModel.name.ilike("%{name}%".format(name=name)))
+
     return query
 
 
@@ -84,6 +89,11 @@ def apply_campaign_order_filters(query, filters: dict):
     if status is not None:
         statuses = status.split(",")
         query = query.filter(OrderModel.status.in_(statuses))
+
+    # Name filter
+    name = filters.get("name", None)
+    if name is not None and name != '':
+        query = query.filter(CampaignModel.name.ilike("%{name}%".format(name=name)))
 
     return query
 
@@ -155,6 +165,11 @@ def apply_model_filters(query, filters: dict):
             query = query.filter(ModelModel.allow_alliances == True)
         elif alliance == "false":
             query = query.filter(ModelModel.allow_alliances == False)
+
+    # Name filter
+    name = filters.get("name", None)
+    if name is not None and name != '':
+        query = query.filter(ModelModel.name.ilike("%{name}%".format(name=name)))
 
     return query
 

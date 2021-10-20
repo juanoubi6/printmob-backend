@@ -337,7 +337,12 @@ class ModelRepository:
         return model_purchase_model.to_entity()
 
     def get_model_by_id(self, model_id: int) -> Model:
-        return self._get_model_model_by_id(model_id).to_entity()
+        model_model = self._get_model_model_by_id(model_id)
+
+        if model_model is None:
+            raise NotFoundException(MODEL_NOT_FOUND)
+
+        return model_model.to_entity()
 
     def _get_model_model_by_id(self, model_id: int) -> ModelModel:
         model_model = self.db.session.query(ModelModel) \

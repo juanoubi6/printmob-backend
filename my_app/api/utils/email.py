@@ -163,3 +163,26 @@ def create_model_purchase_email(receiver: str, model: Model) -> Email:
         subject="Uno de tus modelos fue vendido!",
         body=email_body
     )
+
+
+def create_completed_campaign_email_with_model_file_url_for_printer(
+        receiver: str, campaign: CampaignModel, file_url: str
+) -> Email:
+    email_body = """
+        La campaña '{name}' que creaste finalizo con éxito. En las próximas horas actualizaremos tu saldo disponible
+        para que puedas retirarlo y empezar a imprimir.
+        
+        Además, te enviamos el link al archivo STL del modelo asociado a la campaña para que puedas comenzar a 
+        imrpimirlo. Recorda que no podés utilizar este archivo por fuera de la plataforma o estarías incumpliendo
+        los términos y condiciones.
+        
+        Link al archivo STL: {file_url}
+
+        Saludos!
+    """.format(name=campaign.name, file_url=file_url)
+
+    return Email(
+        to=receiver,
+        subject="Una campaña que creaste finalizo con éxito!",
+        body=email_body
+    )

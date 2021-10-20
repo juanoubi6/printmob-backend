@@ -2,8 +2,8 @@ from .address import Address, AddressPrototype
 from .balance import Balance
 from .bank_information import BankInformation, BankInformationPrototype
 from .buyer import Buyer, BuyerPrototype
-from .campaign import Campaign, CampaignPrototype, CampaignStatus
-from .campaign_model_image import CampaignModelImage, CampaignModelImagePrototype
+from .campaign import Campaign, CampaignPrototype, CampaignStatus, CampaignWithModelPrototype
+from .campaign_model_image import CampaignModelImage, CampaignModelImagePrototype, CampaignModelImageWithoutCampaignPrototype
 from .data_dashboard import PrinterDataDashboard, EndingCampaignResume, DesignerDataDashboard, BuyerDataDashboard
 from .designer import Designer, DesignerPrototype
 from .file import File

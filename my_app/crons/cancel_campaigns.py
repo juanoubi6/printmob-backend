@@ -57,24 +57,17 @@ def cancel_campaigns(
                                 )
                             )
 
-                            # TODO Get mercadopago payment id of desginer's transaction, refund it and create a refund transaction
-                            #  (may not be necessary)
-                            """
+                            # Create a refund designer transaction (if necessary)
                             if pledge_to_cancel.designer_transaction is not None:
-                                mp_designer_payment_id_to_refund = pledge_to_cancel.designer_transaction.mp_payment_id
-
-                                mercadopagoRepository.refund_transactions(mp_designer_payment_id_to_refund)
-
                                 session.add(
                                     TransactionModel(
                                         mp_payment_id=pledge_to_cancel.designer_transaction.mp_payment_id,
                                         user_id=pledge_to_cancel.designer_transaction.user_id,
-                                        amount=pledge_to_cancel.designer_transaction.amount,
-                                        type=TransactionStatus.REFUND,
-                                        is_future=False
+                                        amount=pledge_to_cancel.designer_transaction.amount * -1,
+                                        type=TransactionType.REFUND.value,
+                                        is_future=pledge_to_cancel.designer_transaction.is_future
                                     )
                                 )
-                            """
 
                             session.commit()
 

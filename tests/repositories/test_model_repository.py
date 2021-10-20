@@ -318,6 +318,18 @@ class TestModelRepository(unittest.TestCase):
 
         self.test_db.session.commit.assert_not_called()
 
+    def test_get_model_by_id_returns_model(self):
+        # Mock get model by id query
+        self.test_db.session.query.return_value \
+            .filter.return_value \
+            .filter.return_value \
+            .first.return_value = MOCK_MODEL_MODEL
+
+        response = self.model_repository.get_model_by_id(model_id=1)
+
+        assert isinstance(response, Model)
+        assert response.id == MOCK_MODEL_MODEL.id
+
     def test_get_model_purchase_from_printer_returns_model_purchase(self):
         self.test_db.session.query.return_value.join.return_value \
             .filter.return_value \

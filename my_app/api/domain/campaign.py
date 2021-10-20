@@ -1,8 +1,9 @@
 import datetime
 import enum
-from typing import List
+from typing import List, Optional
 
-from my_app.api.domain.campaign_model_image import CampaignModelImage
+from my_app.api.domain.designer import Designer
+from my_app.api.domain.campaign_model_image import CampaignModelImage, CampaignModelImageWithoutCampaignPrototype
 from my_app.api.domain.printer import Printer
 from my_app.api.domain.tech_detail import TechDetail, TechDetailPrototype
 
@@ -37,6 +38,9 @@ class Campaign:
             created_at: datetime.datetime = datetime.datetime.utcnow(),
             updated_at: datetime.datetime = datetime.datetime.utcnow(),
             deleted_at: datetime.datetime = None,
+            model_id: int = None,
+            alliance_percentages: Optional[float] = None,
+            designer: Optional[Designer] = None
     ):
         self.id = id
         self.name = name
@@ -55,6 +59,9 @@ class Campaign:
         self.created_at = created_at
         self.updated_at = updated_at
         self.deleted_at = deleted_at
+        self.model_id = model_id
+        self.alliance_percentages = alliance_percentages
+        self.designer = designer
 
     def has_reached_confirmation_goal(self) -> bool:
         return self.current_pledgers >= self.min_pledgers
@@ -98,7 +105,10 @@ class Campaign:
             "mp_preference_id": self.mp_preference_id,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
-            "deleted_at": self.deleted_at
+            "deleted_at": self.deleted_at,
+            "model_id": self.model_id,
+            "alliance_percentages": self.alliance_percentages,
+            "designer": self.designer.to_json() if self.designer is not None else None
         }
 
 
@@ -129,3 +139,32 @@ class CampaignPrototype:
         self.max_pledgers = max_pledgers
         self.tech_details = tech_details
         self.status = status
+
+
+class CampaignWithModelPrototype:
+    def __init__(
+            self,
+            name: str,
+            description: str,
+            campaign_model_images: List[CampaignModelImageWithoutCampaignPrototype],
+            printer_id: int,
+            pledge_price: float,
+            end_date: datetime.datetime,
+            min_pledgers: int,
+            max_pledgers: int,
+            tech_details: TechDetailPrototype,
+            status: CampaignStatus,
+            model_id: int
+    ):
+        self.id = id
+        self.name = name
+        self.description = description
+        self.campaign_model_images = campaign_model_images
+        self.printer_id = printer_id
+        self.pledge_price = pledge_price
+        self.end_date = end_date
+        self.min_pledgers = min_pledgers
+        self.max_pledgers = max_pledgers
+        self.tech_details = tech_details
+        self.status = status
+        self.model_id = model_id

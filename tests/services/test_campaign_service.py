@@ -9,7 +9,7 @@ from my_app.api.exceptions import CancellationException
 from my_app.api.exceptions.unprocessable_entity_exception import UnprocessableEntityException
 from my_app.api.services import CampaignService
 from tests.test_utils.mock_entities import MOCK_CAMPAIGN, MOCK_CAMPAIGN_MODEL_IMAGE, MOCK_RAW_IMAGE_FILE, MOCK_ORDER, \
-    MOCK_CAMPAIGN_PROTOTYPE
+    MOCK_CAMPAIGN_PROTOTYPE, MOCK_MODEL, MOCK_CAMPAIGN_WITH_MODEL_PROTOTYPE
 
 
 class TestCampaignService(unittest.TestCase):
@@ -18,8 +18,9 @@ class TestCampaignService(unittest.TestCase):
         self.mock_campaign_repository = Mock()
         self.mock_printer_repository = Mock()
         self.mock_s3_repository = Mock()
+        self.mock_model_repository = Mock()
         self.campaign_service = CampaignService(self.mock_campaign_repository, self.mock_printer_repository,
-                                                self.mock_s3_repository)
+                                                self.mock_s3_repository, self.mock_model_repository)
 
     def test_create_campaigns_creates_a_campaign(self):
         self.mock_printer_repository.exists_printer.return_value = True
@@ -100,6 +101,15 @@ class TestCampaignService(unittest.TestCase):
         assert created_page.page == 1
         self.mock_campaign_repository.get_buyer_campaigns.assert_called_once_with(1, filters)
 
+    def test_get_designer_campaigns_returns_campaigns_page(self):
+        self.mock_campaign_repository.get_designer_campaigns.return_value = Page(1, 2, 3, [MOCK_CAMPAIGN])
+
+        filters = {"filter": "filter"}
+        created_page = self.campaign_service.get_designer_campaigns(1, filters)
+
+        assert created_page.page == 1
+        self.mock_campaign_repository.get_designer_campaigns.assert_called_once_with(1, filters)
+
     def test_cancel_campaigns_does_not_fail_on_success(self):
         in_progress_campaign = copy.deepcopy(MOCK_CAMPAIGN)
         in_progress_campaign.status = CampaignStatus.IN_PROGRESS
@@ -131,3 +141,16 @@ class TestCampaignService(unittest.TestCase):
 
         self.mock_campaign_repository.get_campaign_detail.assert_called_once_with(1)
         self.mock_campaign_repository.change_campaign_status.assert_not_called()
+
+    def test_create_campaign_from_model_creates_a_campaign(self):
+        prototype = copy.deepcopy(MOCK_CAMPAIGN_WITH_MODEL_PROTOTYPE)
+        self.mock_model_repository.get_model_by_id.return_value = MOCK_MODEL
+        self.mock_campaign_repository.create_campaign_from_model.return_value = MOCK_CAMPAIGN
+
+        created_campaign = self.campaign_service.create_campaign_from_model(prototype)
+
+        assert created_campaign == MOCK_CAMPAIGN
+        assert len(prototype.campaign_model_images) == 1
+        assert prototype.campaign_model_images[0].model_picture_url == MOCK_MODEL.model_images[0].model_picture_url
+        self.mock_model_repository.get_model_by_id.assert_called_once_with(MOCK_CAMPAIGN_WITH_MODEL_PROTOTYPE.model_id)
+        self.mock_campaign_repository.create_campaign_from_model.assert_called_once()

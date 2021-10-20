@@ -7,10 +7,11 @@ from sqlalchemy.orm import sessionmaker, noload
 
 from my_app.api.domain import CampaignStatus, OrderStatus, TransactionType
 from my_app.api.repositories import EmailRepository, MercadopagoRepository
-from my_app.api.repositories.models import CampaignModel, FailedToRefundPledgeModel, OrderModel, TransactionModel
+from my_app.api.repositories.models import CampaignModel, FailedToRefundPledgeModel, OrderModel, TransactionModel, \
+    ModelModel
 from my_app.api.utils.email import create_completed_campaign_email_for_client, \
     create_unsatisfied_campaign_email_for_client, create_completed_campaign_email_for_printer, \
-    create_unsatisfied_campaign_email_for_printer
+    create_unsatisfied_campaign_email_for_printer, create_completed_campaign_email_with_model_file_url_for_printer
 
 
 def finalize_campaign(
@@ -44,6 +45,14 @@ def finalize_campaign(
                         campaign_to_finish.status = CampaignStatus.COMPLETED.value
                         campaign_to_finish.end_date = datetime.datetime.now()
 
+                        # If the campaign has an associated model, get the file URL
+                        file_url = None
+                        if campaign_to_finish.model_id is not None:
+                            model_model = session.query(ModelModel).filter(
+                                ModelModel.id == campaign_to_finish.model_id
+                            ).first()
+                            file_url = model_model.model_file.model_file_url
+
                         # For each pledge...
                         for successful_pledge in campaign_to_finish.pledges:
 
@@ -59,6 +68,8 @@ def finalize_campaign(
 
                             # Update transaction's if_future value (from True to False)
                             successful_pledge.printer_transaction.is_future = False
+                            if successful_pledge.designer_transaction is not None:
+                                successful_pledge.designer_transaction.is_future = False
 
                         session.commit()
 
@@ -71,11 +82,18 @@ def finalize_campaign(
                         )
 
                         # Create a complete campaign email to send to the printer
-                        printer_completed_emails.append(
-                            create_completed_campaign_email_for_printer(
-                                campaign_to_finish.printer.user.email, campaign_to_finish
+                        if file_url is None:
+                            printer_completed_emails.append(
+                                create_completed_campaign_email_for_printer(
+                                    campaign_to_finish.printer.user.email, campaign_to_finish
+                                )
                             )
-                        )
+                        else:
+                            printer_completed_emails.append(
+                                create_completed_campaign_email_with_model_file_url_for_printer(
+                                    campaign_to_finish.printer.user.email, campaign_to_finish, file_url
+                                )
+                            )
                     else:
                         # Change campaign status to UNSATISFIED
                         campaign_to_finish.status = CampaignStatus.UNSATISFIED.value
@@ -109,24 +127,17 @@ def finalize_campaign(
                                     )
                                 )
 
-                                # TODO Get mercadopago payment id of desginer's transaction, refund it and create a refund transaction
-                                #  (may not be necessary)
-                                """
+                                # Create a refund designer transaction (if necessary)
                                 if pledge_to_cancel.designer_transaction is not None:
-                                    mp_designer_payment_id_to_refund = pledge_to_cancel.designer_transaction.mp_payment_id
-                                    
-                                    mercadopagoRepository.refund_transactions(mp_designer_payment_id_to_refund)
-                
                                     session.add(
                                         TransactionModel(
                                             mp_payment_id=pledge_to_cancel.designer_transaction.mp_payment_id,
                                             user_id=pledge_to_cancel.designer_transaction.user_id,
-                                            amount=pledge_to_cancel.designer_transaction.amount,
-                                            type=TransactionStatus.REFUND,
-                                            is_future=False
+                                            amount=pledge_to_cancel.designer_transaction.amount * -1,
+                                            type=TransactionType.REFUND.value,
+                                            is_future=pledge_to_cancel.designer_transaction.is_future
                                         )
                                     )
-                                """
 
                                 session.commit()
 

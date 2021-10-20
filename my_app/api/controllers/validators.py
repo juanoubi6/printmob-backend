@@ -1,6 +1,6 @@
 import datetime
 
-from my_app.api.domain.campaign import CampaignPrototype
+from my_app.api.domain.campaign import CampaignPrototype, CampaignWithModelPrototype
 from my_app.api.domain.tech_detail import TechDetailPrototype
 from my_app.api.exceptions import InvalidParamException
 
@@ -32,6 +32,14 @@ def validate_campaign_prototype(campaign_prototype: CampaignPrototype):
     validate_campaign_pledgers_interval(campaign_prototype.min_pledgers, campaign_prototype.max_pledgers)
     validate_tech_detail_prototype(campaign_prototype.tech_details)
     validate_future_date(campaign_prototype.end_date)
+
+def validate_campaign_with_model_prototype(campaign_with_model_prototype: CampaignWithModelPrototype):
+    validate_alphanumeric_field(campaign_with_model_prototype.name, "nombre de campaña")
+    validate_positive_integer_field(campaign_with_model_prototype.printer_id, "ID del impresor")
+    validate_positive_decimal_field(campaign_with_model_prototype.pledge_price, "precio de la reserva")
+    validate_campaign_pledgers_interval(campaign_with_model_prototype.min_pledgers, campaign_with_model_prototype.max_pledgers)
+    validate_tech_detail_prototype(campaign_with_model_prototype.tech_details)
+    validate_future_date(campaign_with_model_prototype.end_date)
 
 
 def validate_alphanumeric_field(field_value: str, field_name: str):
@@ -85,7 +93,6 @@ def validate_campaign_pledgers_interval(min_pledgers: int, max_pledgers: int):
 
 
 def validate_tech_detail_prototype(tech_details_prototype: TechDetailPrototype):
-    validate_alphanumeric_field(tech_details_prototype.material, "material del modelo 3D")
     validate_positive_integer_field(tech_details_prototype.weight, "peso del modelo 3D")
     validate_positive_integer_field(tech_details_prototype.width, "ancho del modelo 3D")
     validate_positive_integer_field(tech_details_prototype.length, "longitud del modelo 3D")

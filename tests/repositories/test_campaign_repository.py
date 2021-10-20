@@ -8,7 +8,8 @@ from my_app.api.domain import Campaign, Page, CampaignModelImage, CampaignStatus
 from my_app.api.exceptions import NotFoundException, MercadopagoException, CampaignCreationException
 from my_app.api.repositories import CampaignRepository
 from my_app.api.repositories.models import CampaignModel
-from tests.test_utils.mock_entities import MOCK_FILTERS, MOCK_CAMPAIGN_MODEL_IMAGE_PROTOTYPE, MOCK_CAMPAIGN_PROTOTYPE
+from tests.test_utils.mock_entities import MOCK_FILTERS, MOCK_CAMPAIGN_MODEL_IMAGE_PROTOTYPE, MOCK_CAMPAIGN_PROTOTYPE, \
+    MOCK_CAMPAIGN_WITH_MODEL_PROTOTYPE
 from tests.test_utils.mock_models import MOCK_CAMPAIGN_MODEL, MOCK_CAMPAIGN_MODEL_IMAGE_MODEL, MOCK_ORDER_MODEL
 
 
@@ -119,6 +120,17 @@ class TestCampaignRepository(unittest.TestCase):
         assert response.page_size == MOCK_FILTERS["page_size"]
         paginate_mock.return_value.all.assert_called_once()
 
+    @patch('my_app.api.repositories.campaign_repository.paginate')
+    def test_get_designer_campaigns_returns_campaign_page(self, paginate_mock):
+        paginate_mock.return_value.all.return_value = [MOCK_CAMPAIGN_MODEL]
+
+        response = self.campaign_repository.get_designer_campaigns(1, MOCK_FILTERS)
+
+        assert isinstance(response, Page)
+        assert response.page == MOCK_FILTERS["page"]
+        assert response.page_size == MOCK_FILTERS["page_size"]
+        paginate_mock.return_value.all.assert_called_once()
+
     def test_change_campaign_status_changes_campaign(self):
         campaign_to_change = CampaignModel(
             id=1,
@@ -144,3 +156,34 @@ class TestCampaignRepository(unittest.TestCase):
 
         self.test_db.session.commit.assert_called_once()
         assert campaign_to_change.status == CampaignStatus.TO_BE_CANCELLED.value
+
+    def test_create_campaign_from_model_creates_campaign(self):
+        self.mock_mercadopago_repository.create_campaign_pledge_preference.return_value = "some_preference_id"
+        response = self.campaign_repository.create_campaign_from_model(MOCK_CAMPAIGN_WITH_MODEL_PROTOTYPE)
+
+        assert isinstance(response, Campaign)
+        assert response.mp_preference_id == "some_preference_id"
+        assert response.model_id == MOCK_CAMPAIGN_WITH_MODEL_PROTOTYPE.model_id
+
+        self.test_db.session.add.assert_called()
+        self.test_db.session.add_all.assert_called()
+        self.test_db.session.flush.assert_called_once()
+        self.test_db.session.commit.assert_called_once()
+
+    def test_create_campaign_from_model_rollbacks_and_raises_mercadopago_exception_on_mercadopago_error(self):
+        self.mock_mercadopago_repository.create_campaign_pledge_preference.side_effect = MercadopagoException(
+            "Some error")
+
+        with pytest.raises(MercadopagoException):
+            self.campaign_repository.create_campaign_from_model(MOCK_CAMPAIGN_WITH_MODEL_PROTOTYPE)
+
+        self.test_db.session.rollback.assert_called_once()
+
+    def test_create_campaign_from_model_rollbacks_and_raises_campaign_creation_exception_on_database_error(self):
+        self.mock_mercadopago_repository.create_campaign_pledge_preference.return_value = "some_preference_id"
+        self.test_db.session.commit.side_effect = Exception("Some db error")
+
+        with pytest.raises(CampaignCreationException):
+            self.campaign_repository.create_campaign_from_model(MOCK_CAMPAIGN_WITH_MODEL_PROTOTYPE)
+
+        self.test_db.session.rollback.assert_called_once()

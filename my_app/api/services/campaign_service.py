@@ -1,9 +1,11 @@
 import uuid
 
-from my_app.api.domain import Page, Campaign, CampaignModelImage, CampaignModelImagePrototype, File, Order
-from my_app.api.domain.campaign import CampaignPrototype, CampaignStatus
+from my_app.api.domain import Page, Campaign, CampaignModelImage, CampaignModelImagePrototype, File, Order, \
+    CampaignModelImageWithoutCampaignPrototype
+from my_app.api.domain.campaign import CampaignPrototype, CampaignStatus, CampaignWithModelPrototype
 from my_app.api.exceptions import CancellationException
 from my_app.api.exceptions.unprocessable_entity_exception import UnprocessableEntityException
+from my_app.api.repositories import ModelRepository, S3Repository, PrinterRepository, CampaignRepository
 
 PRINTER_NOT_FOUND = 'El impresor asociado a la campaña no existe'
 CAMPAIGN_CANNOT_BE_CANCELLED = 'La campaña ya no puede ser cancelada'
@@ -11,15 +13,14 @@ CAMPAIGN_CANNOT_BE_CANCELLED = 'La campaña ya no puede ser cancelada'
 
 class CampaignService:
     def __init__(self,
-                 campaign_repository,
-                 printer_repository,
-                 s3_repository):
+                 campaign_repository: CampaignRepository,
+                 printer_repository: PrinterRepository,
+                 s3_repository: S3Repository,
+                 model_repository: ModelRepository):
         self.campaign_repository = campaign_repository
         self.printer_repository = printer_repository
         self.s3_repository = s3_repository
-
-    def create_data(self):
-        self.campaign_repository.init_campaigns()
+        self.model_repository = model_repository
 
     def create_campaign(self, prototype: CampaignPrototype) -> Campaign:
         self._validate_campaign_printer(prototype)
@@ -58,6 +59,9 @@ class CampaignService:
     def get_buyer_campaigns(self, buyer_id: int, filters: dict) -> Page[Campaign]:
         return self.campaign_repository.get_buyer_campaigns(buyer_id, filters)
 
+    def get_designer_campaigns(self, designer_id: int, filters: dict) -> Page[Campaign]:
+        return self.campaign_repository.get_designer_campaigns(designer_id, filters)
+
     def _generate_campaign_model_image_name(self) -> str:
         return "campaign_model_images/{}".format(uuid.uuid4())
 
@@ -68,3 +72,15 @@ class CampaignService:
             raise CancellationException(CAMPAIGN_CANNOT_BE_CANCELLED)
 
         self.campaign_repository.change_campaign_status(campaign_id, CampaignStatus.TO_BE_CANCELLED)
+
+    def create_campaign_from_model(self, prototype: CampaignWithModelPrototype) -> Campaign:
+        model = self.model_repository.get_model_by_id(prototype.model_id)
+
+        prototype.campaign_model_images = [
+            CampaignModelImageWithoutCampaignPrototype(
+                model_picture_url=model_image.model_picture_url,
+                file_name=model_image.file_name,
+            ) for model_image in model.model_images
+        ]
+
+        return self.campaign_repository.create_campaign_from_model(prototype)

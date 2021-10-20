@@ -1,3 +1,5 @@
+.PHONY: integration-tests
+
 build: 
 	docker-compose build --no-cache
 

@@ -101,6 +101,7 @@ UPDATE_ORDER_RESPONSE_JSON = {
     'status': 'In progress',
     'tracking_code': 'tracking_code',
     'campaign': {
+        'alliance_percentages': None,
         'campaign_model_images': [],
         'campaign_picture_url': None,
         'created_at': 'Sun, 17 May 2020 00:00:00 GMT',
@@ -135,7 +136,9 @@ UPDATE_ORDER_RESPONSE_JSON = {
                          'id': 1,
                          'material': 'material',
                          'weight': 100},
-        'updated_at': 'Sun, 17 May 2020 00:00:00 GMT'
+        'updated_at': 'Sun, 17 May 2020 00:00:00 GMT',
+        "model_id": None,
+        'designer': None
     },
 }
 
@@ -158,6 +161,7 @@ PLEDGE_POST_REQUEST_JSON = {
 }
 
 CAMPAIGN_GET_RESPONSE_JSON = {
+    "alliance_percentages": None,
     "campaign_model_images": [],
     "campaign_picture_url": None,
     "current_pledgers": 2,
@@ -200,7 +204,9 @@ CAMPAIGN_GET_RESPONSE_JSON = {
     "updated_at": "Sun, 17 May 2020 00:00:00 GMT",
     "deleted_at": None,
     "status": "In progress",
-    'mp_preference_id': 'preference_id'
+    'mp_preference_id': 'preference_id',
+    "model_id": None,
+    'designer': None
 }
 
 CAMPAIGN_POST_REQUEST_JSON = {
@@ -226,7 +232,26 @@ CAMPAIGN_POST_REQUEST_JSON = {
     }
 }
 
+CAMPAIGN_FROM_MODEL_POST_REQUEST_JSON = {
+    "name": "Un vaso de cala",
+    "description": "Un modelo 3D para vender ::??",
+    "printer_id": 1,
+    "pledge_price": 20.0,
+    "end_date": "21-05-2023 01:00:00",
+    "min_pledgers": 6,
+    "max_pledgers": 7,
+    "tech_details": {
+        "material": "PLA",
+        "depth": 7,
+        "length": 80,
+        "width": 81,
+        "weight": 82
+    },
+    "model_id": 99
+}
+
 CAMPAIGN_POST_RESPONSE_JSON = {
+    "alliance_percentages": None,
     "campaign_model_images": [],
     "campaign_picture_url": None,
     "created_at": "Sun, 17 May 2020 00:00:00 GMT",
@@ -269,7 +294,9 @@ CAMPAIGN_POST_RESPONSE_JSON = {
     },
     "updated_at": "Sun, 17 May 2020 00:00:00 GMT",
     "status": "In progress",
-    'mp_preference_id': 'preference_id'
+    'mp_preference_id': 'preference_id',
+    "model_id": None,
+    'designer': None
 }
 
 CAMPAIGN_MODEL_IMAGE_JSON = {

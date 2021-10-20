@@ -21,11 +21,6 @@ def healthy():
 
 
 ########################### Testing endpoint ###########################
-@route(campaignBlueprint, '/test-data', methods=['POST'])  # Testing-use
-def create_data():
-    return current_app.campaign_controller.create_data(request)
-
-
 @route(campaignBlueprint, '/end-campaigns', methods=['POST'])  # Testing-use
 def end_campaigns():
     return current_app.cron_controller.end_campaigns()
@@ -54,6 +49,12 @@ def get_token():
 @validate_bearer_token
 def post_campaigns(user_data):
     return current_app.campaign_controller.post_campaign(request)
+
+
+@route(campaignBlueprint, '/from-model', methods=['POST'])
+@validate_bearer_token
+def create_campaign_from_model(user_data):
+    return current_app.campaign_controller.create_campaign_from_model(request)
 
 
 @route(campaignBlueprint, '/', methods=['GET'])
@@ -208,6 +209,11 @@ def get_buyer_campaigns(buyer_id):
 @validate_bearer_token
 def get_designer_models(designer_id, user_data):
     return current_app.model_controller.get_designer_models(request, int(designer_id), user_data)
+
+@route(designerBlueprint, '/<designer_id>/campaigns', methods=['GET'])
+@validate_bearer_token
+def get_designer_campaigns(designer_id, user_data):
+    return current_app.campaign_controller.get_designer_campaigns(request, int(designer_id), user_data)
 
 
 # Models
