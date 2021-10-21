@@ -24,13 +24,22 @@ def finalize_campaign(
 
     with session_factory() as session:
         try:
-            campaigns_to_finish = session.query(CampaignModel) \
+            campaigns_to_finish_by_end_date = session.query(CampaignModel) \
                 .filter(CampaignModel.deleted_at == None) \
-                .filter(CampaignModel.status.in_([CampaignStatus.IN_PROGRESS.value, CampaignStatus.TO_BE_FINALIZED.value, CampaignStatus.CONFIRMED.value])) \
+                .filter(CampaignModel.status.in_([CampaignStatus.IN_PROGRESS.value, CampaignStatus.CONFIRMED.value])) \
                 .filter(func.date(CampaignModel.end_date) <= datetime.datetime.now()) \
                 .options(noload(CampaignModel.tech_detail)) \
                 .options(noload(CampaignModel.images)) \
                 .all()
+
+            campaigns_to_finish_by_max_pledge_goal = session.query(CampaignModel) \
+                .filter(CampaignModel.deleted_at == None) \
+                .filter(CampaignModel.status == CampaignStatus.TO_BE_FINALIZED.value) \
+                .options(noload(CampaignModel.tech_detail)) \
+                .options(noload(CampaignModel.images)) \
+                .all()
+
+            campaigns_to_finish = campaigns_to_finish_by_end_date + campaigns_to_finish_by_max_pledge_goal
 
             client_completed_emails = []
             client_unsatisfied_emails = []

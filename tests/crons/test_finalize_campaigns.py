@@ -28,6 +28,7 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
 
         successful_campaign, unsuccessful_campaign = self._prepare_test_campaigns()
 
+        # Mock campaigns_to_finish_by_end_date
         session_mock. \
             query.return_value. \
             filter.return_value. \
@@ -36,6 +37,15 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
             options.return_value. \
             options.return_value. \
             all.return_value = [successful_campaign, unsuccessful_campaign]
+
+        # Mock campaigns_to_finish_by_max_pledge_goal
+        session_mock. \
+            query.return_value. \
+            filter.return_value. \
+            filter.return_value. \
+            options.return_value. \
+            options.return_value. \
+            all.return_value = []
 
         finalize_campaign(session_factory_mock, email_repository_mock, executor_mock, mercadopago_repository_mock)
 
@@ -79,6 +89,7 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
 
         _, unsuccessful_campaign = self._prepare_test_campaigns()
 
+        # Mock campaigns_to_finish_by_end_date
         session_mock. \
             query.return_value. \
             filter.return_value. \
@@ -87,6 +98,15 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
             options.return_value. \
             options.return_value. \
             all.return_value = [unsuccessful_campaign]
+
+        # Mock campaigns_to_finish_by_max_pledge_goal
+        session_mock. \
+            query.return_value. \
+            filter.return_value. \
+            filter.return_value. \
+            options.return_value. \
+            options.return_value. \
+            all.return_value = []
 
         session_mock.commit.side_effect = [None, None, Exception("Unexpected commit error"), None]
 
@@ -104,6 +124,7 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
 
         successful_campaign, unsuccessful_campaign = self._prepare_test_campaigns()
 
+        # Mock campaigns_to_finish_by_end_date
         session_mock. \
             query.return_value. \
             filter.return_value. \
@@ -112,6 +133,15 @@ class TestFinalizeCampaignsCron(unittest.TestCase):
             options.return_value. \
             options.return_value. \
             all.return_value = [successful_campaign, unsuccessful_campaign]
+
+        # Mock campaigns_to_finish_by_max_pledge_goal
+        session_mock. \
+            query.return_value. \
+            filter.return_value. \
+            filter.return_value. \
+            options.return_value. \
+            options.return_value. \
+            all.return_value = []
 
         # Just fail on the successful campaign update
         session_mock.commit.side_effect = [Exception("Unexpected commit error"), None, None, None]

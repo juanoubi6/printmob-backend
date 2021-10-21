@@ -31,7 +31,7 @@ class TestModelRepository(unittest.TestCase):
         )
 
         assert isinstance(response, Model)
-        assert (response.mp_preference_id, "some_preference_id")
+        assert response.mp_preference_id == "some_preference_id"
         self.mock_mercadopago_repository.create_model_purchase_preference.assert_called_once()
         assert self.mock_s3_repository.upload_file.call_count == 3  # 1 model file, 2 images
         assert self.test_db.session.add.call_count == 2
@@ -47,7 +47,7 @@ class TestModelRepository(unittest.TestCase):
         )
 
         assert isinstance(response, Model)
-        assert (response.mp_preference_id, None)
+        assert response.mp_preference_id is None
         self.mock_mercadopago_repository.create_model_purchase_preference.assert_not_called()
         assert self.test_db.session.add.call_count == 2
         assert self.test_db.session.flush.call_count == 2
