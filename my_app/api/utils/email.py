@@ -16,14 +16,12 @@ class Email:
 
 
 def create_completed_campaign_email_for_client(receiver: str, campaign: CampaignModel) -> Email:
-    email_body = """
-        La campaña '{name}', en la que participaste con ${price}, finalizo con éxito. Te dejamos los datos del 
-        vendedor para que puedas contactarlo ante cualquier duda que tengas.
+    email_body = """La campaña '{name}', en la que participaste con ${price}, finalizo con éxito. Te dejamos los datos del vendedor para que puedas contactarlo ante cualquier duda que tengas.
         
         Nombre: {first_name} {last_name}
         Email: {email}
     
-        Saludos!
+    Saludos!
     """.format(
         name=campaign.name,
         price=campaign.pledge_price,
@@ -40,11 +38,9 @@ def create_completed_campaign_email_for_client(receiver: str, campaign: Campaign
 
 
 def create_unsatisfied_campaign_email_for_client(receiver: str, campaign: CampaignModel) -> Email:
-    email_body = """
-        La campaña '{name}', en la que participaste con ${price}, lamentablemente no pudo alcanzar su objetivo mínimo. 
-        En los próximos días recuperarás el monto de tu reserva en el mismo medio de pago que utilizaste.
+    email_body = """La campaña '{name}', en la que participaste con ${price}, lamentablemente no pudo alcanzar su objetivo mínimo. En los próximos días recuperarás el monto de tu reserva en el mismo medio de pago que utilizaste.
 
-        Saludos!
+    Saludos!
     """.format(
         name=campaign.name,
         price=campaign.pledge_price,
@@ -58,11 +54,9 @@ def create_unsatisfied_campaign_email_for_client(receiver: str, campaign: Campai
 
 
 def create_completed_campaign_email_for_printer(receiver: str, campaign: CampaignModel) -> Email:
-    email_body = """
-        La campaña '{name}' que creaste finalizo con éxito. En las próximas horas actualizaremos tu saldo disponible
-        para que puedas retirarlo y empezar a imprimir.
+    email_body = """La campaña '{name}' que creaste finalizo con éxito. En las próximas horas actualizaremos tu saldo disponible para que puedas retirarlo y empezar a imprimir.
 
-        Saludos!
+    Saludos!
     """.format(name=campaign.name)
 
     return Email(
@@ -73,11 +67,9 @@ def create_completed_campaign_email_for_printer(receiver: str, campaign: Campaig
 
 
 def create_unsatisfied_campaign_email_for_printer(receiver: str, campaign: CampaignModel) -> Email:
-    email_body = """
-        La campaña '{name}' que creaste lamentablemente ha finalizado sin alcanzar el objetivo que estableciste. 
-        A no bajar los brazos!, podes crear otra campaña cuando quieras.
+    email_body = """La campaña '{name}' que creaste lamentablemente ha finalizado sin alcanzar el objetivo que estableciste. A no bajar los brazos!, podes crear otra campaña cuando quieras.
 
-        Saludos!
+    Saludos!
     """.format(name=campaign.name)
 
     return Email(
@@ -88,11 +80,9 @@ def create_unsatisfied_campaign_email_for_printer(receiver: str, campaign: Campa
 
 
 def create_updated_order_status_email_for_buyer(receiver: str, campaign: Campaign, order: Order) -> Email:
-    email_body = """
-        Tu orden de la campaña '{campaign_name}' fue actualizada. Su estado actual es '{status}'. 
-        Para mayor detalle, ingresá en tu dashboard 'Mis Campañas' y revisa tu órden.
+    email_body = """Tu orden de la campaña '{campaign_name}' fue actualizada. Su estado actual es '{status}'. Para mayor detalle, ingresá en tu dashboard 'Mis Campañas' y revisa tu órden.
 
-        Saludos!
+    Saludos!
     """.format(campaign_name=campaign.name, status=order.get_translated_order_status())
 
     return Email(
@@ -103,11 +93,9 @@ def create_updated_order_status_email_for_buyer(receiver: str, campaign: Campaig
 
 
 def create_updated_order_email_for_buyer(receiver: str, campaign: Campaign) -> Email:
-    email_body = """
-        Tu orden realizada sobre la campaña '{campaign_name}' fue actualizada. Si querés saber más datos acerca 
-        del estado de tus órdenes, ingresá en tu dashboard 'Mis Campañas" y revisa tu órden.
+    email_body = """Tu orden realizada sobre la campaña '{campaign_name}' fue actualizada. Si querés saber más datos acerca del estado de tus órdenes, ingresá en tu dashboard 'Mis Campañas" y revisa tu órden.
 
-        Saludos!
+    Saludos!
     """.format(campaign_name=campaign.name)
 
     return Email(
@@ -118,11 +106,9 @@ def create_updated_order_email_for_buyer(receiver: str, campaign: Campaign) -> E
 
 
 def create_cancelled_campaign_email_for_client(receiver: str, campaign: CampaignModel) -> Email:
-    email_body = """
-        La campaña '{name}', en la que participaste con ${price}, lamentablemente fue cancelada. 
-        En los próximos días recuperarás el monto de tu reserva en el mismo medio de pago que utilizaste.
+    email_body = """La campaña '{name}', en la que participaste con ${price}, lamentablemente fue cancelada. En los próximos días recuperarás el monto de tu reserva en el mismo medio de pago que utilizaste.
 
-        Saludos!
+    Saludos!
     """.format(
         name=campaign.name,
         price=campaign.pledge_price,
@@ -136,9 +122,7 @@ def create_cancelled_campaign_email_for_client(receiver: str, campaign: Campaign
 
 
 def create_money_request_email(receiver: str, user: User, amount: float) -> Email:
-    email_body = """
-        El usuario '{id}' ha solicitado la transferencia de ${amount} a su cuenta.
-    """.format(
+    email_body = """El usuario '{id}' ha solicitado la transferencia de ${amount} a su cuenta.""".format(
         id=user.id,
         amount=amount,
     )
@@ -152,8 +136,7 @@ def create_money_request_email(receiver: str, user: User, amount: float) -> Emai
 
 def create_model_purchase_email(receiver: str, model: Model) -> Email:
     email_body = """
-        Tu modelo '{name}' fue comprador por un usuario. En las próximas horas actualizaremos tu saldo disponible
-        para que puedas retirarlo.
+        Tu modelo '{name}' fue comprador por un usuario. En las próximas horas actualizaremos tu saldo disponible para que puedas retirarlo.
 
         Saludos!
     """.format(name=model.name,)
@@ -169,12 +152,9 @@ def create_completed_campaign_email_with_model_file_url_for_printer(
         receiver: str, campaign: CampaignModel, file_url: str
 ) -> Email:
     email_body = """
-        La campaña '{name}' que creaste finalizo con éxito. En las próximas horas actualizaremos tu saldo disponible
-        para que puedas retirarlo y empezar a imprimir.
+        La campaña '{name}' que creaste finalizo con éxito. En las próximas horas actualizaremos tu saldo disponible para que puedas retirarlo y empezar a imprimir.
         
-        Además, te enviamos el link al archivo STL del modelo asociado a la campaña para que puedas comenzar a 
-        imrpimirlo. Recorda que no podés utilizar este archivo por fuera de la plataforma o estarías incumpliendo
-        los términos y condiciones.
+        Además, te enviamos el link al archivo STL del modelo asociado a la campaña para que puedas comenzar a imprimirlo. Recorda que no podés utilizar este archivo por fuera de la plataforma o estarías incumpliendo los términos y condiciones.
         
         Link al archivo STL: {file_url}
 
