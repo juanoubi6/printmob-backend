@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import asc
+from sqlalchemy import asc, or_, and_
 from sqlalchemy.orm import noload
 
 from my_app.api.domain import Page, Campaign, CampaignModelImagePrototype, CampaignModelImage, CampaignPrototype, \
@@ -213,9 +213,19 @@ class CampaignRepository:
         buyer_id: int
             Buyer id.
         """
+        active_campaign_filter = and_(
+            CampaignModel.status.in_([CampaignStatus.IN_PROGRESS.value, CampaignStatus.CONFIRMED.value, CampaignStatus.TO_BE_FINALIZED.value, CampaignStatus.COMPLETED.value]),
+            PledgeModel.deleted_at == None
+        )
+
+        closed_campaign_filter = and_(
+            CampaignModel.status.in_([CampaignStatus.CANCELLED.value, CampaignStatus.TO_BE_CANCELLED.value, CampaignStatus.UNSATISFIED.value]),
+        )
+
         query = self.db.session.query(CampaignModel).join(PledgeModel).distinct(CampaignModel.id) \
             .filter(CampaignModel.id == PledgeModel.campaign_id)\
-            .filter(PledgeModel.buyer_id == buyer_id)
+            .filter(PledgeModel.buyer_id == buyer_id)\
+            .filter(or_(active_campaign_filter, closed_campaign_filter))
         query = apply_campaign_filters(query, filters)
         query = query.options(noload(CampaignModel.tech_detail)).order_by(asc(CampaignModel.id))
 
