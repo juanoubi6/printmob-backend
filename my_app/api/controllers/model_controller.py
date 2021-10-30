@@ -6,7 +6,7 @@ from flask import request
 from my_app.api.controllers.validators import validate_model_file_upload, validate_image_upload, \
     validate_pagination_filters, validate_image_file
 from my_app.api.domain import Model, UserType, ModelPrototype, File, ModelImage, ModelCategory, ModelLike, \
-    ModelPurchase, Page, ModelOrdering
+    ModelPurchase, Page, ModelOrdering, Campaign
 from my_app.api.exceptions import BusinessException
 from my_app.api.services import ModelService
 
@@ -166,6 +166,11 @@ class ModelController:
         model_id = req.args.get("model_id")
 
         return self.model_service.get_model_image_data(model_id)
+
+    def get_model_current_campaigns(self, req: request, model_id: int) -> (List[Campaign], int):
+        campaign_list = self.model_service.get_model_current_campaigns(model_id)
+
+        return [campaign.to_reduced_json() for campaign in campaign_list], 200
 
     def _str_to_bool(self, str_bool):
         return str_bool.lower() in ("True", "true", "t", "1")

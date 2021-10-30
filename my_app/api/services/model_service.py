@@ -4,7 +4,7 @@ from concurrent.futures import Executor
 from typing import List, Optional
 
 from my_app.api.domain import ModelPrototype, Model, File, ModelImage, ModelImagePrototype, \
-    ModelCategory, ModelLike, ModelPurchase, Page, ModelOrdering, ModelOrderingEnum
+    ModelCategory, ModelLike, ModelPurchase, Page, ModelOrdering, ModelOrderingEnum, Campaign
 from my_app.api.exceptions import BusinessException
 from my_app.api.repositories import ModelRepository, S3Repository, EmailRepository
 from my_app.api.utils.email import create_model_purchase_email
@@ -100,6 +100,9 @@ class ModelService:
 
     def get_model_purchase_from_printer(self, model_id: int, printer_id: int) -> ModelPurchase:
         return self.model_repository.get_model_purchase_from_printer(model_id, printer_id)
+
+    def get_model_current_campaigns(self, model_id: int) -> List[Campaign]:
+        return self.model_repository.get_model_current_campaigns(model_id)
 
     def get_model_image_data(self, model_id:int) -> bytes:
         model = self.model_repository.get_model_by_id(model_id)

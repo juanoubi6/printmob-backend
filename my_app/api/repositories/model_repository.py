@@ -6,11 +6,11 @@ from sqlalchemy import asc
 from sqlalchemy.orm import noload, lazyload
 
 from my_app.api.domain import ModelPrototype, Model, ModelImagePrototype, ModelImage, ModelCategory, \
-    ModelLike, ModelPurchase, TransactionType, Page, File
+    ModelLike, ModelPurchase, TransactionType, Page, File, Campaign, CampaignStatus
 from my_app.api.exceptions import MercadopagoException, ModelCreationException, NotFoundException, BusinessException
 from my_app.api.repositories.mercadopago_repository import MercadopagoRepository
 from my_app.api.repositories.models import ModelModel, ModelFileModel, ModelImageModel, ModelCategoryModel, \
-    ModelLikeModel, TransactionModel, ModelPurchaseModel
+    ModelLikeModel, TransactionModel, ModelPurchaseModel, CampaignModel
 from my_app.api.repositories.s3_repository import S3Repository
 from my_app.api.repositories.utils import paginate, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, apply_model_filters, \
     apply_model_order
@@ -248,6 +248,18 @@ class ModelRepository:
             total_records=total_records,
             data=[mpm.to_entity() for mpm in model_purchase_models]
         )
+
+    def get_model_current_campaigns(self, model_id: int) -> List[Campaign]:
+        campaign_model_list = self.db.session.query(CampaignModel) \
+            .filter(CampaignModel.deleted_at == None) \
+            .filter(CampaignModel.status.in_([CampaignStatus.IN_PROGRESS.value, CampaignStatus.CONFIRMED.value])) \
+            .filter(CampaignModel.model_id == model_id) \
+            .options(noload(CampaignModel.tech_detail)) \
+            .options(noload(CampaignModel.images)) \
+            .options(noload(CampaignModel.pledges)) \
+            .all()
+
+        return [campaign.to_campaign_entity() for campaign in campaign_model_list]
 
     def get_models(self, filters: dict, user_id: Optional[int]) -> Page[Model]:
         """

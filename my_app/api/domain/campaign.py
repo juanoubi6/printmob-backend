@@ -111,6 +111,14 @@ class Campaign:
             "designer": self.designer.to_json() if self.designer is not None else None
         }
 
+    def to_reduced_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "printer": self.printer.to_json() if self.printer is not None else None,
+            "pledge_price": self.pledge_price
+        }
+
 
 class CampaignPrototype:
     def __init__(

@@ -286,6 +286,11 @@ def get_model_detail(model_id, user_data):
     return current_app.model_controller.get_model_detail(request, int(model_id), user_data)
 
 
+@route(modelBlueprint, '/<model_id>/campaigns', methods=['GET'])
+def get_model_current_campaigns(model_id):
+    return current_app.model_controller.get_model_current_campaigns(request, int(model_id))
+
+
 @route(modelBlueprint, '/', methods=['GET'])
 @get_user_data_if_sent
 def get_models(user_data):
