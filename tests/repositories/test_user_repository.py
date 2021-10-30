@@ -246,10 +246,19 @@ class TestUserRepository(unittest.TestCase):
             options.return_value. \
             all.return_value = [pending_order]
 
+        # Mock completed campaigns with orders query
+        self.test_db.session.query.return_value.\
+            distinct.return_value. \
+            filter.return_value. \
+            options.return_value. \
+            options.return_value. \
+            count.return_value = 5
+
+
         response = self.user_repository.get_printer_data_dashboard(MOCK_USER_BUYER_MODEL.id)
 
         assert isinstance(response, PrinterDataDashboard)
-        assert response.completed_campaigns == 1
+        assert response.completed_campaigns == 5
         assert response.campaigns_in_progress == 2
         assert response.pending_orders == 1
         assert response.pledges_in_progress == len(MOCK_CAMPAIGN_MODEL.pledges) + len(MOCK_CONFIRMED_CAMPAIGN_MODEL.pledges)

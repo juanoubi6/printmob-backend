@@ -61,9 +61,16 @@ class UserRepository:
             .all()
         pending_orders = len(in_progress_orders_from_printer) if in_progress_orders_from_printer is not None else 0
 
+        # Completed campaigns with orders
+        campaign_with_orders = self.db.session.query(OrderModel).distinct(OrderModel.campaign_id)\
+            .filter(OrderModel.status == OrderStatus.IN_PROGRESS.value) \
+            .options(noload(OrderModel.buyer)) \
+            .options(noload(OrderModel.campaign)) \
+            .count()
+
         return PrinterDataDashboard(
             campaigns_in_progress=campaigns_in_progress,
-            completed_campaigns=completed_campaigns,
+            completed_campaigns=campaign_with_orders,
             pledges_in_progress=current_pledges,
             balance=user_balance,
             pending_orders=pending_orders,
