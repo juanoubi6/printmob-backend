@@ -42,6 +42,9 @@ class ModelController:
             designer_id=int(user_data["id"]),
         )
 
+        if prototype.purchase_price > 10000000:
+            raise BusinessException("El precio de los diseños no puede superar el valor de $10.000.000")
+
         # Retrieve and validate model file
         validate_model_file_upload(req.files, 'model_file')
         model_file_data = req.files['model_file']
