@@ -746,6 +746,24 @@ class CronController:
             session.execute('TRUNCATE model_categories CASCADE;')
             session.commit()
 
+    def truncate_all_excepting_users(self):
+        with self.session_factory() as session:
+            session.execute('TRUNCATE balance_requests CASCADE;')
+            session.execute('TRUNCATE campaign CASCADE;')
+            session.execute('TRUNCATE campaign_model_images CASCADE;')
+            session.execute('TRUNCATE failed_to_refund_pledges CASCADE;')
+            session.execute('TRUNCATE model_files CASCADE;')
+            session.execute('TRUNCATE model_images CASCADE;')
+            session.execute('TRUNCATE model_likes CASCADE;')
+            session.execute('TRUNCATE model_purchases CASCADE;')
+            session.execute('TRUNCATE models CASCADE;')
+            session.execute('TRUNCATE orders CASCADE;')
+            session.execute('TRUNCATE pledges CASCADE;')
+            session.execute('TRUNCATE tech_details CASCADE;')
+            session.execute('TRUNCATE transactions CASCADE;')
+            session.execute('TRUNCATE model_categories CASCADE;')
+            session.commit()
+
     def create_test_data(self, req: request) -> (dict, int):
         params = req.args
         if params.get('truncate'):
@@ -994,3 +1012,8 @@ class CronController:
             session.commit()
 
         return {"status":"ok", "created_campaigns": created_campaigns}, 200
+
+    def truncate_all_but_users(self, req: request) -> (dict, int):
+        self.truncate_all_excepting_users()
+
+        return {"status": "ok"}, 200

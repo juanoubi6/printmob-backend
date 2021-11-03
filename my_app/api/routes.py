@@ -31,6 +31,11 @@ def fixture_data():
     return current_app.cron_controller.create_test_data(request)
 
 
+@route(campaignBlueprint, '/truncate-all-but-users', methods=['POST'])  # Testing-use
+def truncate_all_but_users():
+    return current_app.cron_controller.truncate_all_but_users(request)
+
+
 @route(userBlueprint, '/token', methods=['GET'])  # Testing-use
 def get_token():
     payload = {
