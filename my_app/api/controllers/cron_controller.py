@@ -761,7 +761,6 @@ class CronController:
             session.execute('TRUNCATE pledges CASCADE;')
             session.execute('TRUNCATE tech_details CASCADE;')
             session.execute('TRUNCATE transactions CASCADE;')
-            session.execute('TRUNCATE model_categories CASCADE;')
             session.commit()
 
     def create_test_data(self, req: request) -> (dict, int):
