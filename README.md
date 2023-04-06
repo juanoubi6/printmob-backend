@@ -1,28 +1,28 @@
 #Printmob-backend
-Backend de la aplicacion Printmob
+Backend for Printmob app
 
-#Antes de correr
-1. Crear un archivo `.env` partiendo de `.env.example`
-1. En él, colocar los valores de las variables de ambiente. Las mismas serán pasadas a tu container local
+#Before running
+1. Create a .env file based on the .env.example file
+1. In the .env file, input the values for the environment variables. These variables will be passed to your local container.
 
-#Levantar proyecto con docker
-1. Pararse en el directorio raiz
-1. Ejecutar `make build` para crear los contenedores
-1. Ejecutar `make run` para crear la base de datos y el backend (que a su vez corre las migraciones de la base de datos)
+#Running the project with Docker
+1. Navigate to the root directory
+1. Run `make build` to create the containers
+1. Run `make run` to create the database and the backend (which in turn runs the database migrations).
 
-#Levantar proyecto localmente en Pycharm
-1. Pararse en el directorio raiz
-1. Correr `make build` para crear los contenedores
-1. Correr `make run`. Esto levanta la base de datos y la aplicacion, corriendo las migraciones
-1. Hacer `docker ps`, ubicar el container del backend y deterlo con `docker stop {containerId}`
-1. Correr localmente el metodo run del archivo wsgi.py. Se puede correr debugeando para tener mas control
+#Running the project locally in Pycharm
+1. Navigate to the root directory
+1. Run `make build` to create the containers
+1. Run `make run`. This will start the database and the application, running the migrations.
+1. Run `docker ps`, locate the backend container, and stop it with docker stop {containerId}.
+1. Run the run method of the wsgi.py file locally. You can run it in debug mode for more control.
 
-#Crear una nueva migracion
-1. Correr `alembic revision -m "Descripcion de la migracion"`. Se va a crear un archivo en el directorio /alembic/versions
-1. Modificar el archivo agregando la migracion (tanto el upgrade como el downgrade)
-1. Ejecutar las migraciones utilizando `alembic upgrade head` (si lo tenemos local) o usar `make migrate`
+#Creating a new migration
+1. Run `alembic revision -m "Description of the migration"`. This will create a file in the /alembic/versions directory.
+1. Modify the file by adding the migration (both the upgrade and downgrade).
+1. Run the migrations using `alembic upgrade head` (if you have it locally) or use `make migrate`.
 
-#Pushear container a la nube de AWS
-1. Verificar que haya una entrada llamada `printmob` en el archivo `~/.aws`
-1. Correr `make push`
-1. Ir a la consola de AWS o mediante la CLI, matar el container que esta corriendo para que el nuevo container que se lance use la nueva imagen
+#Pushing container to AWS cloud
+1. Verify that there is an entry called printmob in the ~/.aws file.
+1. Run `make push`.
+1. Go to the AWS console or use the CLI to kill the running container so that the new container that is launched uses the new image.
