@@ -26,5 +26,5 @@ deploy:
 	aws ecs stop-task --profile printmob --cluster "printmob-cluster" --task $(aws ecs list-tasks --profile printmob --cluster "printmob-cluster" --service "backend-service" --output text --query taskArns)
 
 integration-tests:
-	echo "Esto requiere que hayas hecho make run"
+	echo "This requires you to run make run first"
 	docker exec -it printmob-backend_backend_1 python3 -m pytest tests/integration/
